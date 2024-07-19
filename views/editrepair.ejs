@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Repair Detail</title>
+</head>
+<body>
+    <header>
+        <% include index.ejs %>
+    </header>
+    <div class="container mt-5">
+        <h1>แก้ไขการซ่อม</h1>
+        <% if (data.repair) { %>
+        <form action="/assetlist/editrepair/<%= data.repair._id %>?_method=PUT" method="POST" class="mt-5">
+            <div class="mb-3">
+                <label class="form-label">Computer Name</label>
+                <input type="text" class="form-control" value="<%= data.repair.computername ? data.repair.computername.computername : '' %>" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Detail Repair</label>
+                <input type="text" class="form-control" name="detailrepair" value="<%= data.repair.detailrepair %>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Value</label>
+                <input type="text" class="form-control" name="value" value="<%= data.repair.value %>">
+            </div>
+
+            <div class="mb-3">
+                <label for="success" class="form-label">Success:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="success" name="success" value="success" <% if (data.repair.success) { %> checked <% } %>>
+                </div>
+                <label for="fail" class="form-label">Fail:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="fail" name="fail" value="fail" <% if (data.repair.fail) { %> checked <% } %>>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Remark</label>
+                <input type="text" class="form-control" name="repairremark" value="<%= data.repair.repairremark %>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Repair Date</label>
+                <input type="date" class="form-control" name="repairdate" value="<%= data.repair.repairdate.toISOString().split('T')[0] %>">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <% } else { %>
+            <p>Data not found</p>
+        <% } %>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-+GaG3ip9sSQn2G6mWpR86qc433Zuwb0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-s0U0omKBkEl3B2hwhV1ngZV3Eqy1R30ffzGqwNBqrnVPh+4Mzf4FRkS5kNSqlmCw" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-NPT01BYFm1q2A7ixcvK+eSsY2VJ0wn8Bb5O8+3io/QLtqOyF5voFt9k/2MREj7h5" crossorigin="anonymous"></script>
+
+    <script src="/javascripts/editrepair.js"></script>
+
+
+
+</body>
+</html>

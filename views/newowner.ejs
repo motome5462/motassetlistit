@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/editdetail.css">
+    <title>เปลี่ยนผู้ใช้ใหม่</title>
+
+</head>
+<body>
+    <header>
+        <!-- Navbar -->
+        <% include index %>
+    </header>
+    
+    <h3 style="margin-top: 50px ;margin-bottom: 25px;">ASSET IT LIST CONTROL</h3>
+    <div class="container" >
+        <div class="row">
+            <div class="form-container" >
+                <% if (data.assetlist) { %>
+                    <form method="post" action="/assetlist/inputassetlist" enctype="multipart/form-data" class="mt-5">
+                        <table class=" table table-bordered" style="border: 1px solid black;">
+                            <tbody>
+                              <tr>
+                                <td><label for="name" class="form-label">Name:</label></td>
+                                <td><input type="text" name="name" class="form-control" value="<%= data.assetlist.name %>"required></td>
+                                <td><label for="dept" class="form-label">Dept:</label></td>
+                                <td><input type="text" class="form-control" id="dept" name="dept" value="<%= data.assetlist.dept %>"></td>
+                                <td><label for="assetid" class="form-label">Asset ID:</label></td>
+                                <td><input type="text" name="assetid" class="form-control" value="<%= data.assetlist.assetid %>"  required></td>
+    
+                              </tr>
+                              <tr>
+                                <td><label for="assetitlistscompany" class="form-label">Company:</label></td>
+                                <td>
+                                  <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="companyMOT_HeadOffice" name="assetitlistscompany" value="MOT_Head Office"
+                                    <% if (data.assetlist.assetitlistscompany.includes('MOT_Head Office')) { %> checked <% } %>>
+                                    <label class="form-check-label" for="companyMOT_HeadOffice">MOT_Head Office</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="companyMOT_RayongOffice" name="assetitlistscompany" value="MOT_Rayong Office"
+                                    <% if (data.assetlist.assetitlistscompany.includes('MOT_Rayong Office')) { %> checked <% } %>>
+                                    <label class="form-check-label" for="companyMOT_RayongOffice">MOT_Rayong Office</label>
+                                  </div>
+                                </td>
+                                <td><label for="computername" class="form-label">Computer Name:</label></td>
+                                <td><input type="text" class="form-control" id="computername" name="computername" value="<%= data.assetlist.computername %>"></td>                              
+                                <td><label for="assetitlistsdate" class="form-label">Date:</label></td>
+                                <td><input type="date" name="assetitlistsdate" class="form-control" value="<%= new Date(data.assetlist.assetitlistsdate).toISOString().substring(0, 10) %>" required></td>
+    
+                              </tr>
+    
+                            </tbody>
+                          </table>
+                        
+
+
+
+<!-- 
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name:</label>
+                        <input type="text" name="name" class="form-control" value="<%= data.assetlist.name %>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="dept" class="form-label">Dept.</label>
+                        <input type="text" class="form-control" id="dept" name="dept" value="<%= data.assetlist.dept %>">
+                      </div>
+                    <div class="mb-3">
+                        <label for="assetitlistsdate" class="form-label">Date:</label>
+                        <input type="date" name="assetitlistsdate" class="form-control" value="<%= new Date(data.assetlist.assetitlistsdate).toISOString().substring(0, 10) %>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="assetid" class="form-label">Asset ID:</label>
+                        <input type="text" name="assetid" class="form-control" value="<%= data.assetlist.assetid %>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="assetitlistscompany" class="form-label">Company:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="companyMOT_HeadOffice" name="assetitlistscompany" value="MOT_Head Office"
+                            <% if (data.assetlist.assetitlistscompany.includes('MOT_Head Office')) { %> checked <% } %>>
+                            <label class="form-check-label" for="companyMOT_HeadOffice">MOT_Head Office</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="companyMOT_RayongOffice" name="assetitlistscompany" value="MOT_Rayong Office"
+                            <% if (data.assetlist.assetitlistscompany.includes('MOT_Rayong Office')) { %> checked <% } %>>
+                            <label class="form-check-label" for="companyMOT_RayongOffice">MOT_Rayong Office</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="computername" class="form-label">Computer Name:</label>
+                        <input type="text" class="form-control" id="computername" name="computername" value="<%= data.assetlist.computername %>">
+                    </div> -->
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="device" class="form-label">Device:</label><br>
+                            <input type="checkbox" name="device" class="form-check-input" value="DELL" <% if (data.assetlist.device.includes('DELL')) { %> checked <% } %>> DELL<br>
+                            <input type="checkbox" name="device" class="form-check-input" value="Lenovo" <% if (data.assetlist.device.includes('Lenovo')) { %> checked <% } %>> Lenovo<br>
+                            <input type="checkbox" name="device" class="form-check-input" value="Asus" <% if (data.assetlist.device.includes('Asus')) { %> checked <% } %>> Asus<br>
+                            <input type="checkbox" name="device" class="form-check-input" id="deviceother" onclick="toggleOther('deviceotherinput')" <% if (data.assetlist.device.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="deviceotherinput" class="form-control" name="device" style="display: none;" value="<%= data.assetlist.device.find(item => !['DELL', 'Lenovo', 'Asus'].includes(item)) || '' %>">
+                        </div>
+
+
+                        <div class="col">
+                            <label for="devicetype" class="form-label">Device Type:</label><br>
+                            <input type="checkbox" name="devicetype" class="form-check-input" value="Laptop" <% if (data.assetlist.devicetype.includes('Laptop')) { %> checked <% } %>> Laptop<br>
+                            <input type="checkbox" name="devicetype" class="form-check-input" value="PC" <% if (data.assetlist.devicetype.includes('PC')) { %> checked <% } %>> PC<br>
+                            <input type="checkbox" name="devicetype" class="form-check-input" value="Server" <% if (data.assetlist.devicetype.includes('Server')) { %> checked <% } %>> Server<br>
+                            <input type="checkbox" name="devicetype" class="form-check-input" value="Switch" <% if (data.assetlist.devicetype.includes('Switch')) { %> checked <% } %>> Switch<br>
+                            <input type="checkbox" name="devicetype" class="form-check-input" value="Router" <% if (data.assetlist.devicetype.includes('Router')) { %> checked <% } %>> Router<br>
+                            <input type="checkbox" name="devicetype" class="form-check-input" id="devicetype" onclick="toggleOther('devicetypeinput')"<% if (data.assetlist.devicetype.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="devicetypeinput" class="form-control" name="devicetype"  style="display: none;" value="<%= data.assetlist.devicetype.find(item => !['Laptop', 'PC', 'Server','Switch','Router'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="devicechoice" class="form-label">Device Choice:</label><br>
+                            <input type="checkbox" name="devicechoice" class="form-check-input" value="Optiplex" <% if (data.assetlist.devicechoice.includes('Optiplex')) { %> checked <% } %>> Optiplex<br>
+                            <input type="checkbox" name="devicechoice" class="form-check-input" value="Latitude" <% if (data.assetlist.devicechoice.includes('Latitude')) { %> checked <% } %>> Latitude<br>
+                            <input type="checkbox" name="devicechoice" class="form-check-input" id="devicechoice" onclick="toggleOther('devicechoiceinput')" <% if (data.assetlist.devicechoice.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="devicechoiceinput" class="form-control" name="devicechoice" style="display: none;" value="<%= data.assetlist.devicechoice.find(item => !['Optiplex', 'Latitude'].includes(item)) || '' %>">
+                        </div>
+                    </div>
+
+
+                    
+                    
+
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col-md-4">
+                          <label for="devicemodel" class="form-label">Model:</label>
+                          <input type="text" class="form-control" id="devicemodel" name="devicemodel" value="<%= data.assetlist.devicemodel %>">
+                        </div>
+                        <div class="col-md-4">
+                          <label for="devicesn" class="form-label">S/N:</label>
+                          <input type="text" class="form-control" id="devicesn" name="devicesn" value="<%= data.assetlist.devicesn %>">
+                        </div>
+                      </div>
+                    
+
+                      <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col-md-4">
+                        <label for="cpu" class="form-label">CPU:</label><br>
+                        <input type="checkbox" name="cpu" class="form-check-input" value="Intel" <% if (data.assetlist.cpu.includes('Intel')) { %> checked <% } %>> Intel<br>
+                        <input type="checkbox" name="cpu" class="form-check-input" value="AMD" <% if (data.assetlist.cpu.includes('AMD')) { %> checked <% } %>> AMD<br>
+                        <input type="checkbox" name="cpu" class="form-check-input" value="Xeon" <% if (data.assetlist.cpu.includes('Xeon')) { %> checked <% } %>> Xeon<br>
+                        <input type="checkbox" name="cpu" class="form-check-input"  onclick="toggleOther('cpu')" <% if (data.assetlist.cpu.includes('Other')) { %> checked <% } %>> Other
+                        <input type="text" id="cpu" name="cpu" class="form-control" style="display: none;" value="<%= data.assetlist.cpu.find(item => !['Intel', 'AMD','Xeon'].includes(item)) || '' %>">
+
+                    </div>
+
+                        <div class="col-md-4">
+                        <label for="cputype" class="form-label">CPU TYPE:</label><br>
+                        <input type="checkbox" name="cputype" class="form-check-input" value="Core i5" <% if (data.assetlist.cputype.includes('Core i5')) { %> checked <% } %>> Core i5<br>
+                        <input type="checkbox" name="cputype" class="form-check-input" value="Core i7" <% if (data.assetlist.cputype.includes('Core i7')) { %> checked <% } %>> Core i7<br>
+                        <input type="checkbox" name="cputype" class="form-check-input"  onclick="toggleOther('cputype')" <% if (data.assetlist.cputype.includes('Other')) { %> checked <% } %>> Other
+                        <input type="text" id="cputype" class="form-control" name="cputype" style="display: none;" value="<%= data.assetlist.cputype.find(item => !['Core i5', 'Core i7'].includes(item)) || '' %>">
+                    </div>
+                    <div class="col-md-4" >
+                        <label for="cpuassetaccountno" class="form-label">Asset Account No:</label>
+                        <input type="text" class="form-control" id="cpuassetaccountno" name="cpuassetaccountno" value="<%= data.assetlist.cpuassetaccountno %>">
+                      </div>
+
+                    </div>
+
+
+
+
+      <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+        <div class="col">
+            <label for="speed" class="form-label">Speed:</label><br>
+            <input type="checkbox" name="speed" class="form-check-input" value="2.7 GHz" <% if (data.assetlist.speed.includes('2.7 GHz')) { %> checked <% } %>> 2.7 GHz<br>
+            <input type="checkbox" name="speed" class="form-check-input" value="3.0 GHz" <% if (data.assetlist.speed.includes('3.0 GHz')) { %> checked <% } %>> 3.0 GHz<br>
+            <input type="checkbox" name="speed" class="form-check-input"  onclick="toggleOther('speed')" <% if (data.assetlist.speed.includes('Other')) { %> checked <% } %>> Other
+            <input type="text" id="speed" name="speed" class="form-control" style="display: none;" value="<%= data.assetlist.speed.find(item => !['2.7 GHz', '3.0 GHz'].includes(item)) || '' %>">
+        </div>
+        <div class="col" >
+            <label for="harddisk" class="form-label">Harddisk:</label><br>
+            <input type="checkbox" name="harddisk" class="form-check-input" value="500GB" <% if (data.assetlist.harddisk.includes('500GB')) { %> checked <% } %>> 500GB<br>
+            <input type="checkbox" name="harddisk" class="form-check-input" value="1000GB" <% if (data.assetlist.harddisk.includes('1000GB')) { %> checked <% } %>> 1000GB<br>
+            <input type="checkbox" name="harddisk" class="form-check-input"  onclick="toggleOther('harddisk')" <% if (data.assetlist.harddisk.includes('Other')) { %> checked <% } %>> Other
+            <input type="text" id="harddisk" name="harddisk" class="form-control" style="display: none;" value="<%= data.assetlist.harddisk.find(item => !['500GB', '1000GB'].includes(item)) || '' %>">
+        </div>
+        <div class="col" >
+            <label for="ram" class="form-label">Ram:</label><br>
+            <input type="checkbox" name="ram" class="form-check-input" value="4GB" <% if (data.assetlist.ram.includes('4GB')) { %> checked <% } %>> 4GB<br>
+            <input type="checkbox" name="ram" class="form-check-input" value="8GB" <% if (data.assetlist.ram.includes('8GB')) { %> checked <% } %>> 8GB<br>
+            <input type="checkbox" name="ram" class="form-check-input" onclick="toggleOther('ram')" <% if (data.assetlist.ram.includes('Other')) { %> checked <% } %>> Other
+            <input type="text" id="ram" name="ram" class="form-control" style="display: none;" value="<%= data.assetlist.ram.find(item => !['4GB', '8GB'].includes(item)) || '' %>">
+        </div>
+    </div>
+
+    <!-- <div class="mb-3">
+        <label for="img" class="form-label">Image:</label>
+
+            <img src="<%= data.img %>" alt="Previous Image" style="max-width: 200px; display: block; margin-bottom: 10px;">
+
+        <input type="file" name="img" class="form-control" >
+    </div> -->
+
+
+    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+        <label for="img" class="form-label">Image:</label>
+        <% if (data.assetlist.img) { %>
+            <img src="/images/<%= data.assetlist.img %>" alt="Previous Image" style="max-width: 200px; display: block; margin-bottom: 10px;">
+            <input type="hidden" name="existingImage" value="<%= data.assetlist.img %>">
+        <% } else { %>
+            <p>No previous image available</p>
+        <% } %>
+        <input type="file" name="img" class="form-control">
+    </div>
+    
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="romdrive" class="form-label">Rom Drive:</label><br>
+                            <input type="checkbox" name="romdrive" class="form-check-input" value="DELL" <% if (data.assetlist.romdrive.includes('DELL')) { %> checked <% } %>> DELL<br>
+                            <input type="checkbox" name="romdrive" class="form-check-input"  onclick="toggleOther('romdrive')" <% if (data.assetlist.romdrive.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="romdrive" name="romdrive" class="form-control" style="display: none;" value="<%= data.assetlist.romdrive.find(item => !['DELL'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="romdrivetype" class="form-label">Rom Drive Type:</label><br>
+                            <input type="checkbox" name="romdrivetype" class="form-check-input" value="Internal" <% if (data.assetlist.romdrivetype.includes('Internal')) { %> checked <% } %>> Internal<br>
+                            <input type="checkbox" name="romdrivetype" class="form-check-input" value="External" <% if (data.assetlist.romdrivetype.includes('External')) { %> checked <% } %>> External<br>
+
+                        </div>
+                        <div class="col">
+                            <label for="romsn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="romsn" name="romsn" value="<%= data.assetlist.romsn %>">
+                          </div>
+                          <div class="col">
+                            <label for="romassetid" class="form-label">Asset ID:</label>
+                            <input type="text" class="form-control" id="romassetid" name="romassetid" value="<%= data.assetlist.romassetid %>">
+                          </div>
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="monitor" class="form-label">Monitor:</label><br>
+                            <input type="checkbox" name="monitor" class="form-check-input" value="Dell" <% if (data.assetlist.monitor.includes('Dell')) { %> checked <% } %>> Dell<br>
+                            <input type="checkbox" name="monitor" class="form-check-input" value="HP" <% if (data.assetlist.monitor.includes('HP')) { %> checked <% } %>> HP<br>
+                            <input type="checkbox" name="monitor" class="form-check-input" value="SAMSUNG" <% if (data.assetlist.monitor.includes('SAMSUNG')) { %> checked <% } %>> SAMSUNG<br>
+                            <input type="checkbox" name="monitor" class="form-check-input"  onclick="toggleOther('monitor')" <% if (data.assetlist.monitor.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="monitor" class="form-control" name="monitor" style="display: none;" value="<%= data.assetlist.monitor.find(item => !['Dell','HP','SAMSUNG'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="monitortype" class="form-label">Monitor Type:</label><br>
+                            <input type="checkbox" name="monitortype" class="form-check-input" value="19" <% if (data.assetlist.monitortype.includes('19')) { %> checked <% } %>> 19"<br>
+                            <input type="checkbox" name="monitortype" class="form-check-input" value="23" <% if (data.assetlist.monitortype.includes('23')) { %> checked <% } %>> 23"<br>
+                            <input type="checkbox" name="monitortype" class="form-check-input"  onclick="toggleOther('monitortype')" <% if (data.assetlist.monitortype.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="monitortype" class="form-control" name="monitortype" style="display: none;" value="<%= data.assetlist.monitortype.find(item => !['19','23'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="monitorsn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="monitorsn" name="monitorsn" value="<%= data.assetlist.monitorsn %>">
+                          </div>
+                          <div class="col">
+                            <label for="monitorassetid" class="form-label">Asset ID:</label>
+                            <input type="text" class="form-control" id="monitorassetid" name="monitorassetid" value="<%= data.assetlist.monitorassetid %>">
+                          </div>
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="keyboard" class="form-label">Keyboard:</label><br>
+                            <input type="checkbox" name="keyboard" class="form-check-input" value="Dell" <% if (data.assetlist.keyboard.includes('Dell')) { %> checked <% } %>> Dell<br>
+                            <input type="checkbox" name="keyboard" class="form-check-input" value="MD" <% if (data.assetlist.keyboard.includes('MD')) { %> checked <% } %>> MD<br>
+                            <input type="checkbox" name="keyboard" class="form-check-input" value="Genius" <% if (data.assetlist.keyboard.includes('Genius')) { %> checked <% } %>> Genius<br>
+                            <input type="checkbox" name="keyboard" class="form-check-input" value="Logitech" <% if (data.assetlist.keyboard.includes('Logitech')) { %> checked <% } %>> Logitech<br>
+                        </div>
+                        <div class="col">
+                            <label for="keyboardtype" class="form-label">Keyboard Type:</label><br>
+                            <input type="checkbox" name="keyboardtype" class="form-check-input" value="USB" <% if (data.assetlist.keyboardtype.includes('USB')) { %> checked <% } %>> USB<br>
+                            <input type="checkbox" name="keyboardtype" class="form-check-input" value="Wireless" <% if (data.assetlist.keyboardtype.includes('Wireless')) { %> checked <% } %>> Wireless<br>
+                            <input type="checkbox" name="keyboardtype" class="form-check-input"  onclick="toggleOther('keyboardtype')" <% if (data.assetlist.keyboardtype.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="keyboardtype" class="form-control" name="keyboardtype" style="display: none;" value="<%= data.assetlist.keyboardtype.find(item => !['USB','Wireless'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="keyboardsn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="keyboardsn" name="keyboardsn" value="<%= data.assetlist.keyboardsn %>">
+                          </div>
+                          <div class="col">
+                            <label for="keyboardassetid" class="form-label">Asset ID:</label>
+                            <input type="text" class="form-control" id="keyboardassetid" name="keyboardassetid" value="<%= data.assetlist.keyboardassetid %>">
+                          </div>
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="mouse" class="form-label">Mouse:</label><br>
+                            <input type="checkbox" name="mouse" class="form-check-input" value="Dell" <% if (data.assetlist.mouse.includes('Dell')) { %> checked <% } %>> Dell<br>
+                            <input type="checkbox" name="mouse" class="form-check-input" value="MD" <% if (data.assetlist.mouse.includes('MD')) { %> checked <% } %>> MD<br>
+                            <input type="checkbox" name="mouse" class="form-check-input" value="Genius" <% if (data.assetlist.mouse.includes('Genius')) { %> checked <% } %>> Genius<br>
+                            <input type="checkbox" name="mouse" class="form-check-input" value="Logitech" <% if (data.assetlist.mouse.includes('Logitech')) { %> checked <% } %>> Logitech<br>
+                            <input type="checkbox" name="mouse" class="form-check-input" onclick="toggleOther('mouse')" <% if (data.assetlist.mouse.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="mouse" name="mouse" class="form-control" style="display: none;"  value="<%= data.assetlist.mouse.find(item => !['Dell','MD','Genius','Logitech'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="mousetype" class="form-label">Mouse Type:</label><br>
+                            <input type="checkbox" name="mousetype" class="form-check-input" value="HP" <% if (data.assetlist.mousetype.includes('HP')) { %> checked <% } %>> HP<br>
+                            <input type="checkbox" name="mousetype" class="form-check-input" value="Lenovo" <% if (data.assetlist.mousetype.includes('Lenovo')) { %> checked <% } %>> Lenovo<br>
+                        </div>
+                        <div class="col">
+                            <label for="mousesn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="mousesn" name="mousesn" value="<%= data.assetlist.mousesn %>">
+                          </div>
+                          <div class="col">
+                            <label for="mouseassetid" class="form-label">Asset ID:</label>
+                            <input type="text" class="form-control" id="mouseassetid" name="mouseassetid" value="<%= data.assetlist.mouseassetid %>">
+                          </div>
+                    </div>
+
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="printer" class="form-label">Printer:</label><br>
+                            <input type="checkbox" name="printer" class="form-check-input" value="Epson" <% if (data.assetlist.printer.includes('Epson')) { %> checked <% } %>> Epson<br>
+                            <input type="checkbox" name="printer" class="form-check-input" value="HP" <% if (data.assetlist.printer.includes('HP')) { %> checked <% } %>> HP<br>
+                            <input type="checkbox" name="printer" class="form-check-input" value="Cannon" <% if (data.assetlist.printer.includes('Cannon')) { %> checked <% } %>> Cannon<br>
+                            <input type="checkbox" name="printer" class="form-check-input" value="FujiXerox" <% if (data.assetlist.printer.includes('FujiXerox')) { %> checked <% } %>> FujiXerox<br>
+                            <input type="checkbox" name="printer" class="form-check-input"  onclick="toggleOther('printer')" <% if (data.assetlist.printer.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="printer" class="form-control" name="printer" style="display: none;" value="<%= data.assetlist.printer.find(item => !['Epson','HP','Cannon','FujiXerox'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="printertype" class="form-label">Printer Type:</label><br>
+                            <input type="checkbox" name="printertype" class="form-check-input" value="Laser" <% if (data.assetlist.printertype.includes('Laser')) { %> checked <% } %>> Laser<br>
+                            <input type="checkbox" name="printertype" class="form-check-input" value="InkJet" <% if (data.assetlist.printertype.includes('InkJet')) { %> checked <% } %>> InkJet<br>
+                            <input type="checkbox" name="printertype" class="form-check-input" value="DotMatrix" <% if (data.assetlist.printertype.includes('DotMatrix')) { %> checked <% } %>> DotMatrix<br>
+                            <input type="checkbox" name="printertype" class="form-check-input"  onclick="toggleOther('printertype')" <% if (data.assetlist.printertype.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="printertype" class="form-control" name="printertype" style="display: none;" value="<%= data.assetlist.printertype.find(item => !['Laser','InkJet','DotMatrix'].includes(item)) || '' %>"> 
+                        </div>
+
+                        
+                        <div class="col">
+                            <label for="printermodel" class="form-label">Model:</label>
+                            <input type="text" class="form-control" id="printermodel" name="printermodel" value="<%= data.assetlist.printermodel %>">
+                          </div>
+                        <div class="col">
+                            <label for="printersn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="printersn" name="printersn" value="<%= data.assetlist.printersn %>">
+                          </div>
+                          <div class="col">
+                            <label for="printerassetid" class="form-label">Asset ID:</label>
+                            <input type="text" class="form-control" id="printerassetid" name="printerassetid" value="<%= data.assetlist.printerassetid %>">
+                          </div>                     
+                    </div>
+
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="ups" class="form-label">UPS:</label><br>
+                            <input type="checkbox" name="ups" class="form-check-input" value="Tower" <% if (data.assetlist.ups.includes('Tower')) { %> checked <% } %>> Tower<br>
+                            <input type="checkbox" name="ups" class="form-check-input" value="Rack" <% if (data.assetlist.ups.includes('Rack')) { %> checked <% } %>> Rack<br>
+                        </div>
+                        <div class="col">
+                            <label for="upstype" class="form-label">UPS Type:</label><br>
+                            <input type="checkbox" name="upstype" class="form-check-input" value="APC" <% if (data.assetlist.upstype.includes('APC')) { %> checked <% } %>> APC<br>
+                            <input type="checkbox" name="upstype" class="form-check-input"  onclick="toggleOther('upstype')" <% if (data.assetlist.upstype.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="upstype" class="form-control" name="upstype" style="display: none;" value="<%= data.assetlist.upstype.find(item => !['APC'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="upsva" class="form-label">UPS VA:</label><br>
+                            <input type="checkbox" name="upsva" class="form-check-input" value="500 VA" <% if (data.assetlist.upsva.includes('500 VA')) { %> checked <% } %>> 500 VA<br>
+                            <input type="checkbox" name="upsva" class="form-check-input" value="1000 VA" <% if (data.assetlist.upsva.includes('1000 VA')) { %> checked <% } %>> 1000 VA<br>
+                            <input type="checkbox" name="upsva" class="form-check-input" value="1500 VA" <% if (data.assetlist.upsva.includes('1500 VA')) { %> checked <% } %>> 1500 VA<br>
+                            <input type="checkbox" name="upsva" class="form-check-input" value="3000 VA" <% if (data.assetlist.upsva.includes('3000 VA')) { %> checked <% } %>> 3000 VA<br>
+                            <input type="checkbox" name="upsva" class="form-check-input"  onclick="toggleOther('upsva')" <% if (data.assetlist.upsva.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="upsva" name="upsva" class="form-control" style="display: none;" value="<%= data.assetlist.upsva.find(item => !['500 VA','1000 VA','1500 VA','3000 VA'].includes(item)) || '' %>">
+                        </div>
+
+                        
+                        <div class="col">
+                            <label for="upstypemodel" class="form-label">Model:</label>
+                            <input type="text" class="form-control" id="upstypemodel" name="upstypemodel" value="<%= data.assetlist.upstypemodel %>">
+                          </div>
+                        <div class="col">
+                            <label for="upstypesn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="upstypesn" name="upstypesn" value="<%= data.assetlist.upstypesn %>">
+                          </div>
+                          <div class="col">
+                            <label for="upstypeassetid" class="form-label">Asset ID:</label>
+                            <input type="text" class="form-control" id="upstypeassetid" name="upstypeassetid" value="<%= data.assetlist.upstypeassetid %>">
+                          </div>
+                          
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="adaptor" class="form-label">Adaptor:</label><br>
+                            <input type="checkbox" name="adaptor" class="form-check-input" value="Dell" <% if (data.assetlist.adaptor.includes('Dell')) { %> checked <% } %>> Dell<br>
+                            <input type="checkbox" name="adaptor" class="form-check-input" value="Lenovo" <% if (data.assetlist.adaptor.includes('Lenovo')) { %> checked <% } %>> Lenovo<br>
+                            <input type="checkbox" name="adaptor"  class="form-check-input" onclick="toggleOther('adaptor')" <% if (data.assetlist.adaptor.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="adaptor" name="adaptor" class="form-control" style="display: none;" value="<%= data.assetlist.adaptor.find(item => !['Dell','Lenovo'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="adaptorsn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="adaptorsn" name="adaptorsn" value="<%= data.assetlist.adaptorsn %>">
+                          </div>
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="other1" class="form-label">Other:</label><br>
+                            <input type="text" class="form-control" id="other1" name="other1" value="<%= data.assetlist.other1 %>">
+                        </div>
+                        <div class="col">
+                            <label for="othersn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="othersn" name="othersn"  value="<%= data.assetlist.othersn %>">
+                          </div>
+                    </div>
+
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="os" class="form-label">OS:</label><br>
+                            <input type="checkbox" name="os" class="form-check-input" value="Win 10" <% if (data.assetlist.os.includes('Win 10')) { %> checked <% } %>> Win 10<br>
+                            <input type="checkbox" name="os" class="form-check-input" value="Win 11" <% if (data.assetlist.os.includes('Win 11')) { %> checked <% } %>> Win 11<br>
+                            <input type="checkbox" name="os" class="form-check-input"  onclick="toggleOther('os')" <% if (data.assetlist.os.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="os" name="os" class="form-control"  style="display: none;" value="<%= data.assetlist.os.find(item => !['Win 10','Win 11'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="ostype" class="form-label">OS Type:</label><br>
+                            <input type="checkbox" name="ostype" class="form-check-input" value="32 Bit" <% if (data.assetlist.ostype.includes('32 Bit')) { %> checked <% } %>> 30 Bit<br>
+                            <input type="checkbox" name="ostype" class="form-check-input" value="64 Bit" <% if (data.assetlist.ostype.includes('64 Bit')) { %> checked <% } %>> 64 Bit<br>
+                            <input type="checkbox" name="ostype" class="form-check-input"  onclick="toggleOther('ostype')" <% if (data.assetlist.ostype.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="ostype" class="form-control" name="ostype" style="display: none;" value="<%= data.assetlist.ostype.find(item => !['32 Bit','64 Bit'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="ossn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="ossn" name="ossn" value="<%= data.assetlist.ossn %>">
+                          </div>
+                 
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="office" class="form-label">Office:</label><br>
+                            <input type="checkbox" name="office" class="form-check-input"  value="2020" <% if (data.assetlist.office.includes('2020')) { %> checked <% } %>> 2020<br>
+                            <input type="checkbox" name="office" class="form-check-input"  value="2021" <% if (data.assetlist.office.includes('2021')) { %> checked <% } %>> 2021<br>
+                            <input type="checkbox" name="office" class="form-check-input"  value="2022" <% if (data.assetlist.office.includes('2022')) { %> checked <% } %>> 2022<br>
+                            <input type="checkbox" name="office" class="form-check-input"   onclick="toggleOther('office')" <% if (data.assetlist.office.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="office" name="office" class="form-control" style="display: none;" value="<%= data.assetlist.office.find(item => !['2020','2021','2022'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="officetype" class="form-label">Office Type:</label><br>
+                            <input type="checkbox" name="officetype" class="form-check-input"  value="Home&Business" <% if (data.assetlist.officetype.includes('Home&Business')) { %> checked <% } %>> Home&Business<br>
+                            <input type="checkbox" name="officetype" class="form-check-input"  value="Home&Student" <% if (data.assetlist.officetype.includes('Home&Student')) { %> checked <% } %>> Home&Student<br>
+                            <input type="checkbox" name="officetype" class="form-check-input"   onclick="toggleOther('officetype')" <% if (data.assetlist.officetype.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="officetype" class="form-control" name="officetype" style="display: none;" value="<%= data.assetlist.officetype.find(item => !['Home&Business','Home&Student'].includes(item)) || '' %>">
+                        </div>
+                        <div class="col">
+                            <label for="officesn" class="form-label">SN:</label>
+                            <input type="text" class="form-control" id="officesn" name="officesn" value="<%= data.assetlist.officesn %>">
+                          </div>
+                 
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="antivirus" class="form-label">Antivirus:</label><br>
+                            <input type="checkbox" name="antivirus" class="form-check-input" value="NOD" <% if (data.assetlist.antivirus.includes('NOD')) { %> checked <% } %>> NOD<br>
+                            <input type="checkbox" name="antivirus" class="form-check-input" value="Mcafee" <% if (data.assetlist.antivirus.includes('Mcafee')) { %> checked <% } %>> Mcafee<br>
+                            <input type="checkbox" name="antivirus" class="form-check-input" value="Avast" <% if (data.assetlist.antivirus.includes('Avast')) { %> checked <% } %>> Avast<br>
+                            <input type="checkbox" name="antivirus" class="form-check-input" value="Kaspersky" <% if (data.assetlist.antivirus.includes('Kaspersky')) { %> checked <% } %>> Kaspersky<br>
+                            <input type="checkbox" name="antivirus" class="form-check-input"  onclick="toggleOther('antivirus')" <% if (data.assetlist.antivirus.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="antivirus" name="antivirus" class="form-control" style="display: none;" value="<%= data.assetlist.antivirus.find(item => !['NOD','Mcafee','Avast','Kaspersky'].includes(item)) || '' %>">
+                        </div>     
+                    </div>
+
+                    <!-- <div class="mb-3">
+                        <label for="pdf" class="form-label">PDF:</label>
+                        <input type="file" name="pdf" class="form-control">
+                    </div> -->
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="pdf" class="form-label">PDF:</label><br>
+                            <input type="checkbox" name="pdf" class="form-check-input"  onclick="toggleOther('pdf')" <% if (data.assetlist.pdf.includes('Other')) { %> checked <% } %>> Reader
+                            <input type="text" id="pdf" name="pdf" class="form-control" style="display: none;" value="<%= data.assetlist.pdf[0] %>"> <br>
+                            <input type="checkbox" name="pdf" class="form-check-input"  onclick="toggleOther('pdfother')" <% if (data.assetlist.pdf.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="pdfother" name="pdf" class="form-control" style="display: none;" value="<%= data.assetlist.pdf[1] %>">
+                        </div>     
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="utility" class="form-label">Utility:</label><br>
+                            <input type="checkbox" name="utility" class="form-check-input"  value="VLC" <% if (data.assetlist.utility.includes('VLC')) { %> checked <% } %>> VLC<br>
+                            <input type="checkbox" name="utility" class="form-check-input"  value="7Zip" <% if (data.assetlist.utility.includes('7Zip')) { %> checked <% } %>> 7Zip<br>
+                            <input type="checkbox" name="utility" class="form-check-input"  value="TightVNC" <% if (data.assetlist.utility.includes('TightVNC')) { %> checked <% } %>> TightVNC<br>
+                            <input type="checkbox" name="utility" class="form-check-input"  value="Teamviewer" <% if (data.assetlist.utility.includes('Teamviewer')) { %> checked <% } %>> Teamviewer<br>
+                        </div>
+                        <div class="col">
+                            <input type="checkbox" name="utility" class="form-check-input"  value="Chrome" <% if (data.assetlist.utility.includes('Chrome')) { %> checked <% } %>> Chrome<br>
+                            <input type="checkbox" name="utility" class="form-check-input"  value="Firefox" <% if (data.assetlist.utility.includes('Firefox')) { %> checked <% } %>> Firefox<br>
+                            <input type="checkbox" name="utility" class="form-check-input"  value="Skype" <% if (data.assetlist.utility.includes('Skype')) { %> checked <% } %>> Skype<br>
+                            <input type="checkbox" name="utility" class="form-check-input"  value="Line" <% if (data.assetlist.utility.includes('Line')) { %> checked <% } %>> Line<br>
+                            <input type="checkbox" name="utility" class="form-check-input"  value="Dictionary" <% if (data.assetlist.utility.includes('Dictionary')) { %> checked <% } %>> Dictionary<br>
+                            <input type="checkbox" name="utility" class="form-check-input"   onclick="toggleOther('utilitytype')" <% if (data.assetlist.utility.includes('Other')) { %> checked <% } %>> Other
+                            <input type="text" id="utilitytype" class="form-control" name="utility" style="display: none;"  value="<%= data.assetlist.utility.find(item => !['7Zip','Teamviewer','TightVNC','VLC','Chrome','Firefox','Skype','Line','Dictionary'].includes(item)) || '' %>">
+                        </div>
+                    </div>
+             
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="other2" class="form-label">Other:</label><br>
+                            <input type="text" class="form-control" id="other2" name="other2" value="<%= data.assetlist.other2 %>">
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="mapdrive" class="form-label">Map Drive:</label>
+                            <div class="form-check">
+                              <input class="form-check-input" type="radio" name="mapdrive" id="mapdrive" value="yes" <% if (data.assetlist.mapdrive.includes('yes')) { %> checked <% } %>>
+                              <label class="form-check-label" for="mapdrive">Yes</label>
+                            </div>
+                            <div class="form-check">
+                              <input class="form-check-input" type="radio" name="mapdrive" id="mapdrive" value="no" <% if (data.assetlist.mapdrive.includes('no')) { %> checked <% } %>>
+                              <label class="form-check-label" for="mapdrive">No</label>
+                            </div>
+                          </div>
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="addprinter" class="form-label">Add Printer:</label>
+                            <div class="form-check">
+                              <input class="form-check-input" type="radio" name="addprinter" id="addprinter" value="yes" <% if (data.assetlist.addprinter.includes('yes')) { %> checked <% } %>>
+                              <label class="form-check-label" for="addprinter">Yes</label>
+                            </div>
+                            <div class="form-check">
+                              <input class="form-check-input" type="radio" name="addprinter" id="addprinter" value="no" <% if (data.assetlist.addprinter.includes('no')) { %> checked <% } %>>
+                              <label class="form-check-label" for="addprinter">No</label>
+                            </div>
+                          </div>
+                    </div>
+
+                    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <div class="col">
+                            <label for="other3" class="form-label">Other:</label><br>
+                            <input type="text" class="form-control" id="other3" name="other3" value="<%= data.assetlist.other3 %>">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 " style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <label for="assetitlistsremark" class="form-label">Remark:</label>
+                        <input type="text" class="form-control" name="assetitlistsremark" value="<%= data.assetlist.assetitlistsremark %>">
+                      </div>
+                      <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
+                        <label for="deliverydate" class="form-label">Delivery Date</label>
+                        <input type="date" class="form-control" id="deliverydate" name="deliverydate" value="<%= new Date(data.assetlist.deliverydate).toISOString().substring(0, 10) %>">
+                      </div>
+                      
+
+                      <div class="row mb-3" style="border: 1px solid black;padding-bottom: 20px;padding-top: 10px;">  
+                      <h1>Detail Repair</h1>
+                      <div class="mb-3" >
+                        <label for="detailrepair" class="form-label">Detail Repair</label>
+                        <input type="text" class="form-control" id="detailrepair" name="detailrepair" >
+                      </div>
+                      <div class="mb-3">
+                        <label for="repairdate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="repairdate" name="repairdate" >
+                      </div>
+                      <div class="mb-3">
+                        <label for="value" class="form-label">value</label>
+                        <input type="text" class="form-control" id="value" name="value" >
+                      </div>
+
+                      
+                      <div class="mb-3">
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="success" name="success" value="success">
+                            <label for="success" class="form-label">Success</label>
+                        </div>
+                       
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fail" name="fail" value="fail">
+                            <label for="fail" class="form-label">Fail</label>
+                        </div>
+                    </div>
+
+                      <div class="mb-3">
+                        <label for="repairremark" class="form-label">Remark</label>
+                        <input type="text" class="form-control" id="repairremark" name="repairremark" >
+                      </div>
+
+
+                    
+
+                
+                
+            </div>
+        </div>
+    </div>
+    <% } else { %>
+        <p>ไม่มีข้อมูล</p>
+      <% } %>
+    </div>  
+
+      <div style="margin-bottom: 70px;margin-left: 44%; margin-top: 50px;">
+        <a href="/assetlist/getalldetail" class="btn btn-primary" >กลับ</a>
+        <button type="submit" class="btn btn-success" >บันทึกผู้ใช้ใหม่</button>
+      </div>
+    </form>
+      <script src="/javascripts/newowner.js"></script>
+</body>
+</html>
