@@ -1086,70 +1086,70 @@ router.get('/export', async (req, res) => {
 
         // กำหนดคอลัมน์ทั้งหมดที่มีอยู่
         const allColumns = [
-            { header: 'Name', key: 'name', width: 20 },
+            { header: 'Name', key: 'name', width: 40 },
             { header: 'Department', key: 'dept', width: 20 },
             { header: 'Date', key: 'assetitlistsdate', width: 20 },
+            { header: 'Asset Account No', key: 'cpuassetaccountno', width: 20 },
             { header: 'Asset ID', key: 'assetid', width: 20 },
             { header: 'Company', key: 'assetitlistscompany', width: 30 },
             { header: 'Computer Name', key: 'computername', width: 20 },
-            { header: 'Device', key: 'device', width: 20 },
+            { header: 'Brand', key: 'device', width: 20 },
             { header: 'Device Type', key: 'devicetype', width: 20 },
             { header: 'Device Choice', key: 'devicechoice', width: 20 },
-            { header: 'Device Model', key: 'devicemodel', width: 20 },
-            { header: 'Device SN', key: 'devicesn', width: 20 },
+            { header: 'Model', key: 'devicemodel', width: 20 },
+            { header: 'SN', key: 'devicesn', width: 20 },
             { header: 'CPU', key: 'cpu', width: 20 },
             { header: 'CPU Type', key: 'cputype', width: 20 },
-            { header: 'CPU Asset Account No', key: 'cpuassetaccountno', width: 20 },
             { header: 'Speed', key: 'speed', width: 20 },
             { header: 'Hard Disk', key: 'harddisk', width: 20 },
             { header: 'RAM', key: 'ram', width: 20 },
-            { header: 'Image', key: 'img', width: 30 },
-            { header: 'ROM Drive', key: 'romdrive', width: 20 },
+            { header: 'ROM Drive Brand', key: 'romdrive', width: 20 },
             { header: 'ROM Drive Type', key: 'romdrivetype', width: 20 },
-            { header: 'ROM SN', key: 'romsn', width: 20 },
-            { header: 'ROM Asset ID', key: 'romassetid', width: 20 },
-            { header: 'Monitor', key: 'monitor', width: 20 },
-            { header: 'Monitor Type', key: 'monitortype', width: 20 },
-            { header: 'Monitor SN', key: 'monitorsn', width: 20 },
-            { header: 'Monitor Asset ID', key: 'monitorassetid', width: 20 },
-            { header: 'Keyboard', key: 'keyboard', width: 20 },
+            { header: 'SN', key: 'romsn', width: 20 },
+            { header: 'Asset ID', key: 'romassetid', width: 20 },
+            { header: 'Monitor Brand', key: 'monitor', width: 20 },
+            { header: 'Monitor Size', key: 'monitortype', width: 20 },
+            { header: 'SN', key: 'monitorsn', width: 20 },
+            { header: 'Asset ID', key: 'monitorassetid', width: 20 },
+            { header: 'Keyboard Brand', key: 'keyboard', width: 20 },
             { header: 'Keyboard Type', key: 'keyboardtype', width: 20 },
-            { header: 'Keyboard SN', key: 'keyboardsn', width: 20 },
-            { header: 'Keyboard Asset ID', key: 'keyboardassetid', width: 20 },
+            { header: 'SN', key: 'keyboardsn', width: 20 },
+            { header: 'Asset ID', key: 'keyboardassetid', width: 20 },
             { header: 'Mouse', key: 'mouse', width: 20 },
             { header: 'Mouse Type', key: 'mousetype', width: 20 },
-            { header: 'Mouse SN', key: 'mousesn', width: 20 },
-            { header: 'Mouse Asset ID', key: 'mouseassetid', width: 20 },
-            { header: 'Printer', key: 'printer', width: 20 },
+            { header: 'SN', key: 'mousesn', width: 20 },
+            { header: 'Asset ID', key: 'mouseassetid', width: 20 },
+            { header: 'Printer Brand', key: 'printer', width: 20 },
             { header: 'Printer Type', key: 'printertype', width: 20 },
-            { header: 'Printer Model', key: 'printermodel', width: 20 },
-            { header: 'Printer SN', key: 'printersn', width: 20 },
-            { header: 'Printer Asset ID', key: 'printerassetid', width: 20 },
-            { header: 'UPS', key: 'ups', width: 20 },
-            { header: 'UPS Type', key: 'upstype', width: 20 },
+            { header: 'Model', key: 'printermodel', width: 20 },
+            { header: 'SN', key: 'printersn', width: 20 },
+            { header: 'Asset ID', key: 'printerassetid', width: 20 },
+            { header: 'UPS Type', key: 'ups', width: 20 },
+            { header: 'UPS Brand', key: 'upstype', width: 20 },
             { header: 'UPS VA', key: 'upsva', width: 20 },
-            { header: 'UPS Type Model', key: 'upstypemodel', width: 20 },
-            { header: 'UPS Type SN', key: 'upstypesn', width: 20 },
-            { header: 'UPS Type Asset ID', key: 'upstypeassetid', width: 20 },
-            { header: 'Adaptor', key: 'adaptor', width: 20 },
-            { header: 'Adaptor SN', key: 'adaptorsn', width: 20 },
-            { header: 'Other1', key: 'other1', width: 20 },
-            { header: 'Other SN', key: 'othersn', width: 20 },
-            { header: 'OS', key: 'os', width: 20 },
+            { header: 'Model', key: 'upstypemodel', width: 20 },
+            { header: 'SN', key: 'upstypesn', width: 20 },
+            { header: 'Asset ID', key: 'upstypeassetid', width: 20 },
+            { header: 'Adaptor Brand', key: 'adaptor', width: 20 },
+            { header: 'SN', key: 'adaptorsn', width: 20 },
+            { header: 'Hardware', key: 'other1', width: 20 },
+            { header: 'SN', key: 'othersn', width: 20 },
+            { header: 'Windown OS', key: 'os', width: 20 },
             { header: 'OS Type', key: 'ostype', width: 20 },
-            { header: 'OS SN', key: 'ossn', width: 20 },
-            { header: 'Office', key: 'office', width: 20 },
+            { header: 'SN', key: 'ossn', width: 20 },
+            { header: 'Microsoft Office ', key: 'office', width: 20 },
             { header: 'Office Type', key: 'officetype', width: 20 },
-            { header: 'Office SN', key: 'officesn', width: 20 },
+            { header: 'SN', key: 'officesn', width: 20 },
             { header: 'Antivirus', key: 'antivirus', width: 20 },
             { header: 'PDF', key: 'pdf', width: 20 },
             { header: 'Utility', key: 'utility', width: 20 },
-            { header: 'Other2', key: 'other2', width: 20 },
+            { header: 'Software', key: 'other2', width: 20 },
             { header: 'Map Drive', key: 'mapdrive', width: 20 },
             { header: 'Add Printer', key: 'addprinter', width: 20 },
-            { header: 'Other3', key: 'other3', width: 20 },
+            { header: 'Other', key: 'other3', width: 20 },
             { header: 'Remark', key: 'assetitlistsremark', width: 20 },
             { header: 'Delivery Date', key: 'deliverydate', width: 20 },
+            { header: 'Image', key: 'img', width: 40 },
             { header: 'Detail Repair', key: 'detailrepair', width: 20 },
             { header: 'Value', key: 'value', width: 20 },
             { header: 'Success', key: 'success', width: 20 },
@@ -1160,8 +1160,12 @@ router.get('/export', async (req, res) => {
         ];
 
         const columnsToExport = allColumns.filter(col => selectedColumns.includes(col.key));
-
         worksheet.columns = columnsToExport;
+
+        // Center text in all columns
+        worksheet.columns.forEach(column => {
+            column.alignment = { vertical: 'middle', horizontal: 'center' };
+        });
 
         // หาตำแหน่งของคอลัมน์ 'img' เพื่อการแทรกรูปภาพ
         const imgColumnIndex = columnsToExport.findIndex(col => col.key === 'img') + 1;
@@ -1169,9 +1173,13 @@ router.get('/export', async (req, res) => {
         assetlist.forEach(asset => {
             const row = {};
             columnsToExport.forEach(col => {
+                if (col.key === 'img') {
+                    // ข้ามการตั้งค่าค่าของคอลัมน์ 'img' เพื่อไม่ให้มีชื่อไฟล์แสดงในเซลล์
+                    return;
+                }
                 // แปลงข้อมูลที่เป็นอาร์เรย์ให้เป็นสตริง โดยถ้ามีเพียงหนึ่งค่า ให้ใช้ค่านั้นโดยตรง
                 if (Array.isArray(asset[col.key])) {
-                    row[col.key] = asset[col.key].length === 1 ? asset[col.key][0] : asset[col.key].join(', ');
+                    row[col.key] = asset[col.key].filter(value => value).join(', ') || '';
                 } else {
                     row[col.key] = asset[col.key] || '';
                 }
@@ -1208,7 +1216,7 @@ router.get('/export', async (req, res) => {
                     if (!['computername', '_id'].includes(col.key)) {
                         // แปลงข้อมูลที่เป็นอาร์เรย์ให้เป็นสตริง โดยถ้ามีเพียงหนึ่งค่า ให้ใช้ค่านั้นโดยตรง
                         if (Array.isArray(rep[col.key])) {
-                            repairRow[col.key] = rep[col.key].length === 1 ? rep[col.key][0] : rep[col.key].join(', ');
+                            repairRow[col.key] = rep[col.key].filter(value => value).join(', ') || '';
                         } else {
                             repairRow[col.key] = rep[col.key] || '';
                         }
@@ -1238,6 +1246,8 @@ router.get('/export', async (req, res) => {
         res.status(500).send('เกิดข้อผิดพลาดขณะทำการส่งออกข้อมูล');
     }
 });
+
+
 
 
 
