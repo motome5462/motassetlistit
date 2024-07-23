@@ -18,7 +18,7 @@
         <div class="row">
             <div class="form-container" >
                 <% if (data.assetlist) { %>
-                    <form action="/assetlist/edit/<%= data.assetlist._id %>?_method=PUT" method="POST" class="mt-5">
+                    <form action="/assetlist/edit/<%= data.assetlist._id %>?_method=PUT" method="POST" enctype="multipart/form-data" class="mt-5">
                       <h2>User</h2>
                         <table class=" table table-bordered" style="border: 1px solid black;">
                             <tbody>
@@ -197,16 +197,18 @@
     </div> -->
 
 
-    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
-        <label for="img" class="form-label">Image:</label>
-        <% if (data.assetlist.img) { %>
-            <img src="/images/<%= data.assetlist.img %>" alt="Previous Image" style="max-width: 200px; display: block; margin-bottom: 10px;">
-            <input type="hidden" name="existingImage" value="<%= data.assetlist.img %>">
-        <% } else { %>
-            <p>No previous image available</p>
-        <% } %>
-        <input type="file" name="img" class="form-control">
-    </div>
+    <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px; padding-top: 10px;">
+      <label for="img" class="form-label">Image:</label>
+      <% if (data.assetlist.img) { %>
+          <img src="/images/<%= data.assetlist.img %>" alt="Previous Image" style="max-width: 200px; display: block; margin-bottom: 10px;">
+          <input type="hidden" name="existingImage" value="<%= data.assetlist.img %>">
+      <% } else { %>
+          <p>No previous image available</p>
+      <% } %>
+      <input type="file" name="img" class="form-control">
+  </div>
+  
+  
     
 
                     <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">

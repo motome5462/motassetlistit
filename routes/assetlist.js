@@ -688,7 +688,10 @@ router.get("/edit/:id", async function (req, res, next) {
 });
 
 
-router.put('/edit/:id', async (req, res, next) => {
+router.put('/edit/:id', upload.fields([
+    { name: 'img', maxCount: 1 },
+    { name: 'pdf', maxCount: 1 }
+]), async (req, res, next) => {
     try {
         let id = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -701,12 +704,9 @@ router.put('/edit/:id', async (req, res, next) => {
 
         // แยกข้อมูลสำหรับ assetlist และ repair ออกจาก req.body
         const assetlistData = {
-            
-                   
             name: req.body.name,
             assetitlistsdate: req.body.assetitlistsdate,
             assetid: req.body.assetid,
-            img: req.body.img,
             assetitlistscompany: req.body.assetitlistscompany,
             computername: req.body.computername,
             device: req.body.device,
@@ -721,7 +721,7 @@ router.put('/edit/:id', async (req, res, next) => {
             harddisk: req.body.harddisk,
             ram: req.body.ram,
             romdrive: req.body.romdrive,
-            romdrivetype:req.body.romdrivetype,
+            romdrivetype: req.body.romdrivetype,
             romsn: req.body.romsn,
             romassetid: req.body.romassetid,
             monitor: req.body.monitor,
@@ -734,8 +734,8 @@ router.put('/edit/:id', async (req, res, next) => {
             keyboardassetid: req.body.keyboardassetid,
             mouse: req.body.mouse,
             mousetype: req.body.mousetype,
-            mousesn:req.body.mousesn,
-            mouseassetid:req.body.mouseassetid,
+            mousesn: req.body.mousesn,
+            mouseassetid: req.body.mouseassetid,
             printer: req.body.printer,
             printertype: req.body.printertype,
             printermodel: req.body.printermodel,
@@ -766,8 +766,17 @@ router.put('/edit/:id', async (req, res, next) => {
             other3: req.body.other3,
             assetitlistsremark: req.body.assetitlistsremark,
             dept: req.body.dept,
-            deliverydate:req.body.deliverydate,
+            deliverydate: req.body.deliverydate,
         };
+
+        // ตรวจสอบและอัปเดตรูปภาพ
+        console.log('Files:', req.files);
+        if (req.files && req.files.img && req.files.img[0]) {
+            console.log('Uploaded image filename:', req.files.img[0].filename);
+            assetlistData.img = req.files.img[0].filename; // ใช้ชื่อไฟล์รูปภาพใหม่
+        } else if (req.body.existingImage) {
+            assetlistData.img = req.body.existingImage; // ใช้รูปภาพที่มีอยู่ในฐานข้อมูล
+        }
 
         const repairData = {
             detailrepair: req.body.detailrepair,
@@ -789,6 +798,10 @@ router.put('/edit/:id', async (req, res, next) => {
         return res.status(500).send({ message: 'Server error', success: false });
     }
 });
+
+
+
+
 
 
 
@@ -1045,20 +1058,33 @@ router.delete("/delete/:id", async function (req, res, next) {
 
 
 
+
 router.get('/export', async (req, res) => {
     try {
-        const selectedColumns = req.query.columns;
+        // ตรวจสอบค่าพารามิเตอร์ columns ที่รับมาจาก query
+        console.log('Received columns:', req.query.columns);
 
-        if (!selectedColumns || selectedColumns.length === 0) {
-            return res.status(400).send('No columns selected for export.');
+        // ถอดรหัสค่า columns และแยกค่า
+        const columnsParam = decodeURIComponent(req.query.columns);
+        if (!columnsParam || typeof columnsParam !== 'string') {
+            return res.status(400).send('ค่าพารามิเตอร์ columns ไม่ถูกต้องหรือหายไป');
         }
 
+        // แยกค่าโดยใช้เครื่องหมายคอมมา
+        const selectedColumns = columnsParam.replace(/^\[|\]$/g, '').split(',').map(col => col.trim());
+
+        if (selectedColumns.length === 0) {
+            return res.status(400).send('ไม่ได้เลือกคอลัมน์ใด ๆ สำหรับการส่งออก');
+        }
+
+        // ดึงข้อมูลจากฐานข้อมูล
         const assetlist = await assetlistModel.find();
         const repair = await repairModel.find();
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('AssetsList');
 
+        // กำหนดคอลัมน์ทั้งหมดที่มีอยู่
         const allColumns = [
             { header: 'Name', key: 'name', width: 20 },
             { header: 'Department', key: 'dept', width: 20 },
@@ -1137,61 +1163,85 @@ router.get('/export', async (req, res) => {
 
         worksheet.columns = columnsToExport;
 
+        // หาตำแหน่งของคอลัมน์ 'img' เพื่อการแทรกรูปภาพ
         const imgColumnIndex = columnsToExport.findIndex(col => col.key === 'img') + 1;
-
-        const computerNameMap = new Map(assetlist.map(asset => [asset._id.toString(), asset.computername]));
 
         assetlist.forEach(asset => {
             const row = {};
             columnsToExport.forEach(col => {
-                row[col.key] = asset[col.key];
+                // แปลงข้อมูลที่เป็นอาร์เรย์ให้เป็นสตริง โดยถ้ามีเพียงหนึ่งค่า ให้ใช้ค่านั้นโดยตรง
+                if (Array.isArray(asset[col.key])) {
+                    row[col.key] = asset[col.key].length === 1 ? asset[col.key][0] : asset[col.key].join(', ');
+                } else {
+                    row[col.key] = asset[col.key] || '';
+                }
             });
-            const newRow = worksheet.addRow(row);
 
-            if (asset.img && imgColumnIndex) {
-                const imgPath = path.join(__dirname, '../public/images/', asset.img);
-                if (fs.existsSync(imgPath)) {
-                    const imageId = workbook.addImage({
-                        filename: imgPath,
-                        extension: path.extname(imgPath).slice(1),
-                    });
+            const nonEmptyValues = Object.values(row).some(value => value !== '');
+            if (nonEmptyValues) {
+                const newRow = worksheet.addRow(row);
+                if (asset.img && imgColumnIndex) {
+                    const imgPath = path.join(__dirname, '../public/images/', asset.img);
+                    if (fs.existsSync(imgPath)) {
+                        const imageId = workbook.addImage({
+                            filename: imgPath,
+                            extension: path.extname(imgPath).slice(1),
+                        });
 
-                    const dimensions = sizeOf(imgPath);
-                    const cell = worksheet.getCell(newRow.getCell(imgColumnIndex).address);
-                    worksheet.addImage(imageId, {
-                        tl: { col: cell.col - 1, row: cell.row - 1 },
-                        ext: { width: dimensions.width / 4, height: dimensions.height / 4 },
-                    });
+                        const dimensions = sizeOf(imgPath);
+                        const cell = worksheet.getCell(newRow.getCell(imgColumnIndex).address);
+                        worksheet.addImage(imageId, {
+                            tl: { col: cell.col - 1, row: cell.row - 1 },
+                            ext: { width: dimensions.width / 4, height: dimensions.height / 4 },
+                        });
 
-                    newRow.height = dimensions.height / 4;
+                        newRow.height = dimensions.height / 4;
+                    }
                 }
             }
 
             const repairsForAsset = repair.filter(rep => rep.computername.toString() === asset._id.toString());
 
-            repairsForAsset.forEach((rep, index) => {
+            repairsForAsset.forEach(rep => {
                 const repairRow = {};
                 columnsToExport.forEach(col => {
                     if (!['computername', '_id'].includes(col.key)) {
-                        repairRow[col.key] = rep[col.key];
+                        // แปลงข้อมูลที่เป็นอาร์เรย์ให้เป็นสตริง โดยถ้ามีเพียงหนึ่งค่า ให้ใช้ค่านั้นโดยตรง
+                        if (Array.isArray(rep[col.key])) {
+                            repairRow[col.key] = rep[col.key].length === 1 ? rep[col.key][0] : rep[col.key].join(', ');
+                        } else {
+                            repairRow[col.key] = rep[col.key] || '';
+                        }
                     }
                 });
-                worksheet.addRow(repairRow);
-            });
 
-            worksheet.addRow({});
+                const nonEmptyRepairValues = Object.values(repairRow).some(value => value !== '');
+                if (nonEmptyRepairValues) {
+                    worksheet.addRow(repairRow);
+                }
+            });
         });
 
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', 'attachment; filename=assets.xlsx');
+        // สร้างไฟล์ Excel ชั่วคราวและดาวน์โหลด
+        const tempFilePath = path.join(__dirname, 'exported_data.xlsx');
+        await workbook.xlsx.writeFile(tempFilePath);
 
-        await workbook.xlsx.write(res);
-        res.end();
-    } catch (err) {
-        console.error('Export to Excel error:', err);
-        res.status(500).send('Export to Excel failed. Please try again.');
+        res.download(tempFilePath, 'exported_data.xlsx', err => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์');
+            }
+            fs.unlinkSync(tempFilePath);
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('เกิดข้อผิดพลาดขณะทำการส่งออกข้อมูล');
     }
 });
+
+
+
+
 
 
 
@@ -1480,14 +1530,5 @@ router.post("/newrepair/:id", async function (req, res, next) {
         });
     }
 });
-
-module.exports = router;
-
-
-
-
-
-
-
 
 module.exports = router;
