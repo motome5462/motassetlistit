@@ -59,11 +59,13 @@
                   </div>
                   <div class="mb-3">
                     <label for="repairdate" class="form-label">Date</label>
-                    <input type="date" class="form-control" id="repairdate" name="repairdate" >
+                    <input type="date" class="form-control" id="repairdate" name="repairdate" required
+                    oninvalid="this.setCustomValidity('กรุณากรอกวันที่')" 
+                    oninput="this.setCustomValidity('')">
                   </div>
                   <div class="mb-3">
                     <label for="value" class="form-label">value</label>
-                    <input type="text" class="form-control" id="value" name="value" >
+                    <input type="text" class="form-control" id="value" name="value" required pattern="\d*" title="กรุณากรอกตัวเลขเท่านั้น">
                   </div>
 
                   
