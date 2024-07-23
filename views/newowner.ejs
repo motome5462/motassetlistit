@@ -20,7 +20,7 @@
             <div class="form-container" >
                 <% if (data.assetlist) { %>
                     <form method="post" action="/assetlist/inputassetlist" enctype="multipart/form-data" class="mt-5">
-                      <h2>Hardware</h2>
+                      <h2>User</h2>
                         <table class=" table table-bordered" style="border: 1px solid black;">
                             <tbody>
                               <tr>
@@ -93,7 +93,7 @@
                         <label for="computername" class="form-label">Computer Name:</label>
                         <input type="text" class="form-control" id="computername" name="computername" value="<%= data.assetlist.computername %>">
                     </div> -->
-
+                    <h2>Hardware</h2>
                     <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
                         <div class="col">
                             <label for="device" class="form-label">Device:</label><br>
