@@ -19,7 +19,7 @@
             <div class="form-container" >
                 <% if (data.assetlist) { %>
                     <form action="/assetlist/edit/<%= data.assetlist._id %>?_method=PUT" method="POST" class="mt-5">
-
+                      <h2>Hardware</h2>
                         <table class=" table table-bordered" style="border: 1px solid black;">
                             <tbody>
                               <tr>
@@ -407,7 +407,7 @@
                           </div>
                     </div>
 
-
+                    <h2>Software</h2>
                     <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
                         <div class="col">
                             <label for="os" class="form-label">OS:</label><br>
@@ -533,7 +533,7 @@
                             </div>
                           </div>
                     </div>
-
+                    <h2>Other</h2>
                     <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
                         <div class="col">
                             <label for="other3" class="form-label">Other:</label><br>

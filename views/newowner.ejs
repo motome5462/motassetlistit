@@ -20,6 +20,7 @@
             <div class="form-container" >
                 <% if (data.assetlist) { %>
                     <form method="post" action="/assetlist/inputassetlist" enctype="multipart/form-data" class="mt-5">
+                      <h2>Hardware</h2>
                         <table class=" table table-bordered" style="border: 1px solid black;">
                             <tbody>
                               <tr>
@@ -411,7 +412,7 @@
                           </div>
                     </div>
 
-
+                    <h2>Software</h2>
                     <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
                         <div class="col">
                             <label for="os" class="form-label">OS:</label><br>
@@ -539,7 +540,7 @@
                             </div>
                           </div>
                     </div>
-
+                    <h2>Other</h2>
                     <div class="row mb-3" style="border: 1px solid black; padding-bottom: 20px;padding-top: 10px;">
                         <div class="col">
                             <label for="other3" class="form-label">Other:</label><br>
@@ -556,9 +557,8 @@
                         <input type="date" class="form-control" id="deliverydate" name="deliverydate" value="<%= new Date(data.assetlist.deliverydate).toISOString().substring(0, 10) %>">
                       </div>
                       
-
+                      <h2>Detail Repair</h2>
                       <div class="row mb-3" style="border: 1px solid black;padding-bottom: 20px;padding-top: 10px;">  
-                      <h1>Detail Repair</h1>
                       <div class="mb-3" >
                         <label for="detailrepair" class="form-label">Detail Repair</label>
                         <input type="text" class="form-control" id="detailrepair" name="detailrepair" >
