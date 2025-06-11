@@ -14,123 +14,214 @@
         <% include index.ejs %>
     </header>
     <div class="container mt-5">
-        <h2 style="color: rgb(0, 0, 0);margin: 20px 0px 0px 80px;font-size: 50px;">Report</h2>
-        <div class="row mb-3" style="border: 1px solid black;">
-            <div>
-                <p style="color: rgb(0, 0, 255);margin: 20px 0px 20px 0;text-align:center;font-size: 20px;">
-                    <label>
-                        Writebox
-                    </label>
-                    <input type="text" ; style="margin-left: 30px;width: 100px;margin-right: 30px;">
-                    <span>WOW</span>
-                    </input>
-                </p>
+        <h1 style="font-size: 60px">Report</h1>
+        <% if (data && data.length> 0) { %>
+            <% data.forEach((item, index)=> { %>
+                <div class="mt-5">
+                    <h2 style="font-size: 40px">User Owner</h2>
+                    <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0); ">
+                        <thead>
+                                <th>No.</th>
+                                <th>Asset ID</th>
+                                <th>Date</th>
+                                <th>User Owner</th>
+                                <th>Company</th>
+                                <th>Dept</th>
+                                <th>Delivery dates</th>
+                                <th>Remark</th>
+                        </thead>
+                            <tbody>
+                                <td><%= index + 1 %></td>
+                                <td><%= item.assetid %></td>
+                                <td><%= new Date(item.assetitlistsdate).toDateString() %></td>
+                                <td><%= item.name %></td>
+                                <td><%= item.assetitlistscompany.join(', ') %></td>
+                                <td><%= item.dept %></td>
+                                <td><%= new Date(item.deliverydate).toDateString() %></td>
+                                <td><%= item.assetitlistsremark %></td>
+                            </tbody>
+                        <td colspan="8"style="font-size: 25px"><strong>Hardware</strong></td>
+                            <thead>
+                                <th>Device</th>
+                                <th>Device-Type</th>
+                                <th>Model</th>
+                                <th>S/N</th>
+                                <th>CPU</th>
+                                <th>CPU Speed</th>
+                                <th>Harddisk</th>
+                                <th>RAM</th>
+                        </thead>
+                            <tbody>
+                                <td><%= item.device %></td>
+                                <td><%= item.devicetype %></td>
+                                <td ><%= item.devicemodel%></td>
+                                <td ><%= item.devicesn %></td>
+                                <td><%= item.cpu %> <%=item.cputype%></td>
+                                <td><%= item.speed %></td>
+                                <td><%= item.harddisk %></td>
+                                <td><%= item.ram %></td>
+                            </tbody>
+                            <td colspan="8"style="font-size: 25px"><strong>Accessory</strong></td>
+                            <thead>
+                                <th>ROM</th>
+                                <th>ROM Detail</th>
+                                <th>Monitor</th>
+                                <th>Monitor Detail</th>
+                                <th>Keyboard</th>
+                                <th>Keyboard Detail</th>
+                                <th>Mouse</th>
+                                <th>Mouse Detail</th>
+                                </thead>
+                            <tbody>
+                                <td><%= item.romdrive %> <%= item.romdrivetype %></td>
+                                <td><%= item.romsn %> <%= item.romassetid %></td>
+                                <td ><%= item.monitor%> <%= item.monitortype%></td>
+                                <td ><%= item.monitorsn %> <%= item.monitorassetid%></td>
+                                <td><%= item.keyboard %> <%=item.keyboardtype%></td>
+                                <td><%= item.keyboardsn %> <%= item.keyboardassetid%></td>
+                                <td><%= item.mouse %> <%= item.mousetype%></td>
+                                <td><%= item.mousesn %> <%= item.mouseassetid%></td>
+                            </tbody>
+                            <thead>
+                                <th>Printer</th>
+                                <th>Printer Detail</th>
+                                <th>Adaptor</th>
+                                <th>Adaptor Detail</th>
+                                <th>UPS</th>
+                                <th>UPS Detail</th>
+                                <th>Other</th>
+                                <th>Other Detail</th>
+                                </thead>
+                            <tbody>
+                                <td><%= item.printer %> <%= item.printermodel%> <%= item.printertype%></td>
+                                <td><%= item.printersn %> <%= item.printerassetid%></td>
+                                <td><%= item.adaptor %></td>
+                                <td><%= item.adaptorsn %></td>
+                                <td ><%= item.ups%> <%= item.upstype%> <%= item.upsva%></td>
+                                <td ><%= item.upstypemodel%> <%= item.upstypesn %> <%= item.upstypeassetid%></td>
+                                <td><%= item.other1 %> </td>
+                                <td><%= item.othersn %> </td>
+                            </tbody>
+                            <td colspan="8"style="font-size: 25px"><strong>Software</strong></td>
+                            <thead>
+                                <th>OS</th>
+                                <th>OS s/n</th>
+                                <th>Office</th>
+                                <th>Office s/n</th>
+                                <th>Antivirus</th>
+                                <th>pdf</th>
+                                <th>utility</th>
+                                <th>other</th>
+                            </thead>
+                            <tbody>
+                                <td><%= item.os %> <%= item.ostype %></td>
+                                <td><%= item.ossn %></td>
+                                <td><%= item.office%> <%= item.officetype%></td>
+                                <td><%= item.officesn %></td>
+                                <td><%= item.antivirus %></td>
+                                <td><%= item.pdf %></td>
+                                <td><%= item.utility %></td>
+                                <td><%= item.other2 %></td>
+                            </tbody>
+                            <thead>
+                                <th colspan="4"class="text-center">Addprinter</th>
+                                <th colspan="4"class="text-center">Mapdrive</th>
+                            </thead>
+                            <tbody>
+                                <td colspan="4"class="text-center"><%= item.mapdrive %></td>
+                                <td colspan="4"class="text-center"><%= item.addprinter %></td>
+                            </tbody>
+
+              <% if (item.repairs && item.repairs.length > 0) { %>
+                <tr>
+                  <td colspan="9">
+                    <h3 style="font-size: 25px"><strong>Detail Repair</strong></h3>
+                    <table class="table table-bordered mt-2" style="border: 1px solid black; ">
+                      <thead>
+                        <tr>
+                          <th>No.</th>
+                          <th>Date</th>
+                          <th>ComputerName</th>
+                          <th>Detail Repair</th>
+                          <th>Value</th>
+                          <th>Success</th>
+                          <th>Fail</th>
+                          <th>Remark</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% item.repairs.forEach((repair, repairIndex) => { %>
+                          <tr>
+                            <td><%= repairIndex + 1 %></td>
+                            <td><%= new Date(repair.repairdate).toDateString() %></td>
+                            <td><%= repair.computername ? repair.computername.computername : '' %></td>
+                            <td><%= repair.detailrepair %></td>
+                            <td><%= repair.value %></td>
+                            <td><%= repair.success %></td>
+                            <td><%= repair.fail %></td>
+                            <td><%= repair.repairremark %></td>
+                          </tr>
+                        <% }); %>
+                        <tr>
+                          <td colspan="4" class="text-end"><strong>Total Value:</strong></td>
+                          <td colspan="5"><strong><%= item.totalValue %></strong></td>
+                        </tr>
+                    </table>
+                </td>
+                </tbody>
+                </table>
+              <% } %>
+      <% }); %>
+
+<!-- แสดงปุ่มเลือกหน้า -->
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    <% if (totalPages > 1) { %>
+      <!-- First page button -->
+      <li class="page-item <%= currentPage == 1 ? ' disabled' : '' %>">
+                                        <a class="page-link"
+                                            href="/Report/getalldetail?query=<%= typeof query !== 'undefined' ? query : '' %>&page=1&limit=<%= typeof limit !== 'undefined' ? limit : 2 %>">&laquo;</a>
+                                        </li>
+
+                                        <!-- Previous page button -->
+                                        <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                                            <a class="page-link"
+                                                href="/Report/getalldetail?query=<%= typeof query !== 'undefined' ? query : '' %>&page=<%= currentPage - 1 %>&limit=<%= typeof limit !== 'undefined' ? limit : 2 %>">&lsaquo;</a>
+                                        </li>
+
+                                        <% for (let i=Math.max(1, currentPage - 2); i <=Math.min(totalPages, currentPage
+                                            + 2); i++) { %>
+                                            <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+                                                <a class="page-link"
+                                                    href="/Report/getalldetail?query=<%= typeof query !== 'undefined' ? query : '' %>&page=<%= i %>&limit=<%= typeof limit !== 'undefined' ? limit : 2 %>">
+                                                    <%= i %>
+                                                </a>
+                                            </li>
+                                            <% } %>
+
+                                                <!-- Next page button -->
+                                                <li
+                                                    class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                                    <a class="page-link"
+                                                        href="/Report/getalldetail?query=<%= typeof query !== 'undefined' ? query : '' %>&page=<%= currentPage + 1 %>&limit=<%= typeof limit !== 'undefined' ? limit : 2 %>">&rsaquo;</a>
+                                                </li>
+
+                                                <!-- Last page button -->
+                                                <li
+                                                    class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                                    <a class="page-link"
+                                                        href="/Report/getalldetail?query=<%= typeof query !== 'undefined' ? query : '' %>&page=<%= totalPages %>&limit=<%= typeof limit !== 'undefined' ? limit : 2 %>">&raquo;</a>
+                                                </li>
+                                                <% } %>
+                                                    </ul>
+                                                    </nav>
 
 
-                <p style="color: rgb(0, 0, 0); margin: 20px 0px 20px 0; text-align: center; font-size: 30px;">
-                    <label>1 Choice checkbox</label>
-
-                    <input type="radio" id="success" name="status" value="success"
-                        style="margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;">
-                    <label for="success" style="vertical-align: middle; cursor: pointer;">Complete</label>
-
-                    <input type="radio" id="fail" name="status" value="fail"
-                        style="margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;">
-                    <label for="fail" style="vertical-align: middle; cursor: pointer;">Incomplete</label>
-                </p>
-
-
-                <p style="color: rgb(0, 128, 0);margin-bottom: 20px;margin-top: 20px;">
-                    <label>Checkbox</label>
-                    <br>
-                    <input type="checkbox" id="mouse" name="mouse" value="mouse"
-                        style="margin-top: 10px;margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;">
-                    <label style="margin-top: 10px;vertical-align: middle;">Mouse</label>
-                    <br>
-                    <input type="checkbox" id="keyboard" name="keyboard" value="keyboard"
-                        style="margin-top: 10px;margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;">
-
-                    <label style="margin-top: 10px;vertical-align: middle;">Keyboard</label>
-                    <br>
-                    <!-- Other 1 -->
-                <div style="margin-top: 10px; margin-left: 30px;">
-                    <input type="checkbox" id="other1.1" name="other1.1" value="other1.1"
-                        style="width: 15px; height: 15px; vertical-align: middle;"
-                        onclick="toggleOtherInput(this, 'input1')">
-                    <label for="other1" style="color:rgb(0, 128, 0);vertical-align: middle; cursor: pointer;">Other
-                        (Device)</label>
-                    <br>
-                    <input type="text" id="input1" name="input1" placeholder="Specify device"
-                        style="margin-left: 20px; display: none; width: 100px;" disabled>
+                                                    <% } else { %>
+                                                        <p>No data available</p>
+                                                        <% } %>
                 </div>
-                <!-- Other 2 -->
-                <div style="margin-top: 10px; margin-left: 30px;">
-                    <input type="checkbox" id="other1.2" name="other1.2" value="other1.2"
-                        style="width: 15px; height: 15px; vertical-align: middle;"
-                        onclick="toggleOtherInput(this, 'input2')">
-                    <label for="other2" style="color:rgb(0, 128, 0);vertical-align: middle; cursor: pointer;">Other
-                        (Accessory)</label>
-                    <br>
-                    <input type="text" id="input2" name="input2" placeholder="Specify accessory"
-                        style="margin-left: 20px; display: none; width: 100px;" disabled>
-                </div>
-                </p>
-
-
-                <p style="color: rgb(255, 0, 0); margin-bottom: 20px; margin-top: 20px;">
-                    <label>1 Checkbox at a time</label>
-                    <br>
-                    <input type="checkbox" id="mouse2" name="option2" value="mouse"
-                        style="margin-top: 10px;margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;"
-                        onclick="selectOnlyThis(this, ['input2-1','input2-2'])">
-                    <label style="margin-top: 10px;vertical-align: middle;">Mouse</label>
-                    <br>
-                    <input type="checkbox" id="keyboard2" name="option2" value="keyboard"
-                        style="margin-top: 10px;margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;"
-                        onclick="selectOnlyThis(this, ['input2-1','input2-2'])">
-                    <label style="margin-top: 10px;vertical-align: middle;">Keyboard</label>
-
-                    <!-- Other 1 -->
-                <div style="margin-top: 10px; margin-left: 30px;">
-                    <input type="checkbox" id="other2-1" name="option2" value="other2-1"
-                        style="width: 15px; height: 15px; vertical-align: middle;"
-                        onclick="selectOnlyThis(this, ['input2-1','input2-2']); toggleOtherInput(this, 'input2-1')">
-                    <label for="other2-1" style="color:rgb(255, 0, 0); vertical-align: middle; cursor: pointer;">Other
-                        (Device)</label>
-                    <br>
-                    <input type="text" id="input2-1" name="input2-1" placeholder="Specify device"
-                        style="margin-left: 20px; display: none; width: 100px;" disabled>
-                </div>
-
-                <!-- Other 2 -->
-                <div style="margin-top: 10px; margin-left: 30px;">
-                    <input type="checkbox" id="other2-2" name="option2" value="other2-2"
-                        style="width: 15px; height: 15px; vertical-align: middle;"
-                        onclick="selectOnlyThis(this, ['input2-1','input2-2']); toggleOtherInput(this, 'input2-2')">
-                    <label for="other2-2" style="color:rgb(255, 0, 0); vertical-align: middle; cursor: pointer;">Other
-                        (Accessory)</label>
-                    <br>
-                    <input type="text" id="input2-2" name="input2-2" placeholder="Specify accessory"
-                        style="margin-left: 20px; display: none; width: 100px;" disabled>
-                </div>
-                </p>
-
-
-                <p style="color: rgb(186, 186, 0);margin-bottom: 20px;margin-top: 20px;text-align: right;"> 
-                    <label for="device">Choose a device:</label>
-                    <select id="device" name="device" onchange="toggleOtherInput(this)">
-                        <option value="">-- Select --</option>
-                        <option value="mouse">Mouse</option>
-                        <option value="keyboard">Keyboard</option>
-                        <option value="monitor">Monitor</option>
-                        <option value="other">Other</option>
-                    </select>
-                    <input type="text" id="otherDevice" name="otherDevice" placeholder="Specify device"
-                        style="display: none; margin-top: 10px;" disabled>
-                </p>
-            </div>
-        </div>
-        <script src="/javascripts/Report.js"></script>
+                <script src="/javascripts/Report.js"></script>
 </body>
 
 </html>
