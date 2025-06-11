@@ -101,10 +101,10 @@ router.post("/inputassetlist", upload.fields([
             return res.status(400).send(`<script>alert('กรุณากรอก S/N'); window.location.href='/assetlist';</script>`);
         }
 
-        const nameExists = await assetlistModel.exists({ name });
-        if (nameExists) {
-            return res.status(400).send(`<script>alert('ชื่อซ้ำกับในฐานข้อมูล'); window.location.href='/assetlist/getalldetail';</script>`);
-        }
+        // const nameExists = await assetlistModel.exists({ name });
+        // if (nameExists) {
+        //     return res.status(400).send(`<script>alert('ชื่อซ้ำกับในฐานข้อมูล'); window.location.href='/assetlist/getalldetail';</script>`);
+        // } 
 
         let img = "";
         if (req.files.img) {
@@ -507,7 +507,8 @@ router.get('/search', async (req, res) => {
             $or: [
                 { name: regex },
                 { assetid: regex },
-                { devicesn: regex }
+                { devicesn: regex },
+                { dept: regex}
             ]
         })
         .skip((page - 1) * limit)
@@ -524,7 +525,8 @@ router.get('/search', async (req, res) => {
             $or: [
                 { name: regex },
                 { assetid: regex },
-                { devicesn: regex }
+                { devicesn: regex },
+                { dept: regex}
             ]
         });
 

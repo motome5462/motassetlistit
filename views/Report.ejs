@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report</title>
+</head>
+
+
+<body>
+    <header>
+        <!-- Navbar -->
+        <% include index.ejs %>
+    </header>
+    <div class="container mt-5">
+        <h2 style="color: rgb(0, 0, 0);margin: 20px 0px 0px 80px;font-size: 50px;">Report</h2>
+        <div class="row mb-3" style="border: 1px solid black;">
+            <div>
+                <p style="color: rgb(0, 0, 255);margin: 20px 0px 20px 0;text-align:center;font-size: 20px;">
+                    <label>
+                        Writebox
+                    </label>
+                    <input type="text" ; style="margin-left: 30px;width: 100px;margin-right: 30px;">
+                    <span>WOW</span>
+                    </input>
+                </p>
+
+
+                <p style="color: rgb(0, 0, 0); margin: 20px 0px 20px 0; text-align: center; font-size: 30px;">
+                    <label>1 Choice checkbox</label>
+
+                    <input type="radio" id="success" name="status" value="success"
+                        style="margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;">
+                    <label for="success" style="vertical-align: middle; cursor: pointer;">Complete</label>
+
+                    <input type="radio" id="fail" name="status" value="fail"
+                        style="margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;">
+                    <label for="fail" style="vertical-align: middle; cursor: pointer;">Incomplete</label>
+                </p>
+
+
+                <p style="color: rgb(0, 128, 0);margin-bottom: 20px;margin-top: 20px;">
+                    <label>Checkbox</label>
+                    <br>
+                    <input type="checkbox" id="mouse" name="mouse" value="mouse"
+                        style="margin-top: 10px;margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;">
+                    <label style="margin-top: 10px;vertical-align: middle;">Mouse</label>
+                    <br>
+                    <input type="checkbox" id="keyboard" name="keyboard" value="keyboard"
+                        style="margin-top: 10px;margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;">
+
+                    <label style="margin-top: 10px;vertical-align: middle;">Keyboard</label>
+                    <br>
+                    <!-- Other 1 -->
+                <div style="margin-top: 10px; margin-left: 30px;">
+                    <input type="checkbox" id="other1.1" name="other1.1" value="other1.1"
+                        style="width: 15px; height: 15px; vertical-align: middle;"
+                        onclick="toggleOtherInput(this, 'input1')">
+                    <label for="other1" style="color:rgb(0, 128, 0);vertical-align: middle; cursor: pointer;">Other
+                        (Device)</label>
+                    <br>
+                    <input type="text" id="input1" name="input1" placeholder="Specify device"
+                        style="margin-left: 20px; display: none; width: 100px;" disabled>
+                </div>
+                <!-- Other 2 -->
+                <div style="margin-top: 10px; margin-left: 30px;">
+                    <input type="checkbox" id="other1.2" name="other1.2" value="other1.2"
+                        style="width: 15px; height: 15px; vertical-align: middle;"
+                        onclick="toggleOtherInput(this, 'input2')">
+                    <label for="other2" style="color:rgb(0, 128, 0);vertical-align: middle; cursor: pointer;">Other
+                        (Accessory)</label>
+                    <br>
+                    <input type="text" id="input2" name="input2" placeholder="Specify accessory"
+                        style="margin-left: 20px; display: none; width: 100px;" disabled>
+                </div>
+                </p>
+
+
+                <p style="color: rgb(255, 0, 0); margin-bottom: 20px; margin-top: 20px;">
+                    <label>1 Checkbox at a time</label>
+                    <br>
+                    <input type="checkbox" id="mouse2" name="option2" value="mouse"
+                        style="margin-top: 10px;margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;"
+                        onclick="selectOnlyThis(this, ['input2-1','input2-2'])">
+                    <label style="margin-top: 10px;vertical-align: middle;">Mouse</label>
+                    <br>
+                    <input type="checkbox" id="keyboard2" name="option2" value="keyboard"
+                        style="margin-top: 10px;margin-left: 30px; width: 15px; height: 15px; vertical-align: middle;"
+                        onclick="selectOnlyThis(this, ['input2-1','input2-2'])">
+                    <label style="margin-top: 10px;vertical-align: middle;">Keyboard</label>
+
+                    <!-- Other 1 -->
+                <div style="margin-top: 10px; margin-left: 30px;">
+                    <input type="checkbox" id="other2-1" name="option2" value="other2-1"
+                        style="width: 15px; height: 15px; vertical-align: middle;"
+                        onclick="selectOnlyThis(this, ['input2-1','input2-2']); toggleOtherInput(this, 'input2-1')">
+                    <label for="other2-1" style="color:rgb(255, 0, 0); vertical-align: middle; cursor: pointer;">Other
+                        (Device)</label>
+                    <br>
+                    <input type="text" id="input2-1" name="input2-1" placeholder="Specify device"
+                        style="margin-left: 20px; display: none; width: 100px;" disabled>
+                </div>
+
+                <!-- Other 2 -->
+                <div style="margin-top: 10px; margin-left: 30px;">
+                    <input type="checkbox" id="other2-2" name="option2" value="other2-2"
+                        style="width: 15px; height: 15px; vertical-align: middle;"
+                        onclick="selectOnlyThis(this, ['input2-1','input2-2']); toggleOtherInput(this, 'input2-2')">
+                    <label for="other2-2" style="color:rgb(255, 0, 0); vertical-align: middle; cursor: pointer;">Other
+                        (Accessory)</label>
+                    <br>
+                    <input type="text" id="input2-2" name="input2-2" placeholder="Specify accessory"
+                        style="margin-left: 20px; display: none; width: 100px;" disabled>
+                </div>
+                </p>
+
+
+                <p style="color: rgb(186, 186, 0);margin-bottom: 20px;margin-top: 20px;text-align: right;"> 
+                    <label for="device">Choose a device:</label>
+                    <select id="device" name="device" onchange="toggleOtherInput(this)">
+                        <option value="">-- Select --</option>
+                        <option value="mouse">Mouse</option>
+                        <option value="keyboard">Keyboard</option>
+                        <option value="monitor">Monitor</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input type="text" id="otherDevice" name="otherDevice" placeholder="Specify device"
+                        style="display: none; margin-top: 10px;" disabled>
+                </p>
+            </div>
+        </div>
+        <script src="/javascripts/Report.js"></script>
+</body>
+
+</html>
