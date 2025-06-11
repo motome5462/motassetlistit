@@ -507,7 +507,8 @@ router.get('/search', async (req, res) => {
             $or: [
                 { name: regex },
                 { assetid: regex },
-                { devicesn: regex }
+                { devicesn: regex },
+                { dept: regex}
             ]
         })
         .skip((page - 1) * limit)
@@ -524,7 +525,8 @@ router.get('/search', async (req, res) => {
             $or: [
                 { name: regex },
                 { assetid: regex },
-                { devicesn: regex }
+                { devicesn: regex },
+                { dept: regex}
             ]
         });
 
