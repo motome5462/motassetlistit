@@ -2,342 +2,353 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Report</title>
-    <link rel="stylesheet" href="/stylesheets/Report.css" />
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Report</title>
+  <link rel="stylesheet" href="/stylesheets/Report.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
 </head>
 
 <body>
-    <header class="no-print">
-        <!-- Navbar -->
-        <% include index.ejs %>
-    </header>
-    <div style="margin: 0% 5% 0% 5%;">
+  <header class="no-print">
+    <% include index.ejs %>
+  </header>
 
-        <div class="container mt-5 no-print">
-            <div class="row align-items-center mb-4">
-                <!-- Report Heading (Middle Left) -->
-                <div class="col-md-6 ">
-                    <h1 class="mb-0" style="font-size: 60px;">Report</h1>
-                </div>
-
-                <!-- Filter Form Box (Right Side) -->
-                <div class="col-md-6 d-flex form-container">
-                    <div class="border p-4 rounded bg-light" style="min-width: 200px;">
-                        <form id="filterForm" action="/Report/getalldetail" method="GET" class="filter-form">
-
-                            <div class="row g-3 align-items-center mb-3">
-                                <div class="col-auto">
-                                    <label for="assetid" class="form-label mb-0">Search Asset ID:</label>
-                                    <input id="assetid" type="text" name="assetid" class="form-control"
-                                        placeholder="ID" />
-                                </div>
-
-                                <div class="col-auto">
-                                    <label for="name" class="form-label mb-0">Search Name:</label>
-                                    <input id="name" type="text" name="name" value="<%= name || '' %>"
-                                        class="form-control" placeholder="Name" />
-                                </div>
-
-                                <div class="col-auto">
-                                    <label for="dept" class="form-label mb-0">Department:</label>
-                                    <input id="dept" type="text" name="dept" value="<%= dept || '' %>"
-                                        class="form-control" placeholder="Dept." />
-                                </div>
-
-                            </div>
-
-                            <div class="mb-3 ">
-                                <label class="mb-0">Delivery Date From:</label>
-                                <input id="deliveryStart" type="date" name="deliveryStart"
-                                    value="<%= deliveryStart || '' %>" style="width: 30%;" />
-                                <label>to</label>
-                                <input id="deliveryEnd" type="date" name="deliveryEnd" value="<%= deliveryEnd || '' %>"
-                                    style="width: 30%;" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="mb-0">Repair Date From:</label>
-                                <input id="repairStart" type="date" name="repairStart" value="<%= repairStart || '' %>"
-                                    style="width: 30%;" />
-                                <label>to</label>
-                                <input id="repairEnd" type="date" name="repairEnd" value="<%= repairEnd || '' %>"
-                                    style="width: 30%;" />
-                            </div>
-
-                            <div>
-                                <label class="mb-3">Device Type:</label>
-                                <select id="devicetype" name="devicetype">
-                                    <option value="">All</option>
-                                    <option value="Laptop" <%=devicetype==='Laptop' ? 'selected' : '' %>>Laptop</option>
-                                    <option value="PC" <%=devicetype==='PC' ? 'selected' : '' %>>PC</option>
-                                    <option value="Server" <%=devicetype==='Server' ? 'selected' : '' %>>Server</option>
-                                    <option value="Switch" <%=devicetype==='Switch' ? 'selected' : '' %>>Switch</option>
-                                    <option value="Router" <%=devicetype==='Router' ? 'selected' : '' %>>Router</option>
-                                    <option value="Other" <%=devicetype==='Other' ? 'selected' : '' %>>Other</option>
-                                </select>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">Filter</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+  <div class="container-fluid" style="padding: 0 5%;">
+    <div class="container mt-5 no-print">
+      <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+          <h1 class="mb-0 display-4" style="font-size: 80px;"><strong>Report</strong></h1>
         </div>
 
-
-
-        <% if (data && data.length> 0) { %>
-            <% data.forEach((item, index)=> { %>
-                <div class="mt-5 <%= index !== 0 ? 'page-break' : '' %>" style="margin-bottom: 30px;">
-                    <div class="p-4" style="border: 3px solid black; border-radius: 8px;">
-                        <h2 style="font-size: 50px">User Owner</h2>
-                        <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
-                            <thead>
-                                <tr>
-                                    <th>Asset ID</th>
-                                    <th>Date</th>
-                                    <th>Owner/User</th>
-                                    <th>Company</th>
-                                    <th>Dept</th>
-                                    <th>Computer Name</th>
-                                    <th>Delivery dates</th>
-                                    <th>Remark</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <%= item.assetid %>
-                                    </td>
-                                    <td>
-                                        <%= new Date(item.assetitlistsdate).toDateString() %>
-                                    </td>
-                                    <td>
-                                        <%= item.name %>
-                                    </td>
-                                    <td>
-                                        <%= item.assetitlistscompany.join(', ') %></td>
-                                <td><%= item.dept %></td>
-                                <td><%= item.computername %></td>
-                                <td><%= new Date(item.deliverydate).toDateString() %></td>
-                                <td><%= item.assetitlistsremark %></td>
-                            </tr>
-                        </tbody>
-
-                        <thead>
-                            <tr>
-                                <th colspan="8" style="font-size: 30px"><strong>Hardware</strong></th>
-                            </tr>
-                            <tr>
-                                <th>Device</th>
-                                <th>Device-Type</th>
-                                <th>Model</th>
-                                <th>S/N</th>
-                                <th>CPU</th>
-                                <th>CPU Speed</th>
-                                <th>Harddisk</th>
-                                <th>RAM</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><%= item.device %></td>
-                                <td><%= item.devicetype %></td>
-                                <td><%= item.devicemodel %></td>
-                                <td>S/N: <%= item.devicesn %></td>
-                                <td><%= item.cpu %> <%= item.cputype %></td>
-                                <td><%= item.speed %></td>
-                                <td><%= item.harddisk %></td>
-                                <td><%= item.ram %></td>
-                            </tr>
-                        </tbody>
-
-                        <thead>
-                            <tr>
-                                <th colspan="8" style="font-size: 30px"><strong>Accessory</strong></th>
-                            </tr>
-                            <tr>
-                                <th>ROM</th>
-                                <th>ROM Detail</th>
-                                <th>Monitor</th>
-                                <th>Monitor Detail</th>
-                                <th>Keyboard</th>
-                                <th>Keyboard Detail</th>
-                                <th>Mouse</th>
-                                <th>Mouse Detail</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><%= item.romdrive %> <%= item.romdrivetype %></td>
-                                <td>S/N: <%= item.romsn %> ID: <%= item.romassetid %></td>
-                                <td><%= item.monitor %> <%= item.monitortype %></td>
-                                <td>S/N: <%= item.monitorsn %> ID: <%= item.monitorassetid %></td>
-                                <td><%= item.keyboard %> <%= item.keyboardtype %></td>
-                                <td>S/N: <%= item.keyboardsn %> ID: <%= item.keyboardassetid %></td>
-                                <td><%= item.mouse %> <%= item.mousetype %></td>
-                                <td>S/N: <%= item.mousesn %> ID: <%= item.mouseassetid %></td>
-                            </tr>
-                        </tbody>
-
-                        <thead>
-                            <tr>
-                                <th>Printer</th>
-                                <th>Printer Detail</th>
-                                <th>Adaptor</th>
-                                <th>Adaptor Detail</th>
-                                <th>UPS</th>
-                                <th>UPS Detail</th>
-                                <th>Other</th>
-                                <th>Other Detail</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><%= item.printer %> <%= item.printermodel %> <%= item.printertype %></td>
-                                <td>S/N: <%= item.printersn %> ID: <%= item.printerassetid %></td>
-                                <td><%= item.adaptor %></td>
-                                <td>S/N: <%= item.adaptorsn %></td>
-                                <td><%= item.ups %> <%= item.upstype %> <%= item.upsva %></td>
-                                <td><%= item.upstypemodel %> S/N: <%= item.upstypesn %> ID: <%= item.upstypeassetid %></td>
-                                <td><%= item.other1 %></td>
-                                <td>S/N: <%= item.othersn %></td>
-                            </tr>
-                        </tbody>
-
-                        <thead>
-                            <tr>
-                                <th colspan="8" style="font-size: 30px"><strong>Software</strong></th>
-                            </tr>
-                            <tr>
-                                <th>OS</th>
-                                <th>OS s/n</th>
-                                <th>Office</th>
-                                <th>Office s/n</th>
-                                <th>Antivirus</th>
-                                <th>pdf</th>
-                                <th>utility</th>
-                                <th>other</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><%= item.os %> <%= item.ostype %></td>
-                                <td>S/N: <%= item.ossn %></td>
-                                <td><%= item.office %> <%= item.officetype %></td>
-                                <td>S/N: <%= item.officesn %></td>
-                                <td><%= item.antivirus %></td>
-                                <td><%= item.pdf %></td>
-                                <td><%= item.utility %></td>
-                                <td><%= item.other2 %></td>
-                            </tr>
-                        </tbody>
-
-                        <thead>
-                            <tr>
-                                <th colspan="4" class="text-center" width="50%">Addprinter</th>
-                                <th colspan="4" class="text-center" width="50%">Mapdrive</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="4" class="text-center" width="50%"><%= item.addprinter %></td>
-                                <td colspan="4" class="text-center" width="50%"><%= item.mapdrive %></td>
-                            </tr>
-                        </tbody>
-
-                    </table>
-
-                    <% if (item.repairs && item.repairs.length > 0) { %>
-                    <label style="font-size: 30px"><strong>Detail Repair</strong></label>
-                        <table class="table table-bordered mt-2" style="border: 1px solid black;">
-                            <thead>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>Date</th>
-                                    <th>ComputerName</th>
-                                    <th>Detail Repair</th>
-                                    <th>Value</th>
-                                    <th>Success</th>
-                                    <th>Fail</th>
-                                    <th>Remark</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% item.repairs.forEach((repair, repairIndex) => { %>
-                                    <tr>
-                                        <td><%= repairIndex + 1 %></td>
-                                        <td><%= new Date(repair.repairdate).toDateString() %></td>
-                                        <td><%= item.computername || '' %></td>
-                                        <td><%= repair.detailrepair %></td>
-                                        <td><%= repair.value %></td>
-                                        <td><%= repair.success %></td>
-                                        <td><%= repair.fail %></td>
-                                        <td><%= repair.repairremark %></td>
-                                    </tr>
-                                <% }); %>
-                                <tr>
-                                    <td colspan="4" class="text-end"style="font-size: 25px"><strong>Total Value:</strong></td>
-                                    <td colspan="4"style="font-size: 25px"><strong><%= item.totalValue %></strong></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    <% } %>
-                    </div>
-            <% }); %>
-            <div class="no-print">
-            <!-- Pagination -->
-            <nav aria-label="Page navigation" >
-                <ul class="pagination justify-content-center ">
-                    <% if (totalPages > 1) { %>
-                        <%const query = `assetid=${assetid || ''}&name=${name || ''}&dept=${dept || ''}&deliveryStart=${deliveryStart || ''}&deliveryEnd=${deliveryEnd || ''}&repairStart=${repairStart || ''}&repairEnd=${repairEnd || ''}&devicetype=${devicetype || ''}&limit=${limit || 2}`;%>
-                        <!-- First page button -->
-                        <li class="page-item <%= currentPage == 1 ? ' disabled' : '' %> ">
-                                            <a class="page-link"
-                                                href="/Report/getalldetail?<%= query %>&page=1%>">&laquo;</a>
-                                            </li>
-
-                                            <!-- Previous page button -->
-                                            <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
-                                                <a class="page-link"
-                                                    href="/Report/getalldetail?<%= query %>&page=<%= currentPage - 1 %>">&lsaquo;</a>
-                                            </li>
-
-                                            <% for (let i=Math.max(1, currentPage - 2); i <=Math.min(totalPages,
-                                                currentPage + 2); i++) { %>
-                                                <li class="page-item <%= i == currentPage ? 'active' : '' %>">
-                                                    <a class="page-link"
-                                                        href="/Report/getalldetail?<%= query %>&page=<%= i %>">
-                                                        <%= i %>
-                                                    </a>
-                                                </li>
-                                                <% } %>
-
-                                                    <!-- Next page button -->
-                                                    <li
-                                                        class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
-                                                        <a class="page-link"
-                                                            href="/Report/getalldetail?<%= query %>&page=<%= currentPage + 1 %>">&rsaquo;</a>
-                                                    </li>
-
-                                                    <!-- Last page button -->
-                                                    <li
-                                                        class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
-                                                        <a class="page-link"
-                                                            href="/Report/getalldetail?<%= query %>&page=<%= totalPages %>">&raquo;</a>
-                                                    </li>
-                                                    <% } %>
-                                                        </ul>
-                                                        </nav>
-                                                        <% } else { %>
-                                                            <p>No data available</p>
-                                                            <% } %>
-                    </div>
+        <div class="col-md-6 d-flex form-container">
+          <div class="border p-4 rounded bg-light w-100" style="max-width: 600px;">
+            <form id="filterForm" action="/Report/getalldetail" method="GET">
+              <div class="row g-3 align-items-center mb-3">
+                <div class="col-auto">
+                  <label for="assetid" class="form-label mb-0">Search Asset ID:</label>
+                  <input id="assetid" type="text" name="assetid" class="form-control" placeholder="ID" />
                 </div>
-                <script src="/javascripts/Report.js"></script>
+                <div class="col-auto">
+                  <label for="name" class="form-label mb-0">Search Name:</label>
+                  <input id="name" type="text" name="name" value="<%= name || '' %>" class="form-control" placeholder="Name" />
+                </div>
+                <div class="col-auto">
+                  <label for="dept" class="form-label mb-0">Department:</label>
+                  <input id="dept" type="text" name="dept" value="<%= dept || '' %>" class="form-control" placeholder="Dept." />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="mb-0">Delivery Date From:</label>
+                <div class="d-flex align-items-center">
+                  <input id="deliveryStart" type="date" name="deliveryStart" value="<%= deliveryStart || '' %>" class="form-control me-2" style="width: 45%;" />
+                  <label class="mx-2">to</label>
+                  <input id="deliveryEnd" type="date" name="deliveryEnd" value="<%= deliveryEnd || '' %>" class="form-control" style="width: 45%;" />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="mb-0">Repair Date From:</label>
+                <div class="d-flex align-items-center">
+                  <input id="repairStart" type="date" name="repairStart" value="<%= repairStart || '' %>" class="form-control me-2" style="width: 45%;" />
+                  <label class="mx-2">to</label>
+                  <input id="repairEnd" type="date" name="repairEnd" value="<%= repairEnd || '' %>" class="form-control" style="width: 45%;" />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="mb-2">Device Type:</label>
+                <select id="devicetype" name="devicetype" class="form-select">
+                  <option value="">All</option>
+                  <option value="Laptop" <%=devicetype==='Laptop' ? 'selected' : '' %>>Laptop</option>
+                  <option value="PC" <%=devicetype==='PC' ? 'selected' : '' %>>PC</option>
+                  <option value="Server" <%=devicetype==='Server' ? 'selected' : '' %>>Server</option>
+                  <option value="Switch" <%=devicetype==='Switch' ? 'selected' : '' %>>Switch</option>
+                  <option value="Router" <%=devicetype==='Router' ? 'selected' : '' %>>Router</option>
+                  <option value="Other" <%=devicetype==='Other' ? 'selected' : '' %>>Other</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<% if (data && data.length > 0) { %>
+  <% data.forEach((item, index) => { %>
+    <div class="mt-5 <%= index !== 0 ? 'page-break' : '' %>" style="margin-bottom: 30px;">
+      <div class="p-4" style="border: 3px solid black; border-radius: 8px;">
+        
+        <h2 style="font-size: 50px">User Owner</h2>
+        <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
+          <thead>
+            <tr>
+              <th>Asset ID</th>
+              <th>Date</th>
+              <th>Owner/User</th>
+              <th>Company</th>
+              <th>Dept</th>
+              <th>Computer Name</th>
+              <th>Delivery dates</th>
+              <th>Remark</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= item.assetid %></td>
+              <td><%= new Date(item.assetitlistsdate).toDateString() %></td>
+              <td><%= item.name %></td>
+              <td><%= item.assetitlistscompany.join(', ') %></td>
+              <td><%= item.dept %></td>
+              <td><%= item.computername %></td>
+              <td><%= new Date(item.deliverydate).toDateString() %></td>
+              <td><%= item.assetitlistsremark %></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h2 style="font-size: 30px">Hardware</h2>
+        <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
+          <thead>
+            <tr>
+              <th>Device</th>
+              <th>Device-Type</th>
+              <th>Model</th>
+              <th>S/N</th>
+              <th>CPU</th>
+              <th>CPU Speed</th>
+              <th>CPU No.</th>
+              <th>Harddisk</th>
+              <th>RAM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= item.device %></td>
+              <td><%= item.devicetype %> <%= item.devicechoice %></td>
+              <td><%= item.devicemodel %></td>
+              <td>S/N: <%= item.devicesn %></td>
+              <td><%= item.cpu %> <%= item.cputype %></td>
+              <td><%= item.speed %></td>
+              <td><%= item.cpuassetaccountno %></td>
+              <td><%= item.harddisk %></td>
+              <td><%= item.ram %></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h2 style="font-size: 30px">Image</h2>
+        <div style="margin-bottom: 20px; max-height: 400px; overflow: hidden;">
+          <% if (item.img) { %>
+            <% if (item.img.endsWith('.pdf')) { %>
+              <embed src="/images/<%= item.img %>" width="100%" height="400px" type="application/pdf" />
+            <% } else { %>
+              <img src="/images/<%= item.img %>" alt="Asset Image" style="max-height: 400px; width: auto; display: block; margin: 0 auto;" />
+            <% } %>
+          <% } else { %>
+            <div style="height: 100px;"></div> <!-- empty space if no image -->
+          <% } %>
+        </div>
+        
+        <h2 style="font-size: 30px">Accessory</h2>
+        <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
+          <thead>
+            <tr>
+              <th>ROM</th>
+              <th>ROM Detail</th>
+              <th>Monitor</th>
+              <th>Monitor Detail</th>
+              <th>Keyboard</th>
+              <th>Keyboard Detail</th>
+              <th>Mouse</th>
+              <th>Mouse Detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= item.romdrive %> <%= item.romdrivetype %></td>
+              <td>S/N: <%= item.romsn %> ID: <%= item.romassetid %></td>
+              <td><%= item.monitor %> <%= item.monitortype %></td>
+              <td>S/N: <%= item.monitorsn %> ID: <%= item.monitorassetid %></td>
+              <td><%= item.keyboard %> <%= item.keyboardtype %></td>
+              <td>S/N: <%= item.keyboardsn %> ID: <%= item.keyboardassetid %></td>
+              <td><%= item.mouse %> <%= item.mousetype %></td>
+              <td>S/N: <%= item.mousesn %> ID: <%= item.mouseassetid %></td>
+            </tr>
+          </tbody>
+          <thead>
+            <tr>
+              <th>Printer</th>
+              <th>Printer Detail</th>
+              <th>Adaptor</th>
+              <th>Adaptor Detail</th>
+              <th>UPS</th>
+              <th>UPS Detail</th>
+              <th>Other</th>
+              <th>Other Detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= item.printer %> <%= item.printermodel %> <%= item.printertype %></td>
+              <td>S/N: <%= item.printersn %> ID: <%= item.printerassetid %></td>
+              <td><%= item.adaptor %></td>
+              <td>S/N: <%= item.adaptorsn %></td>
+              <td><%= item.ups %> <%= item.upstype %> <%= item.upsva %></td>
+              <td><%= item.upstypemodel %> S/N: <%= item.upstypesn %> ID: <%= item.upstypeassetid %></td>
+              <td><%= item.other1 %></td>
+              <td>S/N: <%= item.othersn %></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h2 style="font-size: 30px">Software</h2>
+        <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
+          <thead>
+            <tr>
+              <th>OS</th>
+              <th>OS s/n</th>
+              <th>Antivirus</th>
+              <th>pdf</th>
+              <th>MapDrive</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= item.os %> <%= item.ostype %></td>
+              <td>S/N: <%= item.ossn %></td>
+              <td><%= item.antivirus %></td>
+              <td><%= item.pdf %></td>
+              <td><%= item.mapdrive %></td>
+            </tr>
+          </tbody>
+          <thead>
+            <tr>
+              <th>Office</th>
+              <th>Office s/n</th>
+              <th>utility</th>
+              <th>other</th>
+              <th>AddPrinter</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= item.office %> <%= item.officetype %></td>
+              <td>S/N: <%= item.officesn %></td>
+              <td><%= item.utility %></td>
+              <td><%= item.other2 %></td>
+              <td><%= item.addprinter %></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h2 style="font-size: 30px">Other</h2>
+        <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
+          <tr>
+            <td><%= item.other3 %> </td>
+          </tr>
+        </table>
+        
+        <% if (item.repairs && item.repairs.length > 0) { %>
+          <label style="font-size: 30px"><strong>Detail Repair</strong></label>
+          <table class="table table-bordered mt-2" style="border: 1px solid black;">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Date</th>
+                <th>ComputerName</th>
+                <th>Detail Repair</th>
+                <th>Value</th>
+                <th>Success</th>
+                <th>Fail</th>
+                <th>Remark</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% item.repairs.forEach((repair, repairIndex) => { %>
+                <tr>
+                  <td><%= repairIndex + 1 %></td>
+                  <td><%= new Date(repair.repairdate).toDateString() %></td>
+                  <td><%= item.computername || '' %></td>
+                  <td><%= repair.detailrepair %></td>
+                  <td><%= repair.value %></td>
+                  <td><%= repair.success %></td>
+                  <td><%= repair.fail %></td>
+                  <td><%= repair.repairremark %></td>
+                </tr>
+              <% }); %>
+              <tr>
+                <td colspan="4" class="text-end" style="font-size: 20px"><strong>Total Value:</strong></td>
+                <td colspan="4" style="font-size: 20px"><strong><%= item.totalValue %></strong></td>
+              </tr>
+            </tbody>
+          </table>
+        <% } %>
+        
+      </div>
+    </div>
+  <% }); %>
+
+  <div class="no-print">
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        <% if (totalPages > 1) { %>
+          <%
+            const query = 
+              'assetid=' + (assetid || '') +
+              '&name=' + (name || '') +
+              '&dept=' + (dept || '') +
+              '&deliveryStart=' + (deliveryStart || '') +
+              '&deliveryEnd=' + (deliveryEnd || '') +
+              '&repairStart=' + (repairStart || '') +
+              '&repairEnd=' + (repairEnd || '') +
+              '&devicetype=' + (devicetype || '') +
+              '&limit=' + (limit || 2);
+          %>
+
+          <!-- First page button -->
+          <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="/Report/getalldetail?<%= query %>&page=1">&laquo;</a>
+          </li>
+
+          <!-- Previous page button -->
+          <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="/Report/getalldetail?<%= query %>&page=<%= currentPage - 1 %>">&lsaquo;</a>
+          </li>
+
+          <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+            <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+              <a class="page-link" href="/Report/getalldetail?<%= query %>&page=<%= i %>"><%= i %></a>
+            </li>
+          <% } %>
+
+          <!-- Next page button -->
+          <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="/Report/getalldetail?<%= query %>&page=<%= currentPage + 1 %>">&rsaquo;</a>
+          </li>
+
+          <!-- Last page button -->
+          <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="/Report/getalldetail?<%= query %>&page=<%= totalPages %>">&raquo;</a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+
+<% } else { %>
+  <p>No data available</p>
+<% } %>
+
+
+  </div>
+  <script src="/javascripts/Report.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
