@@ -1,426 +1,81 @@
+// /public/javascripts/Report.js
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('.filter-form');
+  const paginationLinks = document.querySelectorAll('.pagination a.page-link');
 
-function toggleOther(inputId) {
-    var otherInput = document.getElementById(inputId);
-    if (otherInput.style.display === "none") {
-        otherInput.style.display = "block";
-    } else {
-        otherInput.style.display = "none";
-        otherInput.value = "";  // Clear value when hiding
+  // Helper: Build query string from form inputs
+  function buildQuery(params = {}) {
+    const formData = new FormData(form);
+    for (const [key, value] of Object.entries(params)) {
+      formData.set(key, value);
     }
+    const query = new URLSearchParams(formData);
+    return query.toString();
+  }
+
+  // On filter form submit
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    // Always reset to page 1 on filter submit
+    const query = buildQuery({ page: 1 });
+    window.location.href = `/Report/getalldetail?${query}`;
+  });
+
+  // On pagination click
+  paginationLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      // Get the target page from the href URL
+      const url = new URL(link.href);
+      const page = url.searchParams.get('page') || '1';
+
+      // Build query with page and current filters from the form
+      const query = buildQuery({ page });
+      window.location.href = `/Report/getalldetail?${query}`;
+    });
+  });
+});
+
+function buildQuery() {
+  const assetid = document.getElementById('assetid').value.trim();
+  const name = document.getElementById('name').value.trim();
+  const dept = document.getElementById('dept').value.trim();
+  const deliveryStart = document.getElementById('deliveryStart').value;
+  const deliveryEnd = document.getElementById('deliveryEnd').value;
+  const repairStart = document.getElementById('repairStart').value;
+  const repairEnd = document.getElementById('repairEnd').value;
+  const devicetype = document.getElementById('devicetype').value;
+
+  const params = new URLSearchParams();
+
+  if (dept) params.append('dept', dept);
+  if (assetid) params.append('assetid', assetid);
+  if (name) params.append('name', name);
+  if (deliveryStart) params.append('deliveryStart', deliveryStart);
+  if (deliveryEnd) params.append('deliveryEnd', deliveryEnd);
+  if (repairStart) params.append('repairStart', repairStart);
+  if (repairEnd) params.append('repairEnd', repairEnd);
+  if (devicetype) params.append('devicetype', devicetype);
+
+  return params.toString();
 }
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('deviceother');
-    var otherInput = document.getElementById('deviceotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
 
-        // Set the input field to be part of the devices
-        otherInput.name = "device";
-    }
-});document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('devicetype');
-    var otherInput = document.getElementById('devicetypeinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "devicetype";
-    }
-});document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('devicechoice');
-    var otherInput = document.getElementById('devicechoiceinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "devicechoice";
-    }
-});
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('cpuother');
-    var otherInput = document.getElementById('cpuotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "cpu";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('cputypeother');
-    var otherInput = document.getElementById('cputypeotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "cputype";
-    }
-});
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('speedother');
-    var otherInput = document.getElementById('speedotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "speed";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('harddiskother');
-    var otherInput = document.getElementById('harddiskotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "harddisk";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('ramother');
-    var otherInput = document.getElementById('ramotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "ram";
-    }
-});
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('romdriveother');
-    var otherInput = document.getElementById('romdriveotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "romdrive";
-    }
-});
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('monitorother');
-    var otherInput = document.getElementById('monitorotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "monitor";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('monitortypeother');
-    var otherInput = document.getElementById('monitortypeotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "monitortype";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('keyboardtypeother');
-    var otherInput = document.getElementById('keyboardtypeotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "keyboardtype";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('mouseother');
-    var otherInput = document.getElementById('mouseotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "mouse";
-    }
-});
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('printerother');
-    var otherInput = document.getElementById('printerotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "printer";
-    }
-});
-
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('printertypeother');
-    var otherInput = document.getElementById('printertypeotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "printertype";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('upstypeother');
-    var otherInput = document.getElementById('upstypeotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "upstype";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('upsvaother');
-    var otherInput = document.getElementById('upsvaotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "upsva";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('adaptorother');
-    var otherInput = document.getElementById('adaptorotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "adaptor";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('osother');
-    var otherInput = document.getElementById('osotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "os";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('ostypeother');
-    var otherInput = document.getElementById('ostypeotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "ostype";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('officeother');
-    var otherInput = document.getElementById('officeotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "office";
-    }
-});
-
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('officetypeother');
-    var otherInput = document.getElementById('officetypeotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "officetype";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('antivirusother');
-    var otherInput = document.getElementById('antivirusotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "antivirus";
-    }
-});
-
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('pdfother');
-    var otherInput = document.getElementById('pdfotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "pdf";
-    }
-});
-
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('pdftypeother');
-    var otherInput = document.getElementById('pdftypeotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "pdf";
-    }
-});
-
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    var otherCheckbox = document.getElementById('utilityother');
-    var otherInput = document.getElementById('utilityotherinput');
-    if (otherCheckbox.checked) {
-        // Make sure the other checkbox value is not included
-        otherCheckbox.name = "";
-        otherCheckbox.value = "";
-
-        // Set the input field to be part of the devices
-        otherInput.name = "utility";
-    }
-});
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    const successCheckbox = document.getElementById('success');
-    const failCheckbox = document.getElementById('fail');
-    const headOfficeCheckbox = document.getElementById('companyMOT_HeadOffice');
-    const rayongOfficeCheckbox = document.getElementById('companyMOT_RayongOffice');
-
-    successCheckbox.addEventListener('change', () => {
-        if (successCheckbox.checked) {
-            failCheckbox.checked = false;
-        }
+document.addEventListener('DOMContentLoaded', () => {
+  const filterForm = document.getElementById('filterForm');
+  if (filterForm) {
+    filterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const query = buildQuery();
+      window.location.href = '/Report/getalldetail?' + query + '&page=1';
     });
+  }
 
-    failCheckbox.addEventListener('change', () => {
-        if (failCheckbox.checked) {
-            successCheckbox.checked = false;
-        }
+  document.querySelectorAll('.pagination-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const page = this.dataset.page;
+      const query = buildQuery();
+      window.location.href = '/Report/getalldetail?' + query + '&page=' + page;
     });
-
-
-    headOfficeCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            rayongOfficeCheckbox.checked = false;
-        }
-    });
-
-    rayongOfficeCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            headOfficeCheckbox.checked = false;
-        }
-    });
-
-
-
+  });
 });
-
-
-function confirmSubmit() {
-    const name = document.querySelector('input[name="name"]').value;
-    const assetid = document.querySelector('input[name="assetid"]').value;
-    const devicesn = document.querySelector('input[name="devicesn"]').value;
-
-    if (!name) {
-        alert('กรุณากรอกชื่อ');
-        return false;
-    }
-
-
-
-    if (!assetid) {
-        alert('กรุณากรอก Asset ID');
-        return false;
-    }
-
-    if (!devicesn) {
-        alert('กรุณากรอกS/N');
-        return false;
-    }
-
-    return true; // ถ้าฟิลด์ทั้งหมดถูกกรอกแล้วให้ส่งฟอร์ม
-}

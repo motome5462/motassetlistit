@@ -5,89 +5,106 @@ const mongoose = require('mongoose');
 const assetlistModel = require('../models/assetlist');
 const repairModel = require('../models/repair');
 
-// Your existing route handlers (adapted/fixed for clarity)
-
-router.get('/search', async (req, res) => {
-  const { query, page = 1, limit = 2 } = req.query;
-
-  try {
-    const regex = new RegExp(query, 'i');
-    const results = await assetlistModel.find({
-      $or: [
-        { name: regex },
-        { assetid: regex },
-        { devicesn: regex },
-        { dept: regex }
-      ]
-    })
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit))
-      .populate('repairs');
-
-    results.forEach(asset => {
-      asset.totalValue = asset.repairs.reduce((acc, repair) => acc + parseFloat(repair.value || 0), 0);
-    });
-
-    const count = await assetlistModel.countDocuments({
-      $or: [
-        { name: regex },
-        { assetid: regex },
-        { devicesn: regex },
-        { dept: regex }
-      ]
-    });
-
-    res.render('Report', {
-      data: results,
-      totalPages: Math.ceil(count / limit),
-      currentPage: parseInt(page),
-      query: query,
-      limit: parseInt(limit)
-    });
-  } catch (error) {
-    console.error('Error searching:', error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-});
-
 router.get('/getalldetail', async (req, res) => {
-  const { page = 1, limit = 2 } = req.query;
-
   try {
-    let assetlist = await assetlistModel.find()
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit))
-      .lean();
+    const {
+      assetid,
+      name,
+      dept,
+      deliveryStart,
+      deliveryEnd,
+      repairStart,
+      repairEnd,
+      devicetype,
+      page = 1,
+      limit = 2
+    } = req.query;
 
-    for (let item of assetlist) {
-      item.repairs = await repairModel.find({ computername: item._id }).populate('computername').lean();
-      item.totalValue = item.repairs.reduce((sum, repair) => sum + parseFloat(repair.value || 0), 0);
+    const filters = {};
+
+    // Filter by  (exact or partial match)
+    if (assetid) {
+      filters.assetid = { $regex: `^${assetid}$`, $options: 'i' };  // case-insensitive exact
+    }
+    if (name) {
+      filters.name = { $regex: name, $options: 'i' };  // case-insensitive partial
+    }
+    if (dept) {
+      filters.dept = { $regex: dept, $options: 'i' };  // case-insensitive partial
+    }
+    // Filter by delivery date range
+    if (deliveryStart || deliveryEnd) {
+      filters.deliverydate = {};
+      if (deliveryStart) filters.deliverydate.$gte = new Date(deliveryStart);
+      if (deliveryEnd) filters.deliverydate.$lte = new Date(deliveryEnd);
     }
 
-    let total = assetlist.reduce((acc, item) => acc + item.totalValue, 0);
+    // Filter by device type
+    if (devicetype && devicetype !== '') {
+      if (devicetype === 'Other') {
+        // 'Other' means device types NOT in the main list:
+        const mainTypes = ['Laptop', 'PC', 'Server', 'Switch', 'Router'];
+        filters.devicetype = { $nin: mainTypes };
+      } else {
+        filters.devicetype = devicetype;
+      }
+    }
 
-    const count = await assetlistModel.countDocuments();
+    // Query assetlist with filters
+    let query = assetlistModel.find(filters);
+
+    // Pagination
+    const pageNumber = parseInt(page);
+    const pageLimit = parseInt(limit);
+    query = query.skip((pageNumber - 1) * pageLimit).limit(pageLimit);
+
+    // Populate repairs
+    const assetlist = await query.populate({
+      path: 'repairs',
+      match: (() => {
+        // Repair date filter inside populate
+        const repairDateFilter = {};
+        if (repairStart) repairDateFilter.$gte = new Date(repairStart);
+        if (repairEnd) repairDateFilter.$lte = new Date(repairEnd);
+        if (repairStart || repairEnd) {
+          return { repairdate: repairDateFilter };
+        }
+        return {}; // no filter on repairs
+      })()
+    }).lean();
+
+    // Calculate totalValue from filtered repairs
+    for (const item of assetlist) {
+      item.totalValue = (item.repairs || []).reduce((sum, r) => sum + parseFloat(r.value || 0), 0);
+    }
+
+    // Count total documents for pagination (without pagination limits)
+    const count = await assetlistModel.countDocuments(filters);
 
     res.render('Report', {
       data: assetlist,
-      total: total,
-      totalPages: Math.ceil(count / limit),
-      currentPage: parseInt(page),
-      message: "success",
-      success: true,
+      totalPages: Math.ceil(count / pageLimit),
+      currentPage: pageNumber,
+      assetid,
+      name, 
+      dept,
+      deliveryStart,
+      deliveryEnd,
+      repairStart,
+      repairEnd,
+      devicetype,
+      limit: pageLimit
     });
   } catch (error) {
-    console.error("Error fetching assetlist:", error);
-    res.status(500).send({
-      message: "server error",
-      success: false,
-    });
+    console.error('Error fetching filtered assetlist:', error);
+    res.status(500).send({ message: 'Server error', success: false });
   }
 });
 
+
 router.get('/detail/:id', async (req, res) => {
   try {
-    let id = req.params.id;
+    const id = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).send({
@@ -97,7 +114,7 @@ router.get('/detail/:id', async (req, res) => {
       });
     }
 
-    let assetlist = await assetlistModel.findById(id);
+    const assetlist = await assetlistModel.findById(id);
 
     if (!assetlist) {
       return res.status(404).send({
@@ -106,7 +123,7 @@ router.get('/detail/:id', async (req, res) => {
       });
     }
 
-    res.render('Report', { data: [assetlist] });  // or another view if needed
+    res.render('Report', { data: [assetlist] });
 
   } catch (error) {
     console.error("Error fetching insertone:", error);
