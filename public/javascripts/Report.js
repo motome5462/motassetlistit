@@ -1,65 +1,83 @@
+// /public/javascripts/Report.js
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('.filter-form');
+  const paginationLinks = document.querySelectorAll('.pagination a.page-link');
 
-function toggleOtherInput(checkbox, inputId) {
-    const input = document.getElementById(inputId);
-    if (checkbox.checked) {
-        input.style.display = 'inline-block';
-        input.disabled = false;
-    } else {
-        input.style.display = 'none';
-        input.disabled = true;
-        input.value = '';
+  // Helper: Build query string from form inputs
+  function buildQuery(params = {}) {
+    const formData = new FormData(form);
+    for (const [key, value] of Object.entries(params)) {
+      formData.set(key, value);
     }
-}
+    const query = new URLSearchParams(formData);
+    return query.toString();
+  }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const radios = document.querySelectorAll('input[type="radio"][name="status"]');
+  // On filter form submit
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    // Always reset to page 1 on filter submit
+    const query = buildQuery({ page: 1 });
+    window.location.href = `/Report/getalldetail?${query}`;
+  });
 
-    radios.forEach(radio => {
-        radio.addEventListener("click", function (e) {
-            // If already checked, uncheck it manually
-            if (this.checked && this.dataset.checked === "true") {
-                this.checked = false;
-                this.dataset.checked = "false";
-                e.stopImmediatePropagation(); // prevent native behavior
-            } else {
-                // Reset all radios' dataset
-                radios.forEach(r => r.dataset.checked = "false");
-                this.dataset.checked = "true";
-            }
-        });
+  // On pagination click
+  paginationLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      // Get the target page from the href URL
+      const url = new URL(link.href);
+      const page = url.searchParams.get('page') || '1';
+
+      // Build query with page and current filters from the form
+      const query = buildQuery({ page });
+      window.location.href = `/Report/getalldetail?${query}`;
     });
+  });
 });
 
-function selectOnlyThis(checkbox, relatedInputIds) {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"][name="' + checkbox.name + '"]');
-    checkboxes.forEach((cb) => {
-        if (cb !== checkbox) {
-            cb.checked = false;
-        }
-    });
+function buildQuery() {
+  const assetid = document.getElementById('assetid').value.trim();
+  const name = document.getElementById('name').value.trim();
+  const dept = document.getElementById('dept').value.trim();
+  const sn = document.getElementById('sn').value.trim(); // <-- Add this
+  const deliveryStart = document.getElementById('deliveryStart').value;
+  const deliveryEnd = document.getElementById('deliveryEnd').value;
+  const repairStart = document.getElementById('repairStart').value;
+  const repairEnd = document.getElementById('repairEnd').value;
+  const devicetype = document.getElementById('devicetype').value;
 
-    // Reset and hide all text inputs related to this group
-    relatedInputIds.forEach((id) => {
-        const input = document.getElementById(id);
-        input.style.display = 'none';
-        input.disabled = true;
-        input.value = '';
-    });
+  const params = new URLSearchParams();
+  if (dept) params.append('dept', dept);
+  if (assetid) params.append('assetid', assetid);
+  if (name) params.append('name', name);
+  if (sn) params.append('sn', sn); // <-- Add this
+  if (deliveryStart) params.append('deliveryStart', deliveryStart);
+  if (deliveryEnd) params.append('deliveryEnd', deliveryEnd);
+  if (repairStart) params.append('repairStart', repairStart);
+  if (repairEnd) params.append('repairEnd', repairEnd);
+  if (devicetype) params.append('devicetype', devicetype);
+
+  return params.toString();
 }
 
-function toggleOtherInput(select) {
-    const otherInput = document.getElementById("otherDevice");
-    if (select.value === "other") {
-        otherInput.style.display = "inline-block";
-        otherInput.disabled = false;
-    } else {
-        otherInput.style.display = "none";
-        otherInput.disabled = true;
-        otherInput.value = "";
-    }
-}
 
-document.addEventListener("DOMContentLoaded", function () {
-    const selectElement = document.getElementById("device");
-    toggleOtherInput(selectElement); // Initialize visibility
+document.addEventListener('DOMContentLoaded', () => {
+  const filterForm = document.getElementById('filterForm');
+  if (filterForm) {
+    filterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const query = buildQuery();
+      window.location.href = '/Report/getalldetail?' + query + '&page=1';
+    });
+  }
+
+  document.querySelectorAll('.pagination-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const page = this.dataset.page;
+      const query = buildQuery();
+      window.location.href = '/Report/getalldetail?' + query + '&page=' + page;
+    });
+  });
 });

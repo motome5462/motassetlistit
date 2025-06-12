@@ -1,0 +1,33 @@
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+}
+
+
+/* Example form styling */
+.form-container {
+  justify-content: flex-end;
+}
+
+.filter-form label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.filter-form input,
+.filter-form select {
+  font-size: 14px;
+  padding: 6px 8px;
+  margin-top: 4px;
+}
+
+.filter-form button {
+  width: 100%;
+  padding: 8px;
+}

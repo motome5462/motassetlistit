@@ -11,8 +11,8 @@ router.get('/assetlist', function(req, res, next) {
   res.render('assetlist', { title: 'assetlist' });
 });
 
-router.get('/Test', function(req, res, next) {
-  res.render('Test', { title: 'Test' });
+router.get('/Report', function(req, res, next) {
+  res.render('Report', { title: 'Report' });
 });
 
 
