@@ -38,8 +38,11 @@
                   <label for="dept" class="form-label mb-0">Department:</label>
                   <input id="dept" type="text" name="dept" value="<%= dept || '' %>" class="form-control" placeholder="Dept." />
                 </div>
+                <div class="col-auto">
+                  <label for="sn" class="form-label mb-0">S/N:</label>
+                  <input id="sn" type="text" name="sn" value="<%= sn || '' %>" class="form-control" placeholder="S/N" />
+                </div>
               </div>
-
               <div class="mb-3">
                 <label class="mb-0">Delivery Date From:</label>
                 <div class="d-flex align-items-center">
@@ -300,16 +303,17 @@
         <% if (totalPages > 1) { %>
           <%
             const query = 
-              'assetid=' + (assetid || '') +
-              '&name=' + (name || '') +
-              '&dept=' + (dept || '') +
-              '&deliveryStart=' + (deliveryStart || '') +
-              '&deliveryEnd=' + (deliveryEnd || '') +
-              '&repairStart=' + (repairStart || '') +
-              '&repairEnd=' + (repairEnd || '') +
-              '&devicetype=' + (devicetype || '') +
-              '&limit=' + (limit || 2);
-          %>
+            'assetid=' + (assetid || '') +
+            '&name=' + (name || '') +
+            '&dept=' + (dept || '') +
+            '&deliveryStart=' + (deliveryStart || '') +
+            '&deliveryEnd=' + (deliveryEnd || '') +
+            '&repairStart=' + (repairStart || '') +
+            '&repairEnd=' + (repairEnd || '') +
+            '&devicetype=' + (devicetype || '') +
+            '&sn=' + (sn || '') +
+            '&limit=' + (limit || 2);
+%>
 
           <!-- First page button -->
           <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">

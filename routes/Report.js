@@ -18,6 +18,7 @@ router.get('/getalldetail', async (req, res) => {
       repairStart,
       repairEnd,
       devicetype,
+      sn, // <-- New: S/N field from query
       page = 1,
       limit = 2
     } = req.query;
@@ -49,6 +50,24 @@ router.get('/getalldetail', async (req, res) => {
       }
     }
 
+    // 🔍 Add S/N search (for multiple serial number fields)
+    if (sn) {
+      const regex = new RegExp(sn, 'i');
+      filters.$or = [
+        { devicesn: regex },
+        { romsn: regex },
+        { monitorsn: regex },
+        { keyboardsn: regex },
+        { mousesn: regex },
+        { printersn: regex },
+        { upstypesn: regex },
+        { adaptorsn: regex },
+        { othersn: regex },
+        { ossn: regex },
+        { officesn: regex }
+      ];
+    }
+
     let query = assetlistModel.find(filters);
 
     const pageNumber = parseInt(page);
@@ -71,7 +90,6 @@ router.get('/getalldetail', async (req, res) => {
     for (const item of assetlist) {
       item.totalValue = (item.repairs || []).reduce((sum, r) => sum + parseFloat(r.value || 0), 0);
 
-      // ✅ Get just filename for rendering
       if (item.img) {
         item.img = path.basename(item.img);
       }
@@ -79,7 +97,6 @@ router.get('/getalldetail', async (req, res) => {
 
     const count = await assetlistModel.countDocuments(filters);
 
-    // ✅ Render with img for one-time use
     res.render('Report', {
       data: assetlist,
       totalPages: Math.ceil(count / pageLimit),
@@ -92,10 +109,10 @@ router.get('/getalldetail', async (req, res) => {
       repairStart,
       repairEnd,
       devicetype,
+      sn, // <-- Pass to view for input value persistence
       limit: pageLimit
     });
 
-    // ✅ Clear img path from memory AFTER rendering
     assetlist.forEach(item => {
       item.img = null;
     });
@@ -146,5 +163,6 @@ router.get('/detail/:id', async (req, res) => {
     });
   }
 });
+
 
 module.exports = router;

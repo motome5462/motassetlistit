@@ -40,6 +40,7 @@ function buildQuery() {
   const assetid = document.getElementById('assetid').value.trim();
   const name = document.getElementById('name').value.trim();
   const dept = document.getElementById('dept').value.trim();
+  const sn = document.getElementById('sn').value.trim(); // <-- Add this
   const deliveryStart = document.getElementById('deliveryStart').value;
   const deliveryEnd = document.getElementById('deliveryEnd').value;
   const repairStart = document.getElementById('repairStart').value;
@@ -47,10 +48,10 @@ function buildQuery() {
   const devicetype = document.getElementById('devicetype').value;
 
   const params = new URLSearchParams();
-
   if (dept) params.append('dept', dept);
   if (assetid) params.append('assetid', assetid);
   if (name) params.append('name', name);
+  if (sn) params.append('sn', sn); // <-- Add this
   if (deliveryStart) params.append('deliveryStart', deliveryStart);
   if (deliveryEnd) params.append('deliveryEnd', deliveryEnd);
   if (repairStart) params.append('repairStart', repairStart);
@@ -59,6 +60,7 @@ function buildQuery() {
 
   return params.toString();
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const filterForm = document.getElementById('filterForm');
