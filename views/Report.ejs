@@ -5,33 +5,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Report</title>
+    <link rel="stylesheet" href="/stylesheets/Report.css" />
+
 </head>
 
 <body>
-    <header>
+    <header class="no-print">
         <!-- Navbar -->
         <% include index.ejs %>
     </header>
+    <div style="margin: 0% 5% 0% 5%;">
 
-    <div class="container mt-5">
-
-        <div class="container mt-5">
+        <div class="container mt-5 no-print">
             <div class="row align-items-center mb-4">
                 <!-- Report Heading (Middle Left) -->
-                <div class="col-md-6 d-flex align-items-center">
+                <div class="col-md-6 ">
                     <h1 class="mb-0" style="font-size: 60px;">Report</h1>
                 </div>
 
                 <!-- Filter Form Box (Right Side) -->
-                <div class="col-md-6 d-flex justify-content-end">
-                    <div class="border p-4 rounded bg-light" style="min-width: 500px;">
+                <div class="col-md-6 d-flex form-container">
+                    <div class="border p-4 rounded bg-light" style="min-width: 200px;">
                         <form id="filterForm" action="/Report/getalldetail" method="GET" class="filter-form">
 
                             <div class="row g-3 align-items-center mb-3">
                                 <div class="col-auto">
                                     <label for="assetid" class="form-label mb-0">Search Asset ID:</label>
-                                    <input id="assetid" type="text" name="assetid"
-                                        class="form-control" placeholder="ID" />
+                                    <input id="assetid" type="text" name="assetid" class="form-control"
+                                        placeholder="ID" />
                                 </div>
 
                                 <div class="col-auto">
@@ -48,27 +49,27 @@
 
                             </div>
 
-                            <div class="mb-3 d-flex align-items-center gap-2">
-                                <label class="me-2 mb-0">Delivery Date From:</label>
+                            <div class="mb-3 ">
+                                <label class="mb-0">Delivery Date From:</label>
                                 <input id="deliveryStart" type="date" name="deliveryStart"
-                                    value="<%= deliveryStart || '' %>" class="form-control" style="width: 30%;" />
-                                <label class="mx-2 mb-0">to</label>
+                                    value="<%= deliveryStart || '' %>" style="width: 30%;" />
+                                <label>to</label>
                                 <input id="deliveryEnd" type="date" name="deliveryEnd" value="<%= deliveryEnd || '' %>"
-                                    class="form-control" style="width: 30%;" />
-                            </div>
-
-                            <div class="mb-3 d-flex align-items-center gap-2">
-                                <label class="me-2 mb-0">Repair Date From:</label>
-                                <input id="repairStart" type="date" name="repairStart" value="<%= repairStart || '' %>"
-                                    class="form-control" style="width: 30%;" />
-                                <label class="mx-2 mb-0">to</label>
-                                <input id="repairEnd" type="date" name="repairEnd" value="<%= repairEnd || '' %>"
-                                    class="form-control" style="width: 30%;" />
+                                    style="width: 30%;" />
                             </div>
 
                             <div class="mb-3">
-                                <label>Device Type:</label>
-                                <select id="devicetype" name="devicetype" class="form-control">
+                                <label class="mb-0">Repair Date From:</label>
+                                <input id="repairStart" type="date" name="repairStart" value="<%= repairStart || '' %>"
+                                    style="width: 30%;" />
+                                <label>to</label>
+                                <input id="repairEnd" type="date" name="repairEnd" value="<%= repairEnd || '' %>"
+                                    style="width: 30%;" />
+                            </div>
+
+                            <div>
+                                <label class="mb-3">Device Type:</label>
+                                <select id="devicetype" name="devicetype">
                                     <option value="">All</option>
                                     <option value="Laptop" <%=devicetype==='Laptop' ? 'selected' : '' %>>Laptop</option>
                                     <option value="PC" <%=devicetype==='PC' ? 'selected' : '' %>>PC</option>
@@ -90,28 +91,35 @@
 
         <% if (data && data.length> 0) { %>
             <% data.forEach((item, index)=> { %>
-                <div class="mt-5"
-                    style="border: 2px solid black; padding: 20px; margin-bottom: 30px; border-radius: 5px;">
-                    <h2 style="font-size: 40px">User Owner</h2>
-                    <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
-                        <thead>
-                            <tr>
-                                <th>Asset ID</th>
-                                <th>Date</th>
-                                <th>Owner/User</th>
-                                <th>Company</th>
-                                <th>Dept</th>
-                                <th>Computer Name</th>
-                                <th>Delivery dates</th>
-                                <th>Remark</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><%= item.assetid %></td>
-                                <td><%= new Date(item.assetitlistsdate).toDateString() %></td>
-                                <td><%= item.name %></td>
-                                <td><%= item.assetitlistscompany.join(', ') %></td>
+                <div class="mt-5 <%= index !== 0 ? 'page-break' : '' %>" style="margin-bottom: 30px;">
+                    <div class="p-4" style="border: 3px solid black; border-radius: 8px;">
+                        <h2 style="font-size: 50px">User Owner</h2>
+                        <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
+                            <thead>
+                                <tr>
+                                    <th>Asset ID</th>
+                                    <th>Date</th>
+                                    <th>Owner/User</th>
+                                    <th>Company</th>
+                                    <th>Dept</th>
+                                    <th>Computer Name</th>
+                                    <th>Delivery dates</th>
+                                    <th>Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <%= item.assetid %>
+                                    </td>
+                                    <td>
+                                        <%= new Date(item.assetitlistsdate).toDateString() %>
+                                    </td>
+                                    <td>
+                                        <%= item.name %>
+                                    </td>
+                                    <td>
+                                        <%= item.assetitlistscompany.join(', ') %></td>
                                 <td><%= item.dept %></td>
                                 <td><%= item.computername %></td>
                                 <td><%= new Date(item.deliverydate).toDateString() %></td>
@@ -121,7 +129,7 @@
 
                         <thead>
                             <tr>
-                                <th colspan="8" style="font-size: 25px"><strong>Hardware</strong></th>
+                                <th colspan="8" style="font-size: 30px"><strong>Hardware</strong></th>
                             </tr>
                             <tr>
                                 <th>Device</th>
@@ -149,7 +157,7 @@
 
                         <thead>
                             <tr>
-                                <th colspan="8" style="font-size: 25px"><strong>Accessory</strong></th>
+                                <th colspan="8" style="font-size: 30px"><strong>Accessory</strong></th>
                             </tr>
                             <tr>
                                 <th>ROM</th>
@@ -202,7 +210,7 @@
 
                         <thead>
                             <tr>
-                                <th colspan="8" style="font-size: 25px"><strong>Software</strong></th>
+                                <th colspan="8" style="font-size: 30px"><strong>Software</strong></th>
                             </tr>
                             <tr>
                                 <th>OS</th>
@@ -244,7 +252,7 @@
                     </table>
 
                     <% if (item.repairs && item.repairs.length > 0) { %>
-                        <h3 style="font-size: 25px"><strong>Detail Repair</strong></h3>
+                    <label style="font-size: 30px"><strong>Detail Repair</strong></label>
                         <table class="table table-bordered mt-2" style="border: 1px solid black;">
                             <thead>
                                 <tr>
@@ -272,63 +280,63 @@
                                     </tr>
                                 <% }); %>
                                 <tr>
-                                    <td colspan="4" class="text-end"><strong>Total Value:</strong></td>
-                                    <td colspan="4"><strong><%= item.totalValue %></strong></td>
+                                    <td colspan="4" class="text-end"style="font-size: 25px"><strong>Total Value:</strong></td>
+                                    <td colspan="4"style="font-size: 25px"><strong><%= item.totalValue %></strong></td>
                                 </tr>
                             </tbody>
                         </table>
                     <% } %>
                     </div>
             <% }); %>
-
+            <div class="no-print">
             <!-- Pagination -->
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
+            <nav aria-label="Page navigation" >
+                <ul class="pagination justify-content-center ">
                     <% if (totalPages > 1) { %>
                         <%const query = `assetid=${assetid || ''}&name=${name || ''}&dept=${dept || ''}&deliveryStart=${deliveryStart || ''}&deliveryEnd=${deliveryEnd || ''}&repairStart=${repairStart || ''}&repairEnd=${repairEnd || ''}&devicetype=${devicetype || ''}&limit=${limit || 2}`;%>
                         <!-- First page button -->
-                        <li class="page-item <%= currentPage == 1 ? ' disabled' : '' %>">
-                                        <a class="page-link"
-                                            href="/Report/getalldetail?<%= query %>&page=1%>">&laquo;</a>
-                                        </li>
-
-                                        <!-- Previous page button -->
-                                        <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                        <li class="page-item <%= currentPage == 1 ? ' disabled' : '' %> ">
                                             <a class="page-link"
-                                                href="/Report/getalldetail?<%= query %>&page=<%= currentPage - 1 %>">&lsaquo;</a>
-                                        </li>
-
-                                        <% for (let i=Math.max(1, currentPage - 2); i <=Math.min(totalPages, currentPage
-                                            + 2); i++) { %>
-                                            <li class="page-item <%= i == currentPage ? 'active' : '' %>">
-                                                <a class="page-link"
-                                                    href="/Report/getalldetail?<%= query %>&page=<%= i %>">
-                                                    <%= i %>
-                                                </a>
+                                                href="/Report/getalldetail?<%= query %>&page=1%>">&laquo;</a>
                                             </li>
-                                            <% } %>
 
-                                                <!-- Next page button -->
-                                                <li
-                                                    class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
-                                                    <a class="page-link"
-                                                        href="/Report/getalldetail?<%= query %>&page=<%= currentPage + 1 %>">&rsaquo;</a>
-                                                </li>
+                                            <!-- Previous page button -->
+                                            <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                                                <a class="page-link"
+                                                    href="/Report/getalldetail?<%= query %>&page=<%= currentPage - 1 %>">&lsaquo;</a>
+                                            </li>
 
-                                                <!-- Last page button -->
-                                                <li
-                                                    class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                            <% for (let i=Math.max(1, currentPage - 2); i <=Math.min(totalPages,
+                                                currentPage + 2); i++) { %>
+                                                <li class="page-item <%= i == currentPage ? 'active' : '' %>">
                                                     <a class="page-link"
-                                                        href="/Report/getalldetail?<%= query %>&page=<%= totalPages %>">&raquo;</a>
+                                                        href="/Report/getalldetail?<%= query %>&page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
                                                 </li>
                                                 <% } %>
-                                                    </ul>
-                                                    </nav>
-                                                    <% } else { %>
-                                                        <p>No data available</p>
-                                                        <% } %>
-                </div>
 
+                                                    <!-- Next page button -->
+                                                    <li
+                                                        class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                                        <a class="page-link"
+                                                            href="/Report/getalldetail?<%= query %>&page=<%= currentPage + 1 %>">&rsaquo;</a>
+                                                    </li>
+
+                                                    <!-- Last page button -->
+                                                    <li
+                                                        class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                                        <a class="page-link"
+                                                            href="/Report/getalldetail?<%= query %>&page=<%= totalPages %>">&raquo;</a>
+                                                    </li>
+                                                    <% } %>
+                                                        </ul>
+                                                        </nav>
+                                                        <% } else { %>
+                                                            <p>No data available</p>
+                                                            <% } %>
+                    </div>
+                </div>
                 <script src="/javascripts/Report.js"></script>
 </body>
 
