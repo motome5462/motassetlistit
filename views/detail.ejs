@@ -11,12 +11,18 @@
   <header>
     <% include index.ejs %>
   </header>
-  <form method="get" action="/assetlist/search">
-    <div class="search">
-      <input type="text" class="form-control" name="query" placeholder="ค้นหาด้วย ชื่อ, Asset ID, SN, Department">
-      <button type="submit" class="btn btn-primary" style="margin-left: 43%; margin-top: 20px;">ค้นหา</button>
-    </div>
-  </form>
+<form method="get" action="/assetlist/search">
+  <div class="d-flex flex-column align-items-center" style="margin-top: 50px;">
+    <input 
+      type="text" 
+      class="form-control" 
+      name="query" 
+      placeholder="ค้นหา: ชื่อ, Asset ID, S/N หรือแผนก" 
+      style="width: 40%;"
+    >
+    <button type="submit" class="btn btn-primary mt-3">ค้นหา</button>
+  </div>
+</form>
   <div class="container mt-5">
     <h1 >Information Asset Owner & Repair & Return to IT Department</h1>
     <% if (data && data.length > 0) { %>
