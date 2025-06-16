@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/stylesheets/Report.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Add PR Item</title>
+</head>
+<body>
+        <header>
+        <!-- Navbar -->
+        <% include index %>
+    </header>
+  <h1>Add PR Item</h1>
+  <form action="/pritem/new" method="POST">
+    <input type="hidden" name="PRNO" value="<%= prid %>">
+    <label>Quantity:</label><input name="quantity"><br/>
+    <label>Unit:</label><input name="unit"><br/>
+    <label>SN:</label><input name="sn"><br/>
+    <label>Description:</label><input name="description"><br/>
+
+<label>Stock Status:</label><br/>
+<input type="radio" id="instock" name="stock" value="In Stock" required>
+<label for="instock">In Stock</label><br/>
+
+<input type="radio" id="outstock" name="stock" value="Out Stock">
+<label for="outstock">Out Stock</label><br/>
+
+    <label>Price:</label><input name="price"><br/>
+    <label>PPU:</label><input name="ppu"><br/>
+    <label>Remark:</label><input name="remark"><br/>
+    <label>Total:</label><input name="total"><br/>
+    <button type="submit">Add Item</button>
+  </form>
+</body>
+</html>

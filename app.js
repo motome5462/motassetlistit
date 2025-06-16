@@ -13,6 +13,9 @@ var usersRouter = require('./routes/users');
 const assetlistRouter = require('./routes/assetlist');
 const ReportRouter = require('./routes/Report');
 
+const PrRouter = require('./routes/PR');
+const PritemRouter = require('./routes/pritem');
+
 
 var app = express();
 var cors = require('cors')
@@ -49,6 +52,9 @@ app.use('/assetlist', assetlistRouter);
 app.use('/Report', ReportRouter);
 
 
+app.use('/pr', PrRouter);
+app.use('/pritem', PritemRouter);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -64,5 +70,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;

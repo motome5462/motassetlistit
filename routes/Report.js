@@ -13,12 +13,13 @@ router.get('/getalldetail', async (req, res) => {
       assetid,
       name,
       dept,
+      UsageYears,
       deliveryStart,
       deliveryEnd,
       repairStart,
       repairEnd,
       devicetype,
-      sn, // <-- New: S/N field from query
+      sn,
       page = 1,
       limit = 2
     } = req.query;
@@ -34,6 +35,20 @@ router.get('/getalldetail', async (req, res) => {
     if (dept) {
       filters.dept = { $regex: dept, $options: 'i' };
     }
+
+    const now = new Date();
+    const totalMonths = (parseInt(UsageYears) || 0) * 12;
+
+    if (totalMonths) {
+      filters.deliverydate = filters.deliverydate || {};
+    }
+
+  // Example: at least 24 months used means delivery date <= (today - 24 months)
+      if (totalMonths) {
+        const maxDeliveryDate = new Date(now);
+        maxDeliveryDate.setMonth(maxDeliveryDate.getMonth() - totalMonths);
+        filters.deliverydate.$lte = maxDeliveryDate;
+      } 
 
     if (deliveryStart || deliveryEnd) {
       filters.deliverydate = {};
@@ -93,25 +108,44 @@ router.get('/getalldetail', async (req, res) => {
       if (item.img) {
         item.img = path.basename(item.img);
       }
+
+      if (item.deliverydate) {
+        const now = new Date();
+        const deliveryDate = new Date(item.deliverydate);
+
+        let years = now.getFullYear() - deliveryDate.getFullYear();
+        let months = now.getMonth() - deliveryDate.getMonth();
+
+        if (months < 0) {
+          years -= 1;
+          months += 12;
+        }
+
+        item.ageFormatted = `${years} year(s) ${months} month(s)`;
+      } else {
+        item.ageFormatted = 'N/A';
+      }
     }
+    
+  const count = await assetlistModel.countDocuments(filters);
 
-    const count = await assetlistModel.countDocuments(filters);
+  res.render('Report', {
+    data: assetlist,
+    totalPages: Math.ceil(count / pageLimit),
+    currentPage: pageNumber,
+    assetid,
+    name,
+    dept,
+    deliveryStart,
+    deliveryEnd,
+    repairStart,
+    repairEnd,
+    devicetype,
+    sn,
+    UsageYears,
+    limit: pageLimit
+  });
 
-    res.render('Report', {
-      data: assetlist,
-      totalPages: Math.ceil(count / pageLimit),
-      currentPage: pageNumber,
-      assetid,
-      name,
-      dept,
-      deliveryStart,
-      deliveryEnd,
-      repairStart,
-      repairEnd,
-      devicetype,
-      sn, // <-- Pass to view for input value persistence
-      limit: pageLimit
-    });
 
     assetlist.forEach(item => {
       item.img = null;

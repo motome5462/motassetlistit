@@ -42,7 +42,12 @@
                   <label for="sn" class="form-label mb-0">S/N:</label>
                   <input id="sn" type="text" name="sn" value="<%= sn || '' %>" class="form-control" placeholder="S/N" />
                 </div>
+                <div class="col-auto">
+                <label for="UsageYears">Usage:</label>
+                <input type="number" id="UsageYears" name="UsageYears" placeholder="Years" min="0" class="form-control" style="width: 80px;">
+                </div>
               </div>
+
               <div class="mb-3">
                 <label class="mb-0">Delivery Date From:</label>
                 <div class="d-flex align-items-center">
@@ -97,6 +102,7 @@
               <th>Dept</th>
               <th>Computer Name</th>
               <th>Delivery dates</th>
+              <th>Age</th>
               <th>Remark</th>
             </tr>
           </thead>
@@ -109,6 +115,7 @@
               <td><%= item.dept %></td>
               <td><%= item.computername %></td>
               <td><%= new Date(item.deliverydate).toDateString() %></td>
+              <td><%= item.ageFormatted %></td>
               <td><%= item.assetitlistsremark %></td>
             </tr>
           </tbody>
@@ -298,52 +305,55 @@
 
   <div class="no-print">
     <!-- Pagination -->
-    <nav aria-label="Page navigation">
-      <ul class="pagination justify-content-center">
-        <% if (totalPages > 1) { %>
-          <%
-            const query = 
-            'assetid=' + (assetid || '') +
-            '&name=' + (name || '') +
-            '&dept=' + (dept || '') +
-            '&deliveryStart=' + (deliveryStart || '') +
-            '&deliveryEnd=' + (deliveryEnd || '') +
-            '&repairStart=' + (repairStart || '') +
-            '&repairEnd=' + (repairEnd || '') +
-            '&devicetype=' + (devicetype || '') +
-            '&sn=' + (sn || '') +
-            '&limit=' + (limit || 2);
-%>
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <% if (totalPages > 1) { %>
+        <%
+          const queryParams = [];
+          if (assetid) queryParams.push('assetid=' + encodeURIComponent(assetid));
+          if (name) queryParams.push('name=' + encodeURIComponent(name));
+          if (dept) queryParams.push('dept=' + encodeURIComponent(dept));
+          if (UsageYears) queryParams.push('UsageYears=' + encodeURIComponent(UsageYears));
+          if (deliveryStart) queryParams.push('deliveryStart=' + encodeURIComponent(deliveryStart));
+          if (deliveryEnd) queryParams.push('deliveryEnd=' + encodeURIComponent(deliveryEnd));
+          if (repairStart) queryParams.push('repairStart=' + encodeURIComponent(repairStart));
+          if (repairEnd) queryParams.push('repairEnd=' + encodeURIComponent(repairEnd));
+          if (devicetype) queryParams.push('devicetype=' + encodeURIComponent(devicetype));
+          if (sn) queryParams.push('sn=' + encodeURIComponent(sn));
+          if (limit) queryParams.push('limit=' + encodeURIComponent(limit));
 
-          <!-- First page button -->
-          <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
-            <a class="page-link" href="/Report/getalldetail?<%= query %>&page=1">&laquo;</a>
-          </li>
+          const baseQuery = queryParams.join('&');
+        %>
 
-          <!-- Previous page button -->
-          <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
-            <a class="page-link" href="/Report/getalldetail?<%= query %>&page=<%= currentPage - 1 %>">&lsaquo;</a>
-          </li>
+        <!-- First page button -->
+        <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="/Report/getalldetail?<%= baseQuery %>&page=1">&laquo;</a>
+        </li>
 
-          <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
-            <li class="page-item <%= i == currentPage ? 'active' : '' %>">
-              <a class="page-link" href="/Report/getalldetail?<%= query %>&page=<%= i %>"><%= i %></a>
-            </li>
-          <% } %>
+        <!-- Previous page button -->
+        <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="/Report/getalldetail?<%= baseQuery %>&page=<%= currentPage - 1 %>">&lsaquo;</a>
+        </li>
 
-          <!-- Next page button -->
-          <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
-            <a class="page-link" href="/Report/getalldetail?<%= query %>&page=<%= currentPage + 1 %>">&rsaquo;</a>
-          </li>
-
-          <!-- Last page button -->
-          <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
-            <a class="page-link" href="/Report/getalldetail?<%= query %>&page=<%= totalPages %>">&raquo;</a>
+        <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+          <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+            <a class="page-link" href="/Report/getalldetail?<%= baseQuery %>&page=<%= i %>"><%= i %></a>
           </li>
         <% } %>
-      </ul>
-    </nav>
-  </div>
+
+        <!-- Next page button -->
+        <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="/Report/getalldetail?<%= baseQuery %>&page=<%= currentPage + 1 %>">&rsaquo;</a>
+        </li>
+
+        <!-- Last page button -->
+        <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="/Report/getalldetail?<%= baseQuery %>&page=<%= totalPages %>">&raquo;</a>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
+</div>
 
 <% } else { %>
   <p>No data available</p>

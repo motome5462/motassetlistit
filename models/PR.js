@@ -12,13 +12,13 @@ const PRSchema = new mongoose.Schema({
   supplier:{ type: String, default: "" },
   term:{ type: String, default: "" },
   delivery:{ type: String, default: "" },
-  vlidity:{ type: String, default: "" },
-  transport:{ type: String, default: "" },
+  vlidity:{ type: String, default: "-" },
+  transport:{ type: String, default: "-" },
   ref:{ type: String, default: "" },
   discount:{type: String, default: "" },
   vat:{type: String, default: "" },
   net:{type: String, default: "" },
-  PRITEM: [{ type: mongoose.Schema.Types.ObjectId, ref: "PRITEM" }],
+  pritem: [{ type: mongoose.Schema.Types.ObjectId, ref: "pritem" }],
 });
 
 // Pre-save hook to auto-increment PRno

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/stylesheets/Report.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>All PRs</title>
+</head>
+<body>
+  <header>
+    <% include index %>
+  </header>
+
+  <div class="container mt-4">
+    <h1 class="mb-4">All Purchase Requests</h1>
+    <% prs.forEach(pr => { %>
+      <div class="mb-5 border p-3 rounded shadow-sm">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>PR No</th>
+              <th>Name</th>
+              <th>Date</th>
+              <th>Note</th>
+              <th>Items Count</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= pr.PRno %></td>
+              <td><%= pr.name %></td>
+              <td><%= pr.date?.toISOString().split('T')[0] %></td>
+              <td><%= pr.note %></td>
+              <td><%= pr.PRITEM.length %></td>
+              <td>
+                <form action="/pr/delete/<%= pr._id %>" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+                <a href="/pr/edit/<%= pr._id %>" class="btn btn-warning btn-sm">Edit</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <% if (pr.PRITEM && pr.PRITEM.length > 0) { %>
+          <h5 class="mt-3">Items</h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>QU.</th>
+                <th>Unit</th>
+                <th>P/N</th>
+                <th>Description</th>
+                <th>On Stock</th>
+                <th>Out Stock</th>
+                <th>Price</th>
+                <th>Unit Price</th>
+                <th>Remark</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% pr.PRITEM.forEach((item, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= item.quantity %></td>
+                  <td><%= item.unit %></td>
+                  <td><%= item.sn %></td>
+                  <td><%= item.description %></td>
+                  <td><%= item.instock %></td>
+                  <td><%= item.outstock %></td>
+                  <td><%= item.price %></td>
+                  <td><%= item.ppu %></td>
+                  <td><%= item.remark %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+</body>
+</html>

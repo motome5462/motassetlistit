@@ -15,6 +15,10 @@ router.get('/Report', function(req, res, next) {
   res.render('Report', { title: 'Report' });
 });
 
+router.get('/pr', function(req, res, next) {
+  res.redirect('/pr/new');
+});
+
 
 
 
