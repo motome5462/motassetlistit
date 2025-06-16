@@ -40,23 +40,30 @@ function buildQuery() {
   const assetid = document.getElementById('assetid').value.trim();
   const name = document.getElementById('name').value.trim();
   const dept = document.getElementById('dept').value.trim();
-  const sn = document.getElementById('sn').value.trim(); // <-- Add this
+  const sn = document.getElementById('sn').value.trim();
   const deliveryStart = document.getElementById('deliveryStart').value;
   const deliveryEnd = document.getElementById('deliveryEnd').value;
   const repairStart = document.getElementById('repairStart').value;
   const repairEnd = document.getElementById('repairEnd').value;
   const devicetype = document.getElementById('devicetype').value;
+  const UsageYears = document.getElementById('UsageYears')?.value.trim();
+
+
+
+
 
   const params = new URLSearchParams();
   if (dept) params.append('dept', dept);
   if (assetid) params.append('assetid', assetid);
   if (name) params.append('name', name);
-  if (sn) params.append('sn', sn); // <-- Add this
+  if (sn) params.append('sn', sn);
+  if (UsageYears) params.append('UsageYears', UsageYears || '0');
   if (deliveryStart) params.append('deliveryStart', deliveryStart);
   if (deliveryEnd) params.append('deliveryEnd', deliveryEnd);
   if (repairStart) params.append('repairStart', repairStart);
   if (repairEnd) params.append('repairEnd', repairEnd);
   if (devicetype) params.append('devicetype', devicetype);
+  
 
   return params.toString();
 }
