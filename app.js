@@ -1,4 +1,3 @@
-var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -14,7 +13,6 @@ const assetlistRouter = require('./routes/assetlist');
 const ReportRouter = require('./routes/Report');
 
 const PrRouter = require('./routes/PR');
-const PritemRouter = require('./routes/pritem');
 
 
 var app = express();
@@ -53,7 +51,7 @@ app.use('/Report', ReportRouter);
 
 
 app.use('/pr', PrRouter);
-app.use('/pritem', PritemRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

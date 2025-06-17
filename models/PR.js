@@ -18,7 +18,7 @@ const PRSchema = new mongoose.Schema({
   discount:{type: String, default: "" },
   vat:{type: String, default: "" },
   net:{type: String, default: "" },
-  pritem: [{ type: mongoose.Schema.Types.ObjectId, ref: "pritem" }],
+  pritem: [{ type: mongoose.Schema.Types.ObjectId, ref: "PRITEM" }],
 });
 
 // Pre-save hook to auto-increment PRno

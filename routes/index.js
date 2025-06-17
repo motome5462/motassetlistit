@@ -19,6 +19,11 @@ router.get('/pr', function(req, res, next) {
   res.redirect('/pr/new');
 });
 
+router.get('/pr/detail', function(req, res, next) {
+
+  res.redirect('/pr/list');
+});
+
 
 
 

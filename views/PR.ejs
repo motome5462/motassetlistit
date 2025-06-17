@@ -1,34 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8" />
+  <title><%= pr._id ? 'Edit PR' : 'Create PR' %></title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/stylesheets/Report.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Create PR</title>
 </head>
 <body>
-        <header>
-        <!-- Navbar -->
-        <% include index %>
-    </header>
-  <h1>Create Purchase Request (PR)</h1>
-  <form action="/pr/new" method="POST">
-    <label>Manual PR No:</label><input name="manual_PRno" type="number"><br/>
-    <label>Date:</label><input name="date" type="date"><br/>
-    <label>Name:</label><input name="name"><br/>
-    <label>Note:</label><input name="note"><br/>
-    <label>Customer:</label><input name="customer"><br/>
-    <label>Supplier:</label><input name="supplier"><br/>
-    <label>Term:</label><input name="term"><br/>
-    <label>Delivery:</label><input name="delivery"><br/>
-    <label>Validity:</label><input name="vlidity"><br/>
-    <label>Transport:</label><input name="transport"><br/>
-    <label>Reference:</label><input name="ref"><br/>
-    <label>Discount:</label><input name="discount"><br/>
-    <label>VAT:</label><input name="vat"><br/>
-    <label>Net:</label><input name="net"><br/>
-    <button type="submit">Submit</button>
+  <header class="no-print">
+    <% include index.ejs %>
+  </header>
+
+  <h1><%= pr._id ? 'Edit PR #' + (pr.PRno || pr._id) : 'Create New PR' %></h1>
+
+  <form action="<%= pr._id ? '/pr/' + pr._id + '?_method=PUT' : '/pr/new' %>" method="POST" class="mb-3">
+
+    <% if (pr._id) { %>
+      <!-- method override for PUT -->
+      <input type="hidden" name="_method" value="PUT" />
+    <% } %>
+
+    <div class="mb-3">
+      <label for="manual_PRno" class="form-label">Manual PR No.</label>
+      <input type="number" class="form-control" id="manual_PRno" name="manual_PRno" value="<%= pr.manual_PRno || '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" name="name" value="<%= pr.name %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="customer" class="form-label">Customer</label>
+      <input type="text" class="form-control" id="customer" name="customer" value="<%= pr.customer %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="supplier" class="form-label">Supplier</label>
+      <input type="text" class="form-control" id="supplier" name="supplier" value="<%= pr.supplier %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="date" class="form-label">Date</label>
+      <input type="date" class="form-control" id="date" name="date" value="<%= pr.date ? new Date(pr.date).toISOString().substr(0, 10) : '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="term" class="form-label">Term</label>
+      <input type="text" class="form-control" id="term" name="term" value="<%= pr.term || '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="delivery" class="form-label">Delivery</label>
+      <input type="text" class="form-control" id="delivery" name="delivery" value="<%= pr.delivery || '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="vlidity" class="form-label">Validity</label>
+      <input type="text" class="form-control" id="vlidity" name="vlidity" value="<%= pr.vlidity || '-' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="transport" class="form-label">Transport</label>
+      <input type="text" class="form-control" id="transport" name="transport" value="<%= pr.transport || '-' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="ref" class="form-label">Reference</label>
+      <input type="text" class="form-control" id="ref" name="ref" value="<%= pr.ref || '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="discount" class="form-label">Discount</label>
+      <input type="text" class="form-control" id="discount" name="discount" value="<%= pr.discount || '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="vat" class="form-label">VAT</label>
+      <input type="text" class="form-control" id="vat" name="vat" value="<%= pr.vat || '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="net" class="form-label">Net</label>
+      <input type="text" class="form-control" id="net" name="net" value="<%= pr.net || '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="note" class="form-label">Note</label>
+      <textarea class="form-control" id="note" name="note" rows="3"><%= pr.note %></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success"><%= pr._id ? 'Update PR' : 'Create PR' %></button>
   </form>
+
+  <% if (errors) { %>
+    <div class="alert alert-danger">
+      <ul>
+        <% for (let field in errors) { %>
+          <li><%= field %>: <%= errors[field].message || errors[field] %></li>
+        <% } %>
+      </ul>
+    </div>
+  <% } %>
 </body>
 </html>

@@ -359,6 +359,490 @@
   <p>No data available</p>
 <% } %>
 
+<!-- Modal สำหรับการเลือกคอลัมน์ -->
+<div class="modal fade" id="exportColumnsModal" tabindex="-1" aria-labelledby="exportColumnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exportColumnsModalLabel">เลือกข้อมูลที่ต้องการส่งออกไปยัง Excel</h5>
+          
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="exportColumnsForm">
+            <h5>Asset List IT</h5>
+            <h6>User</h6>
+            <div class="row">
+              <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="name" value="name" >
+              <label class="form-check-label" for="name">Name</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="assetid" value="assetid" >
+              <label class="form-check-label" for="assetid">Asset ID</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="dept" value="dept" >
+              <label class="form-check-label" for="dept">Dept</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="assetitlistscompany" value="assetitlistscompany" >
+              <label class="form-check-label" for="assetitlistscompany">Company</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="computername" value="computername" >
+              <label class="form-check-label" for="computername">ComputerName</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="assetitlistsdate" value="assetitlistsdate" >
+              <label class="form-check-label" for="assetitlistsdate">Date</label>
+            </div>
+          </div>
+          <h6>Hardware</h6>
+            <div class="col-md-4" >
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="device" value="device" onclick="toggleDeviceFields()">
+              <label class="form-check-label" for="device">Device</label>
+            </div>
+          </div>
+
+          <div id="deviceFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="devicetype" value="devicetype" >
+              <label class="form-check-label" for="devicetype">Device Type</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="devicechoice" value="devicechoice" >
+              <label class="form-check-label" for="devicechoice">Device Choice</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="devicemodel" value="devicemodel" >
+              <label class="form-check-label" for="devicemodel">Model</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="devicesn" value="devicesn" >
+              <label class="form-check-label" for="devicesn">S/N</label>
+            </div>
+          </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="cpu" value="cpu" onclick="toggleCPUFields()">
+              <label class="form-check-label" for="cpu">CPU</label>
+            </div>
+          </div>
+          
+
+          <div id="cpuFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="cputype" value="cputype" >
+              <label class="form-check-label" for="cputype">Cpu Type</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="cpuassetaccountno" value="cpuassetaccountno" >
+              <label class="form-check-label" for="cpuassetaccountno">Asset Account No</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="speed" value="speed" >
+              <label class="form-check-label" for="speed">Speed</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="harddisk" value="harddisk" >
+              <label class="form-check-label" for="harddisk">Harddisk</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="ram" value="ram" >
+              <label class="form-check-label" for="ram">Ram</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="img" value="img" >
+              <label class="form-check-label" for="img">Picture</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="romdrive" value="romdrive" onclick="toggleRomdriveFields()">
+              <label class="form-check-label" for="romdrive">Rom Drive</label>
+            </div>
+          </div>
+          <div id="romdriveFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="romdrivetype" value="romdrivetype" >
+              <label class="form-check-label" for="romdrivetype">Rom Drive Type</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="romsn" value="romsn" >
+              <label class="form-check-label" for="romsn">SN</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="romassetid" value="romassetid" >
+              <label class="form-check-label" for="romassetid">Asset ID</label>
+            </div>
+          </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="monitor" value="monitor" onclick="toggleMonitorFields()">
+              <label class="form-check-label" for="monitor">Monitor</label>
+            </div>
+          </div>
+          <div id="monitorFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="monitortype" value="monitortype" >
+              <label class="form-check-label" for="monitortype">Monitor Type</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="monitorsn" value="monitorsn" >
+              <label class="form-check-label" for="monitorsn">SN</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="monitorassetid" value="monitorassetid" >
+              <label class="form-check-label" for="monitorassetid">Asset ID</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="keyboard" value="keyboard" onclick="toggleKeyboardFields()">
+              <label class="form-check-label" for="keyboard">Keyboard</label>
+            </div>
+          </div>
+          <div id="keyboardFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="keyboardtype" value="keyboardtype" >
+              <label class="form-check-label" for="keyboardtype">Keyboard Type</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="keyboardsn" value="keyboardsn" >
+              <label class="form-check-label" for="keyboardsn">SN</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="keyboardassetid" value="keyboardassetid" >
+              <label class="form-check-label" for="keyboardassetid">Asset ID</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="mouse" value="mouse" onclick="toggleMouseFields()">
+              <label class="form-check-label" for="mouse">Mouse</label>
+            </div>
+          </div>
+          <div id="mouseFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="mousetype" value="mousetype" >
+              <label class="form-check-label" for="mousetype">Mouse Type</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="mousesn" value="mousesn" >
+              <label class="form-check-label" for="mousesn">SN</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="mouseassetid" value="mouseassetid" >
+              <label class="form-check-label" for="mouseassetid">Asset ID</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="printer" value="printer" onclick="togglePrinterFields()">
+              <label class="form-check-label" for="printer">Printer</label>
+            </div>
+          </div>
+          <div id="printerFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="printermodel" value="printermodel" >
+              <label class="form-check-label" for="printermodel">Model</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="printersn" value="printersn" >
+              <label class="form-check-label" for="printersn">SN</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="printerassetid" value="printerassetid" >
+              <label class="form-check-label" for="printerassetid">Asset ID</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="ups" value="ups" onclick="toggleUPSFields()">
+              <label class="form-check-label" for="ups">UPS</label>
+            </div>
+          </div>
+          <div id="upsFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="upstype" value="upstype" >
+              <label class="form-check-label" for="upstype">UPS Type</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="upsva" value="upsva" >
+              <label class="form-check-label" for="upsva">UPS VA</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="upstypemodel" value="upstypemodel" >
+              <label class="form-check-label" for="upstypemodel">Model</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="upstypesn" value="upstypesn" >
+              <label class="form-check-label" for="upstypesn">SN</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="upstypeassetid" value="upstypeassetid" >
+              <label class="form-check-label" for="upstypeassetid">Asset ID</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="adaptor" value="adaptor" onclick="toggleAdaptorFields()">
+              <label class="form-check-label" for="adaptor">Adaptor</label>
+            </div>
+          </div>
+          <div id="adaptorFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="adaptorsn" value="adaptorsn" >
+              <label class="form-check-label" for="adaptorsn">SN</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="other1" value="other1" onclick="toggleOther1Fields()">
+              <label class="form-check-label" for="other1">Hardware Other</label>
+            </div>
+          </div>
+          <h6>Software</h6>
+          <div id="other1Fields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="othersn" value="othersn" >
+              <label class="form-check-label" for="othersn">SN</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="os" value="os" onclick="toggleOSFields()">
+              <label class="form-check-label" for="os">OS</label>
+            </div>
+          </div>
+          <div id="osFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="ostype" value="ostype" >
+              <label class="form-check-label" for="ostype">OS Type</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="ossn" value="ossn" >
+              <label class="form-check-label" for="ossn">SN</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="office" value="office" onclick="toggleOfficeFields()">
+              <label class="form-check-label" for="office">Office</label>
+            </div>
+          </div>
+          <div id="officeFields" style="display: none;">
+            <div class="col-md-4" style="display: none;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="officetype" value="officetype" >
+              <label class="form-check-label" for="officetype">Office Type</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="officesn" value="officesn" >
+              <label class="form-check-label" for="officesn">SN</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="antivirus" value="antivirus" >
+              <label class="form-check-label" for="antivirus">Antivirus</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="pdf" value="pdf" >
+              <label class="form-check-label" for="pdf">PDF</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="utility" value="utility" >
+              <label class="form-check-label" for="utility">Utility</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="other2" value="other2" >
+              <label class="form-check-label" for="other2">Software Other</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="mapdrive" value="mapdrive" >
+              <label class="form-check-label" for="mapdrive">Map Drive</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="addprinter" value="addprinter" >
+              <label class="form-check-label" for="addprinter">Add Printer</label>
+            </div>
+          </div>
+          <h6>Other</h6>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="assetitlistsremark" value="assetitlistsremark" >
+              <label class="form-check-label" for="assetitlistsremark">Remark</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="deliverydate" value="deliverydate" >
+              <label class="form-check-label" for="deliverydate">Deliverydate</label>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="other3" value="other3" >
+              <label class="form-check-label" for="other3">Other</label>
+            </div>
+          </div>
+
+          <h5>Detail Repair</h5>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="detailrepair" value="detailrepair" >
+              <label class="form-check-label" for="detailrepair">Detail Repair</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="repairdate" value="repairdate" >
+              <label class="form-check-label" for="repairdate">Repair Date</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="value" value="value" >
+              <label class="form-check-label" for="value">Value</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="success" value="success" >
+              <label class="form-check-label" for="success">Success</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="fail" value="fail" >
+              <label class="form-check-label" for="fail">Fail</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="columns[]" id="repairremark" value="repairremark" >
+              <label class="form-check-label" for="repairremark">Remark</label>
+            </div>
+          </div>
+  
+          </div>
+  
+            <!-- ทำซ้ำสำหรับคอลัมน์อื่น ๆ ตามความต้องการ -->
+          </form>
+        </div>
+        <div class="modal-footer no-print">
+          <button type="button" class="btn btn-success" id="toggleSelectAllBtn" onclick="toggleSelectAll()">เลือกทั้งหมด</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+          <button type="button" class="btn btn-primary" onclick="exportToExcel()">Export To Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- เนื้อหา HTML ที่มีอยู่ของคุณ -->
+  
+  <!-- ปุ่มที่เปิด modal -->
+  <div class="container mt-5 no-print" style="margin-bottom: 50px; margin-left: 41%;">
+    <a href="/" class="btn btn-primary">กลับหน้าแรก</a>
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exportColumnsModal">ทำเป็นไฟล์ Excel</button>
+  </div>
 
   </div>
   <script src="/javascripts/Report.js"></script>

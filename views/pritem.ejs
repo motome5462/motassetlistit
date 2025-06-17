@@ -1,37 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+  <title>Add PR Item</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/stylesheets/Report.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Add PR Item</title>
 </head>
 <body>
-        <header>
-        <!-- Navbar -->
-        <% include index %>
-    </header>
-  <h1>Add PR Item</h1>
-  <form action="/pritem/new" method="POST">
-    <input type="hidden" name="PRNO" value="<%= prid %>">
-    <label>Quantity:</label><input name="quantity"><br/>
-    <label>Unit:</label><input name="unit"><br/>
-    <label>SN:</label><input name="sn"><br/>
-    <label>Description:</label><input name="description"><br/>
-
-<label>Stock Status:</label><br/>
-<input type="radio" id="instock" name="stock" value="In Stock" required>
-<label for="instock">In Stock</label><br/>
-
-<input type="radio" id="outstock" name="stock" value="Out Stock">
-<label for="outstock">Out Stock</label><br/>
-
-    <label>Price:</label><input name="price"><br/>
-    <label>PPU:</label><input name="ppu"><br/>
-    <label>Remark:</label><input name="remark"><br/>
-    <label>Total:</label><input name="total"><br/>
+  <header class="no-print">
+    <% include index.ejs %>
+  </header>  
+  <h1>Add PR Item to PR #<%= pr.PRno || pr._id %></h1>
+  <form action="/pr/<%= pr._id %>/pritem" method="POST">
+    Quantity: <input type="text" name="quantity" value="<%= pritem.quantity %>" /><br/>
+    Unit: <input type="text" name="unit" value="<%= pritem.unit %>" /><br/>
+    SN: <input type="text" name="sn" value="<%= pritem.sn %>" /><br/>
+    Description: <textarea name="description"><%= pritem.description %></textarea><br/>
+    <div class="mb-3">
+      <label class="form-label">Stock Location</label><br/>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input pritem" type="radio" name="stockLocation" id="instockRadio" value="instock"
+          data-checked="<%= pritem.instock === '/' %>" <%= pritem.instock === '/' ? 'checked' : '' %>>
+        <label class="form-check-label" for="instockRadio">In Stock</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input pritem" type="radio" name="stockLocation" id="outstockRadio" value="outstock"
+          data-checked="<%= pritem.outstock === '/' %>" <%= pritem.outstock === '/' ? 'checked' : '' %>>
+        <label class="form-check-label" for="outstockRadio">Out Stock</label>
+      </div>
+    </div>
+    Price: <input type="text" name="price" value="<%= pritem.price %>" /><br/>
+    PPU: <input type="text" name="ppu" value="<%= pritem.ppu %>" /><br/>
+    Remark: <textarea name="remark"><%= pritem.remark %></textarea><br/>
+    Total: <input type="text" name="total" value="<%= pritem.total %>" /><br/>
     <button type="submit">Add Item</button>
   </form>
+
+
+
+  <% if (errors) { %>
+    <ul>
+      <% for (let field in errors) { %>
+        <li><%= field %>: <%= errors[field].message || errors[field] %></li>
+      <% } %>
+    </ul>
+  <% } %>
+  <script src="/javascripts/pritem.js"></script>
 </body>
 </html>
