@@ -14,7 +14,7 @@
 
   <h1><%= pr._id ? 'Edit PR #' + (pr.PRno || pr._id) : 'Create New PR' %></h1>
 
-  <form action="<%= pr._id ? '/pr/' + pr._id + '?_method=PUT' : '/pr/new' %>" method="POST" class="mb-3">
+  <form action="<%= pr._id ? '/pr/' + pr._id + '/edit' : '/pr/new' %>" method="POST" class="mb-3">
 
     <% if (pr._id) { %>
       <!-- method override for PUT -->

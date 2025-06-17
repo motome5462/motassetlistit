@@ -39,7 +39,7 @@
               <td>
                 <a href="/pr/<%= pr._id %>" class="btn btn-sm btn-info">View</a>
                 <a href="/pr/<%= pr._id %>/pritem" class="btn btn-sm btn-secondary">Add Items</a>
-                <!--a href="/pr/<%= pr._id %>/edit" class="btn btn-sm btn-warning">Edit</a-->
+                <a href="/pr/<%= pr._id %>/edit" class="btn btn-sm btn-warning">Edit</a>
                 <form action="/pr/<%= pr._id %>/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this PR?');">
                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                 </form>

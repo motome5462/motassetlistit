@@ -13,7 +13,7 @@ const PRITEM  = new mongoose.Schema({
     ppu: { type: String, default: "" },
     remark: { type: String, default: "" },
     total:{ type: String, default: ""},
-    PRNO: { type: mongoose.Schema.Types.ObjectId, ref: "PRNO" },
+    PRNO: { type: mongoose.Schema.Types.ObjectId, ref: "PR" },
 
 
 

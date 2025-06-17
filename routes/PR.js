@@ -65,53 +65,54 @@ router.post("/:prId/pritem", async (req, res) => {
   }
 });
 
-// // GET form to edit a PR
-// router.get("/:prId/edit", async (req, res) => {
-//   try {
-//     const pr = await PR.findById(req.params.prId);
-//     if (!pr) return res.status(404).send("PR not found");
-//     res.render("pr", { pr, errors: null });
-//   } catch (err) {
-//     res.status(500).send(err.message);
-//   }
-// });
+// GET form to edit a PR
+router.get("/:prId/edit", async (req, res) => {
+  try {
+    const pr = await PR.findById(req.params.prId);
+    if (!pr) return res.status(404).send("PR not found");
+    res.render("pr", { pr, errors: null });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
-// // POST update a PR
-// router.post("/:prId/edit", async (req, res) => {
-//   try {
-//     const prId = req.params.prId;
-//     const updateData = { ...req.body };
+// POST update a PR
+router.post("/:prId/edit", async (req, res) => {
+  try {
+    const prId = req.params.prId;
+    const updateData = { ...req.body };
 
-//     // Clean manual_PRno: convert to Number or remove if empty/invalid
-//     if (updateData.manual_PRno) {
-//       const num = Number(updateData.manual_PRno);
-//       updateData.manual_PRno = isNaN(num) ? undefined : num;
-//     } else {
-//       updateData.manual_PRno = undefined;
-//     }
+    // Convert manual_PRno to Number or undefined
+    if (updateData.manual_PRno) {
+      const num = Number(updateData.manual_PRno);
+      updateData.manual_PRno = isNaN(num) ? undefined : num;
+    } else {
+      updateData.manual_PRno = undefined;
+    }
 
-//     // Convert date string to Date object if present
-//     if (updateData.date) {
-//       updateData.date = new Date(updateData.date);
-//     }
+    // Convert date string to Date object if present
+    if (updateData.date) {
+      updateData.date = new Date(updateData.date);
+    }
 
-//     const updatedPR = await PR.findByIdAndUpdate(prId, updateData, {
-//       new: true,
-//       runValidators: true,
-//     });
+    const updatedPR = await PR.findByIdAndUpdate(prId, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
-//     if (!updatedPR) return res.status(404).send("PR not found");
+    if (!updatedPR) return res.status(404).send("PR not found");
 
-//     res.redirect(`/pr/${prId}`);
-//   } catch (err) {
-//     console.error(err);
-//     const pr = await PR.findById(req.params.prId);
-//     res.render("pr", {
-//       pr: { ...req.body, _id: req.params.prId },
-//       errors: err.errors || err,
-//     });
-//   }
-// });
+    res.redirect(`/pr/${prId}`);
+  } catch (err) {
+    console.error(err);
+    const pr = await PR.findById(req.params.prId);
+    res.render("pr", {
+      pr: { ...req.body, _id: req.params.prId },
+      errors: err.errors || err,
+    });
+  }
+});
+
 
 // POST delete a PR
 router.post("/:prId/delete", async (req, res) => {
@@ -124,37 +125,37 @@ router.post("/:prId/delete", async (req, res) => {
   }
 });
 
-// // GET form to edit PRITEM ctrl + /
-// router.get("/:prId/pritem/:itemId/edit", async (req, res) => {
-//   try {
-//     const pr = await PR.findById(req.params.prId);
-//     const pritem = await PRITEM.findById(req.params.itemId);
-//     if (!pr || !pritem) return res.status(404).send("PR or Item not found");
-//     res.render("pritem", { pr, pritem, errors: null });
-//   } catch (err) {
-//     res.status(500).send(err.message);
-//   }
-// });
+// GET form to edit PRITEM
+router.get("/:prId/pritem/:itemId/edit", async (req, res) => {
+  try {
+    const pr = await PR.findById(req.params.prId);
+    const pritem = await PRITEM.findById(req.params.itemId);
+    if (!pr || !pritem) return res.status(404).send("PR or Item not found");
+    res.render("pritemedit", { pr, pritem, errors: null });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
-// // POST update PRITEM
-// router.post("/:prId/pritem/:itemId/edit", async (req, res) => {
-//   try {
-//     const updateData = req.body;
+// POST update PRITEM
+router.post("/:prId/pritem/:itemId/edit", async (req, res) => {
+  try {
+    const updateData = req.body;
 
-//     updateData.instock = req.body.stockLocation === 'instock' ? '/' : '';
-//     updateData.outstock = req.body.stockLocation === 'outstock' ? '/' : '';
+    updateData.instock = req.body.stockLocation === 'instock' ? '/' : '';
+    updateData.outstock = req.body.stockLocation === 'outstock' ? '/' : '';
 
-//     await PRITEM.findByIdAndUpdate(req.params.itemId, updateData, {
-//       runValidators: true,
-//     });
+    await PRITEM.findByIdAndUpdate(req.params.itemId, updateData, {
+      runValidators: true,
+    });
 
-//     res.redirect(`/pr/${req.params.prId}`);
-//   } catch (err) {
-//     const pr = await PR.findById(req.params.prId);
-//     const pritem = { ...req.body, _id: req.params.itemId };
-//     res.render("pritem", { pr, pritem, errors: err.errors || err });
-//   }
-// });
+    res.redirect(`/pr/${req.params.prId}`);
+  } catch (err) {
+    const pr = await PR.findById(req.params.prId);
+    const pritem = { ...req.body, _id: req.params.itemId };
+    res.render("pritemedit", { pr, pritem, errors: err.errors || err });
+  }
+});
 
 // POST delete PRITEM
 router.post("/:prId/pritem/:itemId/delete", async (req, res) => {
