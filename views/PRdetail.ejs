@@ -11,95 +11,153 @@
   <header class="no-print">
     <% include index.ejs %>
   </header>
-<div class="table-wrapper">
-  <!-- Logo and address -->
-  <div class="container-fluid d-flex align-items-start my-4">
-    <!-- Logo -->
-    <a href="/">
-      <img src="https://www.mot.co.th/wp-content/uploads/2024/04/%E0%B9%82%E0%B8%A5%E0%B9%82%E0%B8%81%E0%B9%89-MOTNew-%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%8A%E0%B8%B1%E0%B8%94.png"
-           style="width: 180px; height: 120px; margin-right: 15px;" />
-    </a>
 
-    <!-- Text -->
-    <div style="margin-top: 1.5%; margin-left: 30px; font-size: 18px;">
-      <p class="mb-0">835/6&nbsp;&nbsp;&nbsp;ถ.&nbsp;สรงประภา&nbsp;&nbsp;&nbsp;แขวงดอนเมือง&nbsp;&nbsp;&nbsp;เขตดอนเมือง&nbsp;&nbsp;&nbsp;กรุงเทพฯ&nbsp;&nbsp;&nbsp;10210&nbsp;&nbsp;&nbsp;โทร +66 (0)2 928-6806&nbsp;&nbsp;&nbsp;แฟกซ์ +66 (0)2 928-6807</p>
-      <p class="mb-0">835/6,&nbsp;Song Prapha Road,&nbsp;Don Mueang Sub-district,&nbsp;Don Mueang District,&nbsp;Bangkok&nbsp;Thailand&nbsp;Tel: +66 (0)2 928-6806&nbsp;Fax: +66 (0)2 928-6807</p>
-      <p class="mb-0">www.mot.co.th</p>
+  <div class="table-wrapper">
+    <!-- Logo and address -->
+    <div class="container-fluid d-flex align-items-start my-4">
+      <!-- Logo -->
+      <a href="/">
+        <img src="https://www.mot.co.th/wp-content/uploads/2024/04/%E0%B9%82%E0%B8%A5%E0%B9%82%E0%B8%81%E0%B9%89-MOTNew-%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%8A%E0%B8%B1%E0%B8%94.png"
+             style="width: 180px; height: 120px; margin-right: 15px;" />
+      </a>
+
+      <!-- Text -->
+      <div style="margin-top: 1.5%; margin-left: 30px; font-size: 18px;">
+        <p class="mb-0">
+          835/6&nbsp;&nbsp;&nbsp;ถ.&nbsp;สรงประภา&nbsp;&nbsp;&nbsp;แขวงดอนเมือง&nbsp;&nbsp;&nbsp;
+          เขตดอนเมือง&nbsp;&nbsp;&nbsp;กรุงเทพฯ&nbsp;&nbsp;&nbsp;10210&nbsp;&nbsp;&nbsp;
+          โทร +66 (0)2 928-6806&nbsp;&nbsp;&nbsp;แฟกซ์ +66 (0)2 928-6807
+        </p>
+        <p class="mb-0">
+          835/6,&nbsp;Song Prapha Road,&nbsp;Don Mueang Sub-district,&nbsp;Don Mueang District,&nbsp;
+          Bangkok&nbsp;Thailand&nbsp;Tel: +66 (0)2 928-6806&nbsp;Fax: +66 (0)2 928-6807
+        </p>
+        <p class="mb-0">www.mot.co.th</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Main Content -->
-  <div class="container-fluid">
-    <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
-      <thead>
-        <tr>
-          <th colspan="10" style="text-align: center;"><strong>ใบขอซื้อสินค้า</strong>(PURCHASE REQUISITION)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td colspan="5"><div><a>Project Name: <%= pr.name %></a><br><a>Project No: <%= pr.note %></a></div></td>
-          <td colspan="4"><div><a>Customer: <%= pr.customer %></a></div></td>
-          <td><div><a>Date: <%= pr.date ? pr.date.toISOString().substr(0,10) : "" %></a><br><a>PR No: <%= pr.PRno || pr._id %>-<%= pr.dept %>-MOT</a></div></td>
-        </tr>
-      </tbody>
-
-    <% if (pr.pritem && pr.pritem.length > 0) { %>
+    <!-- Main Content -->
+    <div class="container-fluid">
+      <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
         <thead>
           <tr>
-            <th style="text-align: center; width: 45px;"><div><a>ลำดับ</a><br><a>Item</a></div></th>
-            <th style="text-align: center; width: 90px;"><div><a>จำนวน</a><br><a>Quantity</a></div></th>
-            <th style="text-align: center; width: 70px;"><div><a>หน่วย</a><br><a>Unit</a></div></th>
-            <th style="text-align: center; width: 150px;"><div><a>รหัสสินค้า</a><br><a>P/N</a></div></th>
-            <th style="text-align: center; vertical-align: top; width: 650px;">รายการ/Description</th>
-            <th style="text-align: center; width: 100px;"><div><a>On-Stock</a><br><a>มี</a></div></th>
-            <th style="text-align: center; width: 100px;"><div><a>Out-Stock</a><br><a>ไม่มี</a></div></th>
-            <th style="text-align: center; width: 150px;"><div><a>Amount Price</a><br><a>ราคารวม</a></div></th>
-            <th style="text-align: center; vertical-align: middle; width: 150px;">Unit/Price</th>
-            <th style="text-align: center; width: 500px; vertical-align: middle;">
-              <span>Remarks</span>
-              <a href="/pr/<%= pr._id %>/pritem" class="btn btn-sm btn-primary no-print float-end">➕</a>
+            <th colspan="10" style="text-align: center;">
+              <strong>ใบขอซื้อสินค้า</strong> (PURCHASE REQUISITION)
             </th>
           </tr>
         </thead>
         <tbody>
-          <% pr.pritem.forEach((item, itemIndex) => { %>
-            <tr>
-              <td style="text-align: center;vertical-align: middle; width: 45px;"><%= itemIndex + 1 %></td>
-              <td style="text-align: center;vertical-align: middle; width: 90px;"><%= item.quantity %></td>
-              <td style="text-align: center;vertical-align: middle; width: 70px;"><%= item.unit %></td>
-              <td style="text-align: center;vertical-align: middle; width: 150px;"><%= item.sn %></td>
-              <td style="text-align: left; vertical-align: middle; width: 650px;">
-                <a style="display: block; white-space: normal; word-wrap: break-word;"><%= item.description %></a>
-              </td>
-              <td style="text-align: center;vertical-align: middle; width: 100px;"><%= item.instock %></td>
-              <td style="text-align: center;vertical-align: middle;width: 100px;"><%= item.outstock %></td>
-              <td style="text-align: right;vertical-align: middle; width: 150px;"><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-              <td style="text-align: right;vertical-align: middle;width: 150px;"><%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-              <td style="position: relative; width: 500px; vertical-align: middle;">
-                <a style="display: block; max-width: 500px; word-wrap: break-word; white-space: normal;"><%= item.remark %></a>
-                <span style="float: right;">
-                  <a href="/pr/<%= pr._id %>/pritem/<%= item._id %>/edit" class="btn btn-sm btn-warning no-print">✏️</a>
-                  <form method="POST" action="/pr/<%= pr._id %>/pritem/<%= item._id %>/delete" class="no-print" style="display:inline;">
-                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this item?')">🗑️</button>
-                  </form>
-                </span>
-              </td>
-            </tr>
-          <% }) %>
-<tr>
-  <td colspan="5" style="text-align: left; vertical-align: top;">
-    <a>Supplier Name: </a>
-    <a style="padding-left: 10px;"><%= pr.supplier %></a><br>
-    <span style="padding-left: 150px;"><%= pr.supplierdetail %></span>
-  </td>
-</tr>
+          <tr>
+            <td colspan="5">
+              <div>
+                <a>Project Name: <%= pr.name %></a><br>
+                <a>Project No: <%= pr.note %></a>
+              </div>
+            </td>
+            <td colspan="4">
+              <div><a>Customer: <%= pr.customer %></a></div>
+            </td>
+            <td>
+              <div>
+                <a>Date: <%= pr.date ? pr.date.toISOString().substr(0,10) : "" %></a><br>
+                <a>PR No: <%= pr.PRno || pr._id %>-<%= pr.dept %>-MOT</a>
+              </div>
+            </td>
+          </tr>
         </tbody>
+
+        <% if (pr.pritem && pr.pritem.length > 0) { %>
+          <thead>
+            <tr>
+              <th style="text-align: center; width: 45px;">ลำดับ<br>Item</th>
+              <th style="text-align: center; width: 70px;">จำนวน<br>Quantity</th>
+              <th style="text-align: center; width: 70px;">หน่วย<br>Unit</th>
+              <th style="text-align: center; width: 150px;">รหัสสินค้า<br>P/N</th>
+              <th style="text-align: center; vertical-align: top; width: 650px;">รายการ/Description</th>
+              <th style="text-align: center; width: 100px;">On-Stock<br>มี</th>
+              <th style="text-align: center; width: 100px;">Out-Stock<br>ไม่มี</th>
+              <th style="text-align: center; width: 150px;">Amount Price<br>ราคารวม</th>
+              <th style="text-align: center; vertical-align: middle; width: 150px;">Unit/Price</th>
+              <th style="text-align: center; width: 500px; vertical-align: middle;">
+                Remarks
+                <a href="/pr/<%= pr._id %>/pritem" class="btn btn-sm btn-primary no-print float-end">➕</a>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% pr.pritem.forEach((item, itemIndex) => { %>
+              <tr>
+                <td style="text-align: center; vertical-align: middle;"><%= itemIndex + 1 %></td>
+                <td style="text-align: center; vertical-align: middle;"><%= item.quantity %></td>
+                <td style="text-align: center; vertical-align: middle;"><%= item.unit %></td>
+                <td style="text-align: center; vertical-align: middle;"><%= item.sn %></td>
+                <td style="text-align: left; vertical-align: top;">
+                  <div style="white-space: normal; word-break: break-word;">
+                    <%= item.description %>
+                  </div>
+                </td>
+                <td style="text-align: center; vertical-align: middle;"><%= item.instock %></td>
+                <td style="text-align: center; vertical-align: middle;"><%= item.outstock %></td>
+                <td style="text-align: right; vertical-align: middle;">
+                  <%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %>
+                </td>
+                <td style="text-align: right; vertical-align: middle;">
+                  <%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %>
+                </td>
+                <td style="vertical-align: top; text-align: left;">
+                  <div style="display: flex; justify-content: space-between; align-items: start; gap: 10px;">
+                    <div style="flex-grow: 1; white-space: normal; word-break: break-word;">
+                      <%= item.remark %>
+                    </div>
+                    <div class="no-print" style="white-space: nowrap;">
+                      <a href="/pr/<%= pr._id %>/pritem/<%= item._id %>/edit" class="btn btn-sm btn-warning">✏️</a>
+                      <form method="POST" action="/pr/<%= pr._id %>/pritem/<%= item._id %>/delete" style="display:inline;">
+                        <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this item?')">🗑️</button>
+                      </form>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+
+            <tr>
+              <td colspan="5" style="text-align: left; vertical-align: top;">
+                <a>Supplier Name:</a>
+                <a style="padding-left: 15px;"><%= pr.supplier %></a><br>
+                <span style="padding-left: 128px;"><%= pr.supplierdetail %></span>
+              </td>
+              <td colspan="2" style="text-align: left; vertical-align: top;">
+                <div>
+                  <a>Total</a><br>
+                  <a>Special Discount</a><br>
+                  <a>Vat 7%</a><br>
+                  <a>Net Amount</a><br>
+                </div>
+              </td>
+              <td style="text-align: right; vertical-align: top;">
+                <div>
+                  <a><%= parseFloat(totalPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></a><br>
+                  <a><%= parseFloat(pr.discount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></a><br>
+                  <a><%= parseFloat(vat || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></a><br>
+                  <a><%= parseFloat(net || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></a><br>
+                </div>
+              </td>
+<td colspan="2" style="text-align:left; vertical-align:top;">
+  <table>
+    <tr><td><span style="display:inline-block; min-width:80px;">Term of payment</span></td><td><%= pr.term || '-' %></td></tr>
+    <tr><td><span style="display:inline-block; min-width:120px;">Delivery Time</span></td><td><%= pr.delivery || '-' %></td></tr>
+    <tr><td><span style="display:inline-block; min-width:150px;">Validity</span></td><td><%= pr.vlidity || '-' %></td></tr>
+    <tr><td><span style="display:inline-block; min-width:180px;">Transportation</span></td><td><%= pr.transport || '-' %></td></tr>
+  </table>
+</td>
+
+            </tr>
+          </tbody>
+        <% } else { %>
+          <p>No items added yet.</p>
+        <% } %>
       </table>
-    <% } else { %>
-      <p>No items added yet.</p>
-    <% } %>
+    </div>
   </div>
-</div>
 </body>
 </html>

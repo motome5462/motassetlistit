@@ -188,23 +188,36 @@ router.get("/:prId", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId).populate("pritem").lean();
     if (!pr) return res.status(404).send("PR not found");
-    const ppu = pr.pritem.price/pr.pritem.quantity;
+
     // Calculate total price
     const totalPrice = (pr.pritem || []).reduce((sum, item) => {
       return sum + parseFloat(item.price || 0);
     }, 0);
-        pr.pritem = pr.pritem.map(item => {
+
+    // Calculate per-unit price for each item
+    pr.pritem = pr.pritem.map(item => {
       const quantity = parseFloat(item.quantity || 0);
       const price = parseFloat(item.price || 0);
       item.ppu = quantity !== 0 ? (price / quantity).toFixed(2) : "0.00";
       return item;
     });
 
-    res.render("prdetail", { pr, totalPrice , ppu }); // Pass it to EJS
+    // Calculate VAT and Net
+    const vat = +(totalPrice * 0.07).toFixed(2);
+    const discount = parseFloat(pr.discount || 0);
+    const net = +(totalPrice + vat - discount).toFixed(2);
+
+    res.render("prdetail", {
+      pr,
+      totalPrice: totalPrice.toFixed(2),
+      vat: vat.toFixed(2),
+      net: net.toFixed(2),
+    });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
+
 
 
 module.exports = router;
