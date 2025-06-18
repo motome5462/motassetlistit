@@ -11,6 +11,7 @@ const PRSchema = new mongoose.Schema({
   note:{ type: String, default: "" },
   customer:{ type: String, default: "" },
   supplier:{ type: String, default: "" },
+  supplierdetail:{ type: String, default: "" },
   term:{ type: String, default: "" },
   delivery:{ type: String, default: "" },
   vlidity:{ type: String, default: "-" },

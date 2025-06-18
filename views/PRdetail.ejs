@@ -11,9 +11,9 @@
   <header class="no-print">
     <% include index.ejs %>
   </header>
-
+<div class="table-wrapper">
   <!-- Logo and address -->
-  <div class="container-fluid d-flex align-items-start my-4"style="margin-left: 10px;>
+  <div class="container-fluid d-flex align-items-start my-4">
     <!-- Logo -->
     <a href="/">
       <img src="https://www.mot.co.th/wp-content/uploads/2024/04/%E0%B9%82%E0%B8%A5%E0%B9%82%E0%B8%81%E0%B9%89-MOTNew-%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%8A%E0%B8%B1%E0%B8%94.png"
@@ -29,75 +29,77 @@
   </div>
 
   <!-- Main Content -->
-  <div class="container-fluid" style="margin-left: 10px;">
+  <div class="container-fluid">
     <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
       <thead>
         <tr>
-          <th colspan="11" style="text-align: center;"><strong>ใบขอซื้อสินค้า</strong>(PURCHASE REQUISITION)</th>
+          <th colspan="10" style="text-align: center;"><strong>ใบขอซื้อสินค้า</strong>(PURCHASE REQUISITION)</th>
         </tr>
       </thead>
-    <p><strong>Name:</strong> <%= pr.name %></p>
-    <p><strong>Project No:</strong> <%= pr.note %></p>
-    <p><strong>Customer:</strong> <%= pr.customer %></p>
-    <p><strong>Date:</strong> <%= pr.date ? pr.date.toISOString().substr(0,10) : "" %></p>
-    <p><strong>PR No:</strong> <%= pr.PRno || pr._id %>-<%= pr.dept %>-MOT Details</p>
-
-
+      <tbody>
+        <tr>
+          <td colspan="5"><div><a>Project Name: <%= pr.name %></a><br><a>Project No: <%= pr.note %></a></div></td>
+          <td colspan="4"><div><a>Customer: <%= pr.customer %></a></div></td>
+          <td><div><a>Date: <%= pr.date ? pr.date.toISOString().substr(0,10) : "" %></a><br><a>PR No: <%= pr.PRno || pr._id %>-<%= pr.dept %>-MOT</a></div></td>
+        </tr>
+      </tbody>
 
     <% if (pr.pritem && pr.pritem.length > 0) { %>
         <thead>
           <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Unit</th>
-            <th>SN</th>
-            <th>Description</th>
-            <th>In Stock</th>
-            <th>Out Stock</th>
-            <th>Price</th>
-            <th>PPU</th>
-            <th>Remark</th>
-            <th class="no-print" style="width: 150px;">
-              <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <span>Actions</span>
-                <a href="/pr/<%= pr._id %>/pritem" class="btn btn-sm btn-primary no-print">➕</a>
-              </div>
+            <th style="text-align: center; width: 45px;"><div><a>ลำดับ</a><br><a>Item</a></div></th>
+            <th style="text-align: center; width: 90px;"><div><a>จำนวน</a><br><a>Quantity</a></div></th>
+            <th style="text-align: center; width: 70px;"><div><a>หน่วย</a><br><a>Unit</a></div></th>
+            <th style="text-align: center; width: 150px;"><div><a>รหัสสินค้า</a><br><a>P/N</a></div></th>
+            <th style="text-align: center; vertical-align: top; width: 650px;">รายการ/Description</th>
+            <th style="text-align: center; width: 100px;"><div><a>On-Stock</a><br><a>มี</a></div></th>
+            <th style="text-align: center; width: 100px;"><div><a>Out-Stock</a><br><a>ไม่มี</a></div></th>
+            <th style="text-align: center; width: 150px;"><div><a>Amount Price</a><br><a>ราคารวม</a></div></th>
+            <th style="text-align: center; vertical-align: middle; width: 150px;">Unit/Price</th>
+            <th style="text-align: center; width: 500px; vertical-align: middle;">
+              <span>Remarks</span>
+              <a href="/pr/<%= pr._id %>/pritem" class="btn btn-sm btn-primary no-print float-end">➕</a>
             </th>
           </tr>
         </thead>
         <tbody>
           <% pr.pritem.forEach((item, itemIndex) => { %>
             <tr>
-              <td><%= itemIndex + 1 %></td>
-              <td><%= item.quantity %></td>
-              <td><%= item.unit %></td>
-              <td><%= item.sn %></td>
-              <td><%= item.description %></td>
-              <td><%= item.instock %></td>
-              <td><%= item.outstock %></td>
-              <td><%= item.price %></td>
-              <td><%= item.ppu %></td>
-              <td><%= item.remark %></td>
-              <td class="no-print text-end" style="width: 150px;">
-                <div class="d-flex justify-content-end align-items-center gap-1">
-                  <a href="/pr/<%= pr._id %>/pritem/<%= item._id %>/edit" class="btn btn-sm btn-warning">✏️</a>
-                  <form method="POST" action="/pr/<%= pr._id %>/pritem/<%= item._id %>/delete">
+              <td style="text-align: center;vertical-align: middle; width: 45px;"><%= itemIndex + 1 %></td>
+              <td style="text-align: center;vertical-align: middle; width: 90px;"><%= item.quantity %></td>
+              <td style="text-align: center;vertical-align: middle; width: 70px;"><%= item.unit %></td>
+              <td style="text-align: center;vertical-align: middle; width: 150px;"><%= item.sn %></td>
+              <td style="text-align: left; vertical-align: middle; width: 650px;">
+                <a style="display: block; white-space: normal; word-wrap: break-word;"><%= item.description %></a>
+              </td>
+              <td style="text-align: center;vertical-align: middle; width: 100px;"><%= item.instock %></td>
+              <td style="text-align: center;vertical-align: middle;width: 100px;"><%= item.outstock %></td>
+              <td style="text-align: right;vertical-align: middle; width: 150px;"><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
+              <td style="text-align: right;vertical-align: middle;width: 150px;"><%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
+              <td style="position: relative; width: 500px; vertical-align: middle;">
+                <a style="display: block; max-width: 500px; word-wrap: break-word; white-space: normal;"><%= item.remark %></a>
+                <span style="float: right;">
+                  <a href="/pr/<%= pr._id %>/pritem/<%= item._id %>/edit" class="btn btn-sm btn-warning no-print">✏️</a>
+                  <form method="POST" action="/pr/<%= pr._id %>/pritem/<%= item._id %>/delete" class="no-print" style="display:inline;">
                     <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this item?')">🗑️</button>
                   </form>
-                </div>
+                </span>
               </td>
             </tr>
           <% }) %>
-          <tr>
-            <td colspan="8" class="text-end"><strong>Total Value:</strong></td>
-            <td colspan="3"><strong><%= totalPrice.toFixed(2) %></strong></td>
-          </tr>
+<tr>
+  <td colspan="5" style="text-align: left; vertical-align: top;">
+    <a>Supplier Name: </a>
+    <a style="padding-left: 10px;"><%= pr.supplier %></a><br>
+    <span style="padding-left: 150px;"><%= pr.supplierdetail %></span>
+  </td>
+</tr>
         </tbody>
       </table>
-      <p><strong>Supplier:</strong> <%= pr.supplier %></p>
     <% } else { %>
       <p>No items added yet.</p>
     <% } %>
   </div>
+</div>
 </body>
 </html>

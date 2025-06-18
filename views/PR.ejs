@@ -47,6 +47,11 @@
     </div>
 
     <div class="mb-3">
+      <label for="supplierdetail" class="form-label">Supplier Detail</label>
+      <input type="text" class="form-control" id="supplierdetail" name="supplierdetail" value="<%= pr.supplierdetail %>">
+    </div>
+
+    <div class="mb-3">
       <label for="date" class="form-label">Date</label>
       <input type="date" class="form-control" id="date" name="date" value="<%= pr.date ? new Date(pr.date).toISOString().substr(0, 10) : '' %>">
     </div>
