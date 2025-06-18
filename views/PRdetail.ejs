@@ -11,48 +11,93 @@
   <header class="no-print">
     <% include index.ejs %>
   </header>
-  <h1>PR #<%= pr.PRno || pr._id %> Details</h1>
-  <p><strong>Name:</strong> <%= pr.name %></p>
-  <p><strong>Customer:</strong> <%= pr.customer %></p>
-  <p><strong>Supplier:</strong> <%= pr.supplier %></p>
-  <p><strong>Date:</strong> <%= pr.date ? pr.date.toISOString().substr(0,10) : "" %></p>
-  <p><strong>Note:</strong> <%= pr.note %></p>
-  <a href="/pr/<%= pr._id %>/pritem" class="btn btn-primary my-3">➕ Add New Item</a>
 
-  <h2>Items</h2>
-  <% if (pr.pritem && pr.pritem.length > 0) { %>
-    <table border="1" cellpadding="5" cellspacing="0">
+  <!-- Logo and address -->
+  <div class="container-fluid d-flex align-items-start my-4"style="margin-left: 10px;>
+    <!-- Logo -->
+    <a href="/">
+      <img src="https://www.mot.co.th/wp-content/uploads/2024/04/%E0%B9%82%E0%B8%A5%E0%B9%82%E0%B8%81%E0%B9%89-MOTNew-%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%8A%E0%B8%B1%E0%B8%94.png"
+           style="width: 180px; height: 120px; margin-right: 15px;" />
+    </a>
+
+    <!-- Text -->
+    <div style="margin-top: 1.5%; margin-left: 30px; font-size: 18px;">
+      <p class="mb-0">835/6&nbsp;&nbsp;&nbsp;ถ.&nbsp;สรงประภา&nbsp;&nbsp;&nbsp;แขวงดอนเมือง&nbsp;&nbsp;&nbsp;เขตดอนเมือง&nbsp;&nbsp;&nbsp;กรุงเทพฯ&nbsp;&nbsp;&nbsp;10210&nbsp;&nbsp;&nbsp;โทร +66 (0)2 928-6806&nbsp;&nbsp;&nbsp;แฟกซ์ +66 (0)2 928-6807</p>
+      <p class="mb-0">835/6,&nbsp;Song Prapha Road,&nbsp;Don Mueang Sub-district,&nbsp;Don Mueang District,&nbsp;Bangkok&nbsp;Thailand&nbsp;Tel: +66 (0)2 928-6806&nbsp;Fax: +66 (0)2 928-6807</p>
+      <p class="mb-0">www.mot.co.th</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container-fluid" style="margin-left: 10px;">
+    <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
       <thead>
         <tr>
-          <th>Quantity</th><th>Unit</th><th>SN</th><th>Description</th><th>In Stock</th><th>Out Stock</th><th>Price</th><th>PPU</th><th>Remark</th><th>Total</th>
+          <th colspan="11" style="text-align: center;"><strong>ใบขอซื้อสินค้า</strong>(PURCHASE REQUISITION)</th>
         </tr>
       </thead>
-      <tbody>
-        <% pr.pritem.forEach(item => { %>
-          <tr>
-            <td><%= item.quantity %></td>
-            <td><%= item.unit %></td>
-            <td><%= item.sn %></td>
-            <td><%= item.description %></td>
-            <td><%= item.instock %></td>
-            <td><%= item.outstock %></td>
-            <td><%= item.price %></td>
-            <td><%= item.ppu %></td>
-            <td><%= item.remark %></td>
-            <td><%= item.total %></td>
-            <td>
-              <a href="/pr/<%= pr._id %>/pritem/<%= item._id %>/edit" class="btn btn-sm btn-warning">✏️ Edit</a>
-                <form method="POST" action="/pr/<%= pr._id %>/pritem/<%= item._id %>/delete" style="display:inline;">
-                  <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this item?')">🗑️ Delete</button>
-                </form>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  <% } else { %>
-    <p>No items added yet.</p>
-  <% } %>
+    <p><strong>Name:</strong> <%= pr.name %></p>
+    <p><strong>Project No:</strong> <%= pr.note %></p>
+    <p><strong>Customer:</strong> <%= pr.customer %></p>
+    <p><strong>Date:</strong> <%= pr.date ? pr.date.toISOString().substr(0,10) : "" %></p>
+    <p><strong>PR No:</strong> <%= pr.PRno || pr._id %>-<%= pr.dept %>-MOT Details</p>
 
+
+
+    <% if (pr.pritem && pr.pritem.length > 0) { %>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+            <th>SN</th>
+            <th>Description</th>
+            <th>In Stock</th>
+            <th>Out Stock</th>
+            <th>Price</th>
+            <th>PPU</th>
+            <th>Remark</th>
+            <th class="no-print" style="width: 150px;">
+              <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <span>Actions</span>
+                <a href="/pr/<%= pr._id %>/pritem" class="btn btn-sm btn-primary no-print">➕</a>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% pr.pritem.forEach((item, itemIndex) => { %>
+            <tr>
+              <td><%= itemIndex + 1 %></td>
+              <td><%= item.quantity %></td>
+              <td><%= item.unit %></td>
+              <td><%= item.sn %></td>
+              <td><%= item.description %></td>
+              <td><%= item.instock %></td>
+              <td><%= item.outstock %></td>
+              <td><%= item.price %></td>
+              <td><%= item.ppu %></td>
+              <td><%= item.remark %></td>
+              <td class="no-print text-end" style="width: 150px;">
+                <div class="d-flex justify-content-end align-items-center gap-1">
+                  <a href="/pr/<%= pr._id %>/pritem/<%= item._id %>/edit" class="btn btn-sm btn-warning">✏️</a>
+                  <form method="POST" action="/pr/<%= pr._id %>/pritem/<%= item._id %>/delete">
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this item?')">🗑️</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+          <tr>
+            <td colspan="8" class="text-end"><strong>Total Value:</strong></td>
+            <td colspan="3"><strong><%= totalPrice.toFixed(2) %></strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Supplier:</strong> <%= pr.supplier %></p>
+    <% } else { %>
+      <p>No items added yet.</p>
+    <% } %>
+  </div>
 </body>
 </html>

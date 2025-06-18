@@ -186,9 +186,21 @@ router.get("/list", async (req, res) => {
 // GET PR detail page with all PRITEMs
 router.get("/:prId", async (req, res) => {
   try {
-    const pr = await PR.findById(req.params.prId).populate("pritem");
+    const pr = await PR.findById(req.params.prId).populate("pritem").lean();
     if (!pr) return res.status(404).send("PR not found");
-    res.render("prdetail", { pr });
+    const ppu = pr.pritem.price/pr.pritem.quantity;
+    // Calculate total price
+    const totalPrice = (pr.pritem || []).reduce((sum, item) => {
+      return sum + parseFloat(item.price || 0);
+    }, 0);
+        pr.pritem = pr.pritem.map(item => {
+      const quantity = parseFloat(item.quantity || 0);
+      const price = parseFloat(item.price || 0);
+      item.ppu = quantity !== 0 ? (price / quantity).toFixed(2) : "0.00";
+      return item;
+    });
+
+    res.render("prdetail", { pr, totalPrice , ppu }); // Pass it to EJS
   } catch (err) {
     res.status(500).send(err.message);
   }

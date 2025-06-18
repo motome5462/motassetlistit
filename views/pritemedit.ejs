@@ -30,7 +30,7 @@
       <textarea class="form-control" id="description" name="description"><%= pritem.description %></textarea>
     </div>
     <div class="mb-3">
-      <label class="form-label">Stock Location</label><br/>
+      <label class="form-label">Stock</label><br/>
       <div class="form-check form-check-inline">
         <input class="form-check-input pritem" type="radio" name="stockLocation" id="instockRadio" value="instock"
           <%= pritem.instock === '/' ? 'checked' : '' %>>
@@ -47,16 +47,8 @@
       <input class="form-control" type="text" id="price" name="price" value="<%= pritem.price %>" />
     </div>
     <div class="mb-3">
-      <label for="ppu" class="form-label">PPU</label>
-      <input class="form-control" type="text" id="ppu" name="ppu" value="<%= pritem.ppu %>" />
-    </div>
-    <div class="mb-3">
       <label for="remark" class="form-label">Remark</label>
       <textarea class="form-control" id="remark" name="remark"><%= pritem.remark %></textarea>
-    </div>
-    <div class="mb-3">
-      <label for="total" class="form-label">Total</label>
-      <input class="form-control" type="text" id="total" name="total" value="<%= pritem.total %>" />
     </div>
     <button type="submit" class="btn btn-primary"><%= pritem._id ? 'Update Item' : 'Add Item' %></button>
   </form>

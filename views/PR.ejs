@@ -32,6 +32,11 @@
     </div>
 
     <div class="mb-3">
+      <label for="dept" class="form-label">Department</label>
+      <input type="text" class="form-control" id="dept" name="dept" value="<%= pr.dept %>"> 
+    </div>
+
+    <div class="mb-3">
       <label for="customer" class="form-label">Customer</label>
       <input type="text" class="form-control" id="customer" name="customer" value="<%= pr.customer %>">
     </div>
@@ -74,16 +79,6 @@
     <div class="mb-3">
       <label for="discount" class="form-label">Discount</label>
       <input type="text" class="form-control" id="discount" name="discount" value="<%= pr.discount || '' %>">
-    </div>
-
-    <div class="mb-3">
-      <label for="vat" class="form-label">VAT</label>
-      <input type="text" class="form-control" id="vat" name="vat" value="<%= pr.vat || '' %>">
-    </div>
-
-    <div class="mb-3">
-      <label for="net" class="form-label">Net</label>
-      <input type="text" class="form-control" id="net" name="net" value="<%= pr.net || '' %>">
     </div>
 
     <div class="mb-3">

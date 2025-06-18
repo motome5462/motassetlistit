@@ -18,7 +18,7 @@
     SN: <input type="text" name="sn" value="<%= pritem.sn %>" /><br/>
     Description: <textarea name="description"><%= pritem.description %></textarea><br/>
     <div class="mb-3">
-      <label class="form-label">Stock Location</label><br/>
+      <label class="form-label">Stock</label><br/>
       <div class="form-check form-check-inline">
         <input class="form-check-input pritem" type="radio" name="stockLocation" id="instockRadio" value="instock"
           data-checked="<%= pritem.instock === '/' %>" <%= pritem.instock === '/' ? 'checked' : '' %>>
@@ -31,9 +31,7 @@
       </div>
     </div>
     Price: <input type="text" name="price" value="<%= pritem.price %>" /><br/>
-    PPU: <input type="text" name="ppu" value="<%= pritem.ppu %>" /><br/>
     Remark: <textarea name="remark"><%= pritem.remark %></textarea><br/>
-    Total: <input type="text" name="total" value="<%= pritem.total %>" /><br/>
     <button type="submit">Add Item</button>
   </form>
 

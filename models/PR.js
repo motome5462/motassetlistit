@@ -7,6 +7,7 @@ const PRSchema = new mongoose.Schema({
   manual_PRno: { type: Number },
   date:{ type: Date, default: null },
   name: { type: String, default: "" },
+  dept: { type: String, default: "" },
   note:{ type: String, default: "" },
   customer:{ type: String, default: "" },
   supplier:{ type: String, default: "" },
