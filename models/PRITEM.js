@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 
 
-const PRITEM  = new mongoose.Schema({
+const PRITEMSchema  = new mongoose.Schema({
     quantity: { type: String, default: "" },
     unit: {type: String, default: ""},
     sn: {type: String, default: ""},
@@ -20,4 +20,4 @@ const PRITEM  = new mongoose.Schema({
 
 
 })
-module.exports = mongoose.model("PRITEM",PRITEM)
+module.exports = mongoose.model("PRITEM",PRITEMSchema)

@@ -14,7 +14,7 @@ const PRSchema = new mongoose.Schema({
   supplierdetail:{ type: String, default: "" },
   term:{ type: String, default: "" },
   delivery:{ type: String, default: "" },
-  vlidity:{ type: String, default: "-" },
+  validity:{ type: String, default: "-" },
   transport:{ type: String, default: "-" },
   ref:{ type: String, default: "" },
   discount:{type: String, default: "" },
@@ -29,7 +29,6 @@ PRSchema.pre("save", async function (next) {
 
   if (!doc.isNew) return next(); // Only assign PRno for new documents
 
-  const Counter = require("./Counter");
   let counter = await Counter.findById("PRno");
   if (!counter) {
     counter = await Counter.create({ _id: "PRno", seq: 0 });

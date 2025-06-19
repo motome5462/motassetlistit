@@ -8,69 +8,84 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <header class="no-print">
+  <header class="no-print mb-4">
     <% include index.ejs %>
   </header>  
 
-  <h1>Add PR Item to PR #<%= pr.PRno || pr._id %></h1>
-
-  <form action="/pr/<%= pr._id %>/pritem" method="POST">
-    <div class="mb-3">
-      <label for="quantity" class="form-label">Quantity</label>
-      <input class="form-control" type="text" id="quantity" name="quantity" value="<%= pritem.quantity %>" />
-    </div>
-
-    <div class="mb-3">
-      <label for="unit" class="form-label">Unit</label>
-      <input class="form-control" type="text" id="unit" name="unit" value="<%= pritem.unit %>" />
-    </div>
-
-    <div class="mb-3">
-      <label for="sn" class="form-label">SN</label>
-      <input class="form-control" type="text" id="sn" name="sn" value="<%= pritem.sn %>" />
-    </div>
-
-    <div class="mb-3">
-      <label for="description" class="form-label">Description</label>
-      <textarea class="form-control" id="description" name="description"><%= pritem.description %></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Stock</label><br/>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input pritem" type="radio" name="stockLocation" id="instockRadio" value="instock"
-          <%= pritem.instock === '/' ? 'checked' : '' %> >
-        <label class="form-check-label" for="instockRadio">In Stock</label>
+  <div class="container my-4">
+    <div class="card shadow">
+      <div class="card-header text-white"style="background-color: #0099ff;">
+        <h3 class="mb-0">Add PR Item to PR #<%= pr.PRno || pr._id %></h3>
       </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input pritem" type="radio" name="stockLocation" id="outstockRadio" value="outstock"
-          <%= pritem.outstock === '/' ? 'checked' : '' %> >
-        <label class="form-check-label" for="outstockRadio">Out Stock</label>
-      </div>
-    </div>
 
-    <div class="mb-3">
-      <label for="price" class="form-label">Price</label>
-      <input class="form-control" type="text" id="price" name="price" value="<%= pritem.price %>" />
-    </div>
+      <div class="card-body">
+        <form action="/pr/<%= pr._id %>/pritem" method="POST">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="quantity" class="form-label">Quantity</label>
+              <input class="form-control" type="text" id="quantity" name="quantity" value="<%= pritem.quantity %>" />
+            </div>
 
-    <div class="mb-3">
-      <label for="remark" class="form-label">Remark</label>
-      <textarea class="form-control" id="remark" name="remark"><%= pritem.remark %></textarea>
-    </div>
+            <div class="col-md-4 mb-3">
+              <label for="unit" class="form-label">Unit</label>
+              <input class="form-control" type="text" id="unit" name="unit" value="<%= pritem.unit %>" />
+            </div>
 
-    <button type="submit" class="btn btn-primary">Add Item</button>
-  </form>
+            <div class="col-md-4 mb-3">
+              <label for="sn" class="form-label">P/N</label>
+              <input class="form-control" type="text" id="sn" name="sn" value="<%= pritem.sn %>" />
+            </div>
+          </div>
 
-  <% if (errors) { %>
-    <div class="alert alert-danger mt-3">
-      <ul>
-        <% for (let field in errors) { %>
-          <li><%= field %>: <%= errors[field].message || errors[field] %></li>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="2"><%= pritem.description %></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Stock</label><br/>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input pritem" type="radio" name="stockLocation" id="instockRadio" value="instock"
+                <%= pritem.instock === '/' ? 'checked' : '' %> >
+              <label class="form-check-label" for="instockRadio">In Stock</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input pritem" type="radio" name="stockLocation" id="outstockRadio" value="outstock"
+                <%= pritem.outstock === '/' ? 'checked' : '' %> >
+              <label class="form-check-label" for="outstockRadio">Out Stock</label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="price" class="form-label">Price</label>
+              <input class="form-control" type="text" id="price" name="price" value="<%= pritem.price %>" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="remark" class="form-label">Remark</label>
+              <textarea class="form-control" id="remark" name="remark" rows="2"><%= pritem.remark %></textarea>
+            </div>
+          </div>
+
+          <div class="text-end">
+            <button type="submit" class="btn btn-success px-4">Add Item</button>
+          </div>
+        </form>
+
+        <% if (errors) { %>
+          <div class="alert alert-danger mt-4">
+            <h5>Form Errors:</h5>
+            <ul class="mb-0">
+              <% for (let field in errors) { %>
+                <li><strong><%= field %>:</strong> <%= errors[field].message || errors[field] %></li>
+              <% } %>
+            </ul>
+          </div>
         <% } %>
-      </ul>
+      </div>
     </div>
-  <% } %>
+  </div>
 
   <script src="/javascripts/pritem.js"></script>
 </body>
