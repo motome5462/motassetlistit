@@ -78,8 +78,10 @@
                   <option value="Other" <%=devicetype==='Other' ? 'selected' : '' %>>Other</option>
                 </select>
               </div>
-
-              <button type="submit" class="btn btn-primary w-100">Filter</button>
+<div class="d-flex justify-content-between gap-2">
+  <button type="submit" class="btn btn-primary w-50">Filter</button>
+  <button type="button" class="btn btn-success w-50" data-bs-toggle="modal" data-bs-target="#exportColumnsModal">ทำเป็นไฟล์ Excel</button>
+</div>
             </form>
           </div>
         </div>
@@ -841,7 +843,6 @@
   <!-- ปุ่มที่เปิด modal -->
   <div class="container mt-5 no-print" style="margin-bottom: 50px; margin-left: 41%;">
     <a href="/" class="btn btn-primary">กลับหน้าแรก</a>
-    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exportColumnsModal">ทำเป็นไฟล์ Excel</button>
   </div>
 
   </div>
