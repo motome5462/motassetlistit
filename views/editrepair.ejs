@@ -1,66 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Repair Detail</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>แก้ไขรายการซ่อม</title>
+  <link rel="stylesheet" href="/stylesheets/Report.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <% include index.ejs %>
-    </header>
-    <div class="container mt-5">
-        <h1>แก้ไขการซ่อม</h1>
-        <% if (data.repair) { %>
-        <form action="/assetlist/editrepair/<%= data.repair._id %>?_method=PUT" method="POST" class="mt-5">
-            <div class="mb-3">
-                <label class="form-label">Computer Name</label>
-                <input type="text" class="form-control" value="<%= data.repair.computername ? data.repair.computername.computername : '' %>" readonly>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Detail Repair</label>
-                <input type="text" class="form-control" name="detailrepair" value="<%= data.repair.detailrepair %>">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Value</label>
-                <input type="text" class="form-control" name="value" value="<%= data.repair.value %>">
+  <header class="no-print mb-4">
+    <% include index.ejs %>
+  </header>
+
+  <div class="container my-4">
+    <% if (repair) { %>
+    <div class="card shadow">
+      <div class="card-header text-white" style="background-color: #0099ff;">
+        <h3 class="mb-0">แก้ไขรายการซ่อม</h3>
+      </div>
+
+      <div class="card-body">
+        <form action="/Report/repair/edit/<%= repair._id %>?_method=PUT" method="POST">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Computer Name</label>
+              <input type="text" class="form-control" value="<%= repair.computername?.computername || '' %>" readonly>
             </div>
 
-            <div class="mb-3">
-                <label for="success" class="form-label">Success:</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="success" name="success" value="success" <% if (data.repair.success) { %> checked <% } %>>
-                </div>
-                <label for="fail" class="form-label">Fail:</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="fail" name="fail" value="fail" <% if (data.repair.fail) { %> checked <% } %>>
-                </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">วันที่ซ่อม (Repair Date)</label>
+              <input type="date" class="form-control" name="repairdate" value="<%= repair.repairdate?.toISOString().split('T')[0] %>">
             </div>
+          </div>
 
-            <div class="mb-3">
-                <label class="form-label">Remark</label>
-                <input type="text" class="form-control" name="repairremark" value="<%= data.repair.repairremark %>">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Repair Date</label>
-                <input type="date" class="form-control" name="repairdate" value="<%= data.repair.repairdate.toISOString().split('T')[0] %>">
-            </div>
+          <div class="mb-3">
+            <label class="form-label">รายละเอียดการซ่อม (Detail Repair)</label>
+            <input type="text" class="form-control" name="detailrepair" value="<%= repair.detailrepair %>" required>
+          </div>
 
-            <button type="submit" class="btn btn-primary">Submit</button>
+          <div class="mb-3">
+            <label class="form-label">มูลค่า (Value)</label>
+            <input type="number" class="form-control" name="value" step="0.01" value="<%= repair.value %>">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">สถานะ (Status)</label><br>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="success" value="success" id="success" <%= repair.success ? 'checked' : '' %>>
+              <label class="form-check-label" for="success">Success</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="fail" value="fail" id="fail" <%= repair.fail ? 'checked' : '' %>>
+              <label class="form-check-label" for="fail">Fail</label>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">หมายเหตุ (Remarks)</label>
+            <input type="text" class="form-control" name="repairremark" value="<%= repair.repairremark %>">
+          </div>
+
+          <div class="text-end">
+            <button type="submit" class="btn btn-success px-4">บันทึกการเปลี่ยนแปลง</button>
+            <a href="/Report/getalldetail" class="btn btn-secondary ms-2">ย้อนกลับ</a>
+          </div>
         </form>
-        <% } else { %>
-            <p>Data not found</p>
-        <% } %>
+      </div>
     </div>
+    <% } else { %>
+      <div class="alert alert-warning">ไม่พบข้อมูลการซ่อม</div>
+    <% } %>
+  </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-+GaG3ip9sSQn2G6mWpR86qc433Zuwb0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-s0U0omKBkEl3B2hwhV1ngZV3Eqy1R30ffzGqwNBqrnVPh+4Mzf4FRkS5kNSqlmCw" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-NPT01BYFm1q2A7ixcvK+eSsY2VJ0wn8Bb5O8+3io/QLtqOyF5voFt9k/2MREj7h5" crossorigin="anonymous"></script>
-
-    <script src="/javascripts/editrepair.js"></script>
-
-
-
+  <script src="/javascripts/editrepair.js"></script>
 </body>
 </html>

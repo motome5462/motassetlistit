@@ -93,7 +93,22 @@
     <div class="mt-5 <%= index !== 0 ? 'page-break' : '' %>" style="margin-bottom: 30px;">
       <div class="p-4" style="border: 3px solid black; border-radius: 8px;">
         
-        <h2 style="font-size: 50px">User Owner</h2>
+        <div class="row mb-3 align-items-center">
+          <!-- Title on the left -->
+          <div class="col text-start">
+            <h2 style="font-size: 50px;">User Owner</h2>
+          </div>
+
+          <!-- Buttons on the right -->
+          <div class="col text-end no-print">
+            <a href="/Report/newowner/<%= item._id %>" class="btn btn-success me-2">เปลี่ยนผู้ใช้ใหม่</a>
+            <a href="/Report/edit/<%= item._id %>" class="btn btn-warning me-2">แก้ไขผู้ใช้</a>
+            <form action="/Report/delete/<%= item._id %>?_method=DELETE" method="POST" class="d-inline" onsubmit="return confirmDelete();">
+              <button type="submit" class="btn btn-danger">ลบข้อมูล</button>
+            </form>
+          </div>
+        </div>
+
         <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
           <thead>
             <tr>
@@ -264,9 +279,19 @@
             <td><%= item.other3 %> </td>
           </tr>
         </table>
+        <div class="row mb-3 align-items-center">
+          <!-- Title on the left -->
+          <div class="col text-start">
+            <label style="font-size: 30px"><strong>Detail Repair</strong></label>
+          </div>
+
+          <!-- Buttons on the right -->
+          <div class="col text-end no-print">
+            <a href="/Report/newrepair/<%= item._id %>" class="btn btn-success btn-rounded">เพิ่มการซ่อม</a>
+          </div>
+        </div>
         
         <% if (item.repairs && item.repairs.length > 0) { %>
-          <label style="font-size: 30px"><strong>Detail Repair</strong></label>
           <table class="table table-bordered mt-2" style="border: 1px solid black;">
             <thead>
               <tr>
@@ -290,7 +315,22 @@
                   <td><%= repair.value %></td>
                   <td><%= repair.success %></td>
                   <td><%= repair.fail %></td>
-                  <td><%= repair.repairremark %></td>
+                  <td>
+                    <div style="display: flex;">
+                      <div style="flex-grow: 1;">
+                        <%= repair.repairremark %>
+                      </div>
+                      <div class="no-print" >
+                        <!-- Edit Repair Button -->
+                        <a href="/Report/repair/edit/<%= repair._id %>" class="btn btn-warning btn-sm mb-1">แก้ไข</a>
+
+                        <!-- Delete Repair Form -->
+                        <form action="/Report/repair/delete/<%= repair._id %>?_method=DELETE" method="POST" style="display:inline;" onsubmit="return confirm('ยืนยันการลบรายการซ่อมนี้หรือไม่?');">
+                          <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                        </form>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               <% }); %>
               <tr>
@@ -838,12 +878,7 @@
     </div>
   </div>
   
-  <!-- เนื้อหา HTML ที่มีอยู่ของคุณ -->
-  
-  <!-- ปุ่มที่เปิด modal -->
-  <div class="container mt-5 no-print" style="margin-bottom: 50px; margin-left: 41%;">
-    <a href="/" class="btn btn-primary">กลับหน้าแรก</a>
-  </div>
+
 
   </div>
   <script src="/javascripts/Report.js"></script>

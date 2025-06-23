@@ -189,18 +189,19 @@ router.get("/:prId", async (req, res) => {
     const pr = await PR.findById(req.params.prId).populate("pritem").lean();
     if (!pr) return res.status(404).send("PR not found");
 
+    // Calculate price total
+    pr.pritem = pr.pritem.map(item => {
+      const quantity = parseFloat(item.quantity || 0);
+      const price = parseFloat(item.ppu || 0);
+      item.price = quantity !== 0 ? (price * quantity).toFixed(2) : "0.00";
+      return item;
+    });
+
     // Calculate total price
     const totalPrice = (pr.pritem || []).reduce((sum, item) => {
       return sum + parseFloat(item.price || 0);
     }, 0);
 
-    // Calculate per-unit price for each item
-    pr.pritem = pr.pritem.map(item => {
-      const quantity = parseFloat(item.quantity || 0);
-      const price = parseFloat(item.price || 0);
-      item.ppu = quantity !== 0 ? (price / quantity).toFixed(2) : "0.00";
-      return item;
-    });
 
     // Calculate VAT and Net
     const vat = +(totalPrice * 0.07).toFixed(2);

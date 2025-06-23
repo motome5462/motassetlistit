@@ -802,11 +802,6 @@ router.put('/edit/:id', upload.fields([
 });
 
 
-
-
-
-
-
 router.delete("/delete/:id", async function (req, res, next) {
     try {
         let id = req.params.id;
@@ -843,6 +838,107 @@ router.delete("/delete/:id", async function (req, res, next) {
         });
     }
 });
+
+router.get("/repair/edit/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send({
+                message: "Invalid ID",
+                success: false
+            });
+        }
+
+        const repair = await repairModel.findById(id).populate('computername');
+
+        if (!repair) {
+            return res.status(404).send({
+                message: "Repair record not found",
+                success: false
+            });
+        }
+
+        res.render('editrepair', { repair }); 
+    } catch (error) {
+        console.error("Error fetching repair:", error);
+        return res.status(500).send({
+            message: "Server error",
+            success: false
+        });
+    }
+});
+
+router.put("/repair/edit/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send({
+                message: "Invalid ID",
+                success: false
+            });
+        }
+
+        const updateData = {
+            detailrepair: req.body.detailrepair || "",
+            value: req.body.value || "",
+            success: req.body.success || "",
+            fail: req.body.fail || "",
+            repairremark: req.body.repairremark || "",
+            repairdate: req.body.repairdate || new Date(),
+        };
+
+        const updated = await repairModel.updateOne({ _id: id }, { $set: updateData });
+
+        if (updated.modifiedCount === 0) {
+            return res.status(404).send({
+                message: "Repair update failed or not found",
+                success: false
+            });
+        }
+
+        res.redirect("/assetlist/getalldetail");
+    } catch (error) {
+        console.error("Error updating repair:", error);
+        return res.status(500).send({
+            message: "Server error",
+            success: false
+        });
+    }
+});
+
+
+router.delete("/repair/delete/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send({
+                message: "Invalid ID",
+                success: false
+            });
+        }
+
+        const deleted = await repairModel.deleteOne({ _id: id });
+
+        if (deleted.deletedCount === 0) {
+            return res.status(404).send({
+                message: "Repair record not found",
+                success: false
+            });
+        }
+
+        res.redirect("/assetlist/getalldetail");
+    } catch (error) {
+        console.error("Error deleting repair:", error);
+        return res.status(500).send({
+            message: "Server error",
+            success: false
+        });
+    }
+});
+
 
 
 
@@ -1532,7 +1628,7 @@ router.post("/newrepair/:id", async function (req, res, next) {
 
         
 
-        res.redirect(`/assetlist/getalldetail`);
+        res.redirect(`/Report/getalldetail`);
 
     } catch (error) {
         console.error("Error creating new repair:", error);

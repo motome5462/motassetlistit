@@ -18,7 +18,7 @@
         <div class="row">
             <div class="form-container" >
                 <% if (data.assetlist) { %>
-                    <form action="/assetlist/edit/<%= data.assetlist._id %>?_method=PUT" method="POST" enctype="multipart/form-data" class="mt-5">
+                    <form action="/Report/edit/<%= data.assetlist._id %>?_method=PUT" method="POST" enctype="multipart/form-data" class="mt-5">
                       <h2>User</h2>
                         <table class=" table table-bordered" style="border: 1px solid black;">
                             <tbody>
@@ -598,7 +598,7 @@
       <% } %>
 
       <div style="margin-bottom: 70px;margin-left: 44%; margin-top: 50px;">
-        <a href="/assetlist/getalldetail" class="btn btn-primary" >กลับ</a>
+        <a href="/Report/getalldetail" class="btn btn-primary" >กลับ</a>
         <button type="submit" class="btn btn-success" >บันทึกการแก้ไข</button>
       </div>
 

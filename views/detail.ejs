@@ -76,6 +76,7 @@
                           <th>Success</th>
                           <th>Fail</th>
                           <th>Remark</th>
+                          <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -89,6 +90,15 @@
                             <td><%= repair.success %></td>
                             <td><%= repair.fail %></td>
                             <td><%= repair.repairremark %></td>
+                            <td>
+                              <!-- Edit Repair Button -->
+                              <a href="/assetlist/repair/edit/<%= repair._id %>" class="btn btn-warning btn-sm mb-1">แก้ไข</a>
+
+                              <!-- Delete Repair Form -->
+                              <form action="/assetlist/repair/delete/<%= repair._id %>?_method=DELETE" method="POST" style="display:inline;" onsubmit="return confirm('ยืนยันการลบรายการซ่อมนี้หรือไม่?');">
+                                <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                              </form>
+                            </td>
                           </tr>
                         <% }); %>
                         <tr>
