@@ -33,7 +33,7 @@
         <p class="mb-0">www.mot.co.th</p>
       </div>
     </div>
-
+    
     <!-- Main Content -->
     <div class="container-fluid">
       <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
@@ -41,6 +41,7 @@
           <tr>
             <th colspan="10" style="text-align: center;">
               <strong>ใบขอซื้อสินค้า</strong> (PURCHASE REQUISITION)
+              <button class="btn btn-success no-print" onclick="exportPR('<%= pr._id %>')">Export</button>
             </th>
           </tr>
         </thead>
@@ -207,5 +208,6 @@
         <% } %>
     </div>
   </div>
+  <script src="/javascripts/prdetail.js"></script>
 </body>
 </html>

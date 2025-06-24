@@ -3,6 +3,8 @@ const router = express.Router();
 
 const PR = require("../models/PR");
 const PRITEM = require("../models/PRITEM");
+const ExcelJS = require('exceljs');
+const path = require('path');
 
 // Redirect /pr to /pr/list
 router.get("/", (req, res) => {
@@ -219,6 +221,87 @@ router.get("/:prId", async (req, res) => {
   }
 });
 
+router.get('/export/:id', async (req, res) => {
+  try {
+    const pr = await PR.findById(req.params.id).populate('pritem');
+
+        // --- Price ---
+    pr.pritem = pr.pritem.map(item => {
+      const quantity = parseFloat(item.quantity || "0");
+      const unitPrice = parseFloat(item.ppu || "0");
+      const price = quantity * unitPrice;
+
+      item.price = price.toFixed(2);
+      return item;
+    });
+
+    // ---Calculate totals ---
+    const totalPrice = pr.pritem.reduce((sum, item) => {
+      return sum + parseFloat(item.price || "0");
+    }, 0);
+
+    const discount = parseFloat(pr.discount || "0");
+    const vat = +(totalPrice * 0.07).toFixed(2);
+    const net = +(totalPrice + vat - discount).toFixed(2);
+
+
+    pr.totalPrice = totalPrice.toFixed(2);
+    pr.vat = vat.toFixed(2);
+    pr.net = net.toFixed(2);
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(path.join(__dirname, '../public/templates/PR_Form.xlsx'));
+    const worksheet = workbook.getWorksheet('1');
+
+
+    // --- Fill PR main data (adjust cell positions as needed) ---
+    worksheet.getCell('D7').value = pr.name;
+    worksheet.getCell('D8').value = pr.note;
+    worksheet.getCell('I7').value = pr.customer;
+    const dateObj = pr.date ? new Date(pr.date) : null;
+    worksheet.getCell('M7').value = dateObj instanceof Date && !isNaN(dateObj) ? dateObj : '';
+    worksheet.getCell('M7').numFmt = 'dd/mm/yyyy';
+    worksheet.getCell('D33').value = pr.supplier;
+    worksheet.getCell('D34').value = pr.supplierdetail;
+    worksheet.getCell('J33').value = pr.totalPrice;
+    worksheet.getCell('J34').value = pr.discount;
+    worksheet.getCell('J35').value = pr.vat;
+    worksheet.getCell('J36').value = pr.net;
+    worksheet.getCell('M33').value = pr.term;
+    worksheet.getCell('M34').value = pr.delivery;
+    worksheet.getCell('L35').value = pr.validity;
+    worksheet.getCell('L36').value = pr.transport;
+    worksheet.getCell('M37').value = pr.ref;
+
+    // --- Insert PRITEMs starting at B11 ---
+    const startRow = 11;
+
+    pr.pritem.forEach((item, i) => {
+      const row = worksheet.getRow(startRow + i);
+      row.getCell(2).value = i + 1;         // Column B (2nd column)
+      row.getCell(3).value = item.quantity; // Column C
+      row.getCell(4).value = item.unit;     // Column D
+      row.getCell(5).value = item.sn;       // Column E
+      row.getCell(6).value = item.description; // Column F
+      row.getCell(8).value = item.instock;  // Column H
+      row.getCell(9).value = item.outstock; // Column I
+      row.getCell(10).value = item.price;   // Column J
+      row.getCell(11).value = item.ppu;     // Column K
+      row.getCell(12).value = item.remark;  // Column L
+      row.commit();
+    });
+
+
+    // --- Send file to browser ---
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=PR_${pr.PRno|| pr._id}-${pr.dept}-MOT.xlsx`);
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Failed to export PR');
+  }
+});
 
 
 module.exports = router;
