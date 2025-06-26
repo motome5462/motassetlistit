@@ -1,193 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PO Detail / List</title>
+  <meta charset="UTF-8" />
+  <title>PO Detail</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/stylesheets/Report.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="container mt-4">
-  <header class="no-print mb-4">
-        <% include index.ejs %>
-  </header>
-  <% if (typeof poList !== 'undefined') { %>
-    <h1 class="mb-4">PO List with PR and PRITEM Details</h1>
+<body>
+  <header class="no-print">
+    <% include index.ejs %>
+  </header>  
 
-    <% if (!poList || poList.length === 0) { %>
-      <div class="alert alert-info">No Purchase Orders found.</div>
-    <% } %>
+  <div class="container mt-4">
+    <h1>PO Detail: <%= po.POno || po._id %></h1>
+    <hr />
 
-    <% poList.forEach(po => { %>
-      <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-          <strong>PO# <%= po.POno || po._id %></strong> - Date: <%= po.date ? new Date(po.date).toLocaleDateString("th-TH") : '-' %>
+    <% if (po.pr) { %>
+      <div class="mb-3">
+        <strong>Supplier:</strong> <%= po.pr.supplier %><br />
+        <strong>Tax ID:</strong> <%= po.Taxpayerno %><br />
+        <strong>Phone:</strong> <%= po.Tel %><br />
+        <strong>Mobile:</strong> <%= po.mobile %><br />
+        <strong>Email:</strong> <%= po.email %><br />
+        <strong>PO Date:</strong> <%= po.date ? po.date.toISOString().substr(0, 10) : '' %><br />
+        <strong>Delivery Date:</strong> <%= po.deliverydate ? po.deliverydate.toISOString().substr(0, 10) : '' %>
+      </div>
+
+      <h4 class="mt-4">Items</h4>
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>PR No:</strong> <%= po.pr.PRno || po.pr._id %> — <%= po.pr.name %> | <%= po.pr.customer %>
         </div>
-        <div class="card-body">
-          <p><strong>Manual PO:</strong> <%= po.manual_POno || '-' %></p>
-          <p><strong>Attention:</strong> <%= po.attention || '-' %></p>
-          <p><strong>Payment Term:</strong> <%= po.Paymentterm || '-' %></p>
-          <p><strong>Linked PR(s):</strong></p>
-
-          <% if (po.pr && po.pr.length > 0) { %>
-            <% po.pr.forEach(pr => { %>
-              <div class="border p-2 mb-2">
-                <h5>PR# <%= pr.PRno || pr._id %> - <%= pr.name %></h5>
-                <p><strong>Note:</strong> <%= pr.note || '-' %></p>
-                <p><strong>Customer:</strong> <%= pr.customer || '-' %></p>
-                <p><strong>Supplier:</strong> <%= pr.supplier || '-' %></p>
-                <p><strong>Delivery:</strong> <%= pr.delivery || '-' %></p>
-
-                <% if (pr.pritem && pr.pritem.length > 0) { %>
-                  <table class="table table-sm table-bordered mt-2">
-                    <thead class="table-secondary">
-                      <tr>
-                        <th>#</th>
-                        <th>Qty</th>
-                        <th>Unit</th>
-                        <th>SN</th>
-                        <th>Description</th>
-                        <th>In</th>
-                        <th>Out</th>
-                        <th>PPU</th>
-                        <th>Total</th>
-                        <th>Remark</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% pr.pritem.forEach((item, index) => { %>
-                        <tr>
-                          <td><%= index + 1 %></td>
-                          <td><%= item.quantity || '-' %></td>
-                          <td><%= item.unit || '-' %></td>
-                          <td><%= item.sn || '-' %></td>
-                          <td><%= item.description || '-' %></td>
-                          <td><%= item.instock || '-' %></td>
-                          <td><%= item.outstock || '-' %></td>
-                          <td><%= item.ppu || '-' %></td>
-                          <td><%= item.total || '-' %></td>
-                          <td><%= item.remark || '-' %></td>
-                        </tr>
-                      <% }) %>
-                    </tbody>
-                  </table>
-                <% } else { %>
-                  <p class="text-muted">No items linked to this PR.</p>
-                <% } %>
-              </div>
-            <% }) %>
-          <% } else { %>
-            <p class="text-muted">No PRs linked to this PO.</p>
-          <% } %>
+        <div class="card-body p-0">
+          <table class="table table-bordered m-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Description</th>
+                <th>SN</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>PPU</th>
+                <th>Price</th>
+                <th>Remark</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% po.pr.pritem.forEach((item, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= item.description %></td>
+                  <td><%= item.sn %></td>
+                  <td><%= item.quantity %></td>
+                  <td><%= item.unit %></td>
+                  <td><%= item.ppu %></td>
+                  <td><%= item.price %></td>
+                  <td><%= item.remark %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
         </div>
       </div>
-    <% }) %>
-
-  <% } else if (typeof po !== 'undefined') { %>
-
-    <h1 class="mb-4">PO Detail for PO# <%= po.POno || po._id %></h1>
-
-    <table class="table table-bordered mb-4">
-      <tbody>
-        <tr>
-          <th>Manual PO No.</th>
-          <td><%= po.manual_POno || '-' %></td>
-          <th>Date</th>
-          <td><%= po.date ? new Date(po.date).toLocaleDateString("th-TH") : '-' %></td>
-        </tr>
-        <tr>
-          <th>Attention</th>
-          <td><%= po.attention || '-' %></td>
-          <th>Email</th>
-          <td><%= po.email || '-' %></td>
-        </tr>
-        <tr>
-          <th>Mobile</th>
-          <td><%= po.mobile || '-' %></td>
-          <th>Tel</th>
-          <td><%= po.Tel || '-' %></td>
-        </tr>
-        <tr>
-          <th>Fax</th>
-          <td><%= po.fax || '-' %></td>
-          <th>Taxpayer No.</th>
-          <td><%= po.Taxpayernol || '-' %></td>
-        </tr>
-        <tr>
-          <th>Tax ID</th>
-          <td><%= po.Texid || '-' %></td>
-          <th>Payment Term</th>
-          <td><%= po.Paymentterm || '-' %></td>
-        </tr>
-        <tr>
-          <th>Delivery Date</th>
-          <td><%= po.deliverydate ? new Date(po.deliverydate).toLocaleDateString("th-TH") : '-' %></td>
-          <th>Quotation</th>
-          <td><%= po.quotation || '-' %></td>
-        </tr>
-        <tr>
-          <th>Purchasing</th>
-          <td><%= po.purchasing || '-' %></td>
-          <th>Approval</th>
-          <td><%= po.approval || '-' %></td>
-        </tr>
-      </tbody>
-    </table>
-
-    <% if (po.pr && po.pr.length > 0) { %>
-      <h3>Linked Purchase Requests (PRs)</h3>
-      <% po.pr.forEach((pr, prIndex) => { %>
-        <div class="mb-4">
-          <h5>PR #<%= pr.PRno || pr._id %> - <%= pr.name || '' %></h5>
-          <p><strong>Project Note:</strong> <%= pr.note || '-' %></p>
-          <p><strong>Customer:</strong> <%= pr.customer || '-' %></p>
-          <p><strong>Date:</strong> <%= pr.date ? new Date(pr.date).toLocaleDateString("th-TH") : '-' %></p>
-
-          <% if (pr.pritem && pr.pritem.length > 0) { %>
-            <table class="table table-sm table-bordered mt-2">
-              <thead class="table-secondary">
-                <tr>
-                  <th>#</th>
-                  <th>Quantity</th>
-                  <th>Unit</th>
-                  <th>P/N (SN)</th>
-                  <th>Description</th>
-                  <th>In Stock</th>
-                  <th>Out Stock</th>
-                  <th style="text-align:right;">Amount Price</th>
-                  <th style="text-align:right;">Unit Price</th>
-                  <th>Remarks</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% pr.pritem.forEach((item, idx) => { %>
-                  <tr>
-                    <td class="text-center"><%= idx + 1 %></td>
-                    <td class="text-center"><%= item.quantity || '-' %></td>
-                    <td class="text-center"><%= item.unit || '-' %></td>
-                    <td class="text-center"><%= item.sn || '-' %></td>
-                    <td><%= item.description || '-' %></td>
-                    <td class="text-center"><%= item.instock || '-' %></td>
-                    <td class="text-center"><%= item.outstock || '-' %></td>
-                    <td class="text-end"><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-                    <td class="text-end"><%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-                    <td><%= item.remark || '-' %></td>
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          <% } else { %>
-            <p>No PR Items added.</p>
-          <% } %>
-        </div>
-      <% }) %>
     <% } else { %>
-      <p>No linked Purchase Requests.</p>
+      <p>No linked PR found for this PO.</p>
     <% } %>
 
-    <a href="/po/list" class="btn btn-secondary mt-3 no-print">Back to PO List</a>
+    <div class="mt-4">
+      <h5>Summary</h5>
+      <p><strong>Total:</strong> ฿<%= totalPrice %></p>
+      <p><strong>VAT (7%):</strong> ฿<%= vat %></p>
+      <p><strong>Net:</strong> ฿<%= net %></p>
+    </div>
 
-  <% } else { %>
-    <p class="text-danger">No data to display.</p>
-  <% } %>
-
+    <a href="/po/list" class="btn btn-secondary mt-3">Back to List</a>
+  </div>
 </body>
 </html>

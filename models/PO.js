@@ -5,7 +5,7 @@ const Counter = require("./Counter");
 const POSchema = new mongoose.Schema({
   POno: { type: Number, unique: true },
   manual_POno: { type: Number },
-  Taxpayernol:{ type: String, default: "" },
+  Taxpayerno:{ type: String, default: "" },
   date:{ type: Date, default: null },
   Texid:{ type: String, default: "" },
   Tel:{ type: String, default: "" },
@@ -19,7 +19,7 @@ const POSchema = new mongoose.Schema({
   purchasing:{ type: String, default: "" },
   approval:{ type: String, default: "" },
 
-  pr: [{ type: mongoose.Schema.Types.ObjectId, ref: "PR" }],
+pr: { type: mongoose.Schema.Types.ObjectId, ref: "PR" },
 });
 
 // Pre-save hook to auto-increment POno

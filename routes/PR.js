@@ -258,6 +258,7 @@ router.get('/export/:id', async (req, res) => {
     worksheet.getCell('D8').value = pr.note;
     worksheet.getCell('I7').value = pr.customer;
     worksheet.getCell('M7').value = pr.date ? new Date(pr.date) : '';
+    worksheet.getCell('M8').value =  `${pr.PRno|| pr._id}-${pr.dept}-MOT`;
     worksheet.getCell('D33').value = pr.supplier;
     worksheet.getCell('D34').value = pr.supplierdetail;
     worksheet.getCell('J33').value = pr.totalPrice;

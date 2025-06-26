@@ -42,31 +42,25 @@ router.post("/new", async (req, res) => {
   }
 });
 
-// GET getalldetail of all POs with populated PRs and PRITEMs
-router.get("/getalldetail", async (req, res) => {
+// GET PO list
+router.get("/list", async (req, res) => {
   try {
     const poList = await PO.find()
-      .sort({ POno: -1 })
-      .populate({
-        path: "pr",
-        populate: {
-          path: "pritem",
-          model: "PRITEM",
-        },
-      })
-      .lean();
+  .sort({ POno: -1 })
+  .populate("pr")      // <-- populate single PR ref
+  .lean();
 
-    res.render("podetail", { poList });  // pass poList for the list page
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Failed to load PO list");
+    res.render("polist", { poList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
   }
 });
 
-// GET PO detail by ID, populate linked PRs and PRITEMs
-router.get("/:id", async (req, res) => {
+// GET PO detail page with nested PR and PRITEMs
+router.get("/:poId", async (req, res) => {
   try {
-    const po = await PO.findById(req.params.id)
+    const po = await PO.findById(req.params.poId)
       .populate({
         path: "pr",
         populate: {
@@ -78,11 +72,38 @@ router.get("/:id", async (req, res) => {
 
     if (!po) return res.status(404).send("PO not found");
 
-    res.render("podetail", { po });  // pass po for single PO detail page
+    let allItems = [];
+
+    if (po.pr) {
+      po.pr.pritem = po.pr.pritem.map(item => {
+        const quantity = parseFloat(item.quantity || 0);
+        const ppu = parseFloat(item.ppu || 0);
+        item.price = quantity !== 0 ? (quantity * ppu).toFixed(2) : "0.00";
+        return item;
+      });
+      allItems = po.pr.pritem;
+    }
+
+    // Calculate total, VAT, and net
+    const totalPrice = allItems.reduce((sum, item) => {
+      return sum + parseFloat(item.price || 0);
+    }, 0);
+
+    const vat = +(totalPrice * 0.07).toFixed(2);
+    const net = +(totalPrice + vat).toFixed(2); // Add discount if needed
+
+    res.render("podetail", {
+      po,
+      totalPrice: totalPrice.toFixed(2),
+      vat: vat.toFixed(2),
+      net: net.toFixed(2),
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Failed to load PO detail");
+    res.status(500).send("Server Error");
   }
 });
+
+
 
 module.exports = router;

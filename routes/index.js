@@ -24,6 +24,11 @@ router.get('/pr/detail', function(req, res, next) {
   res.redirect('/pr/list');
 });
 
+router.get('/po/detail', function(req, res, next) {
+
+  res.redirect('/po/list');
+});
+
 
 
 
