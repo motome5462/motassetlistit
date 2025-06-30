@@ -44,7 +44,7 @@
                 <form action="/pr/<%= pr._id %>/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this PR?');">
                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                 </form>
-                <a href="/po/new?prId=<%= pr._id %>" class="btn btn-primary mt-3">Create PO</a>
+                <a href="/po/new?prId=<%= pr._id %>" class="btn btn-sm btn-primary">Create PO</a>
               </td>
             </tr>
           <% }) %>

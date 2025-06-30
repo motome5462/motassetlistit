@@ -14,6 +14,7 @@
 
   <div class="container mt-4">
     <h1>PO Detail: <%= po.POno || po._id %></h1>
+    <button class="btn btn-success no-print" onclick="exportPO('<%= po._id %>')">Export</button>
     <hr />
 
     <% if (po.pr) { %>
@@ -76,5 +77,6 @@
 
     <a href="/po/list" class="btn btn-secondary mt-3">Back to List</a>
   </div>
+  <script src="/javascripts/podetail.js"></script>
 </body>
 </html>

@@ -226,28 +226,28 @@ router.get('/export/:id', async (req, res) => {
     const pr = await PR.findById(req.params.id).populate('pritem');
 
         // --- Price ---
-    pr.pritem = pr.pritem.map(item => {
-      const quantity = parseFloat(item.quantity || "0");
-      const unitPrice = parseFloat(item.ppu || "0");
-      const price = quantity * unitPrice;
+    // pr.pritem = pr.pritem.map(item => {
+    //   const quantity = parseFloat(item.quantity || "0");
+    //   const unitPrice = parseFloat(item.ppu || "0");
+    //   const price = quantity * unitPrice;
 
-      item.price = price.toFixed(2);
-      return item;
-    });
+    //   item.price = price.toFixed(2);
+    //   return item;
+    // });
 
-    // ---Calculate totals ---
-    const totalPrice = pr.pritem.reduce((sum, item) => {
-      return sum + parseFloat(item.price || "0");
-    }, 0);
+    // // ---Calculate totals ---
+    // const totalPrice = pr.pritem.reduce((sum, item) => {
+    //   return sum + parseFloat(item.price || "0");
+    // }, 0);
 
-    const discount = parseFloat(pr.discount || "0");
-    const vat = +(totalPrice * 0.07).toFixed(2);
-    const net = +(totalPrice + vat - discount).toFixed(2);
+    // const discount = parseFloat(pr.discount || "0");
+    // const vat = +(totalPrice * 0.07).toFixed(2);
+    // const net = +(totalPrice + vat - discount).toFixed(2);
 
 
-    pr.totalPrice = totalPrice.toFixed(2);
-    pr.vat = vat.toFixed(2);
-    pr.net = net.toFixed(2);
+    // pr.totalPrice = totalPrice.toFixed(2);
+    // pr.vat = vat.toFixed(2);
+    // pr.net = net.toFixed(2);
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(path.join(__dirname, '../public/templates/PR_Form.xlsx'));
     const worksheet = workbook.getWorksheet('1');
@@ -261,10 +261,11 @@ router.get('/export/:id', async (req, res) => {
     worksheet.getCell('M8').value =  `${pr.PRno|| pr._id}-${pr.dept}-MOT`;
     worksheet.getCell('D33').value = pr.supplier;
     worksheet.getCell('D34').value = pr.supplierdetail;
-    worksheet.getCell('J33').value = pr.totalPrice;
-    worksheet.getCell('J34').value = pr.discount;
-    worksheet.getCell('J35').value = pr.vat;
-    worksheet.getCell('J36').value = pr.net;
+    //worksheet.getCell('J33').value = pr.totalPrice;
+    worksheet.getCell('J34').value = Number(pr.discount);
+    worksheet.getCell('J34').numFmt = '#,##0.00'; // Set format to include commas and 2 decimals
+    //worksheet.getCell('J35').value = pr.vat;
+    //worksheet.getCell('J36').value = pr.net;
     worksheet.getCell('M33').value = pr.term;
     worksheet.getCell('M34').value = pr.delivery;
     worksheet.getCell('L35').value = pr.validity;
@@ -283,11 +284,13 @@ router.get('/export/:id', async (req, res) => {
       row.getCell(6).value = item.description; // Column F
       row.getCell(8).value = item.instock;  // Column H
       row.getCell(9).value = item.outstock; // Column I
-      row.getCell(10).value = item.price;   // Column J
-      row.getCell(11).value = item.ppu;     // Column K
+      //row.getCell(10).value = item.price;    Column J
+      row.getCell(11).value = Number(item.ppu);     // Column K
+      row.getCell(11).numFmt = '#,##0.00';      // Set format to include commas and 2 decimals
       row.getCell(12).value = item.remark;  // Column L
       row.commit();
     });
+
 
 
     // --- Send file to browser ---

@@ -101,10 +101,14 @@
   </form>
 
   <% if (errors) { %>
-    <div class="alert alert-danger mt-3">
-      <pre><%= JSON.stringify(errors, null, 2) %></pre>
-    </div>
-  <% } %>
-
+          <div class="alert alert-danger mt-4">
+            <h5>Form Errors:</h5>
+            <ul class="mb-0">
+              <% for (let field in errors) { %>
+                <li><strong><%= field %>:</strong> <%= errors[field].message || errors[field] %></li>
+              <% } %>
+            </ul>
+          </div>
+        <% } %>
 </body>
 </html>
