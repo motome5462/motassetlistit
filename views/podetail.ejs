@@ -5,28 +5,19 @@
   <title>PO Detail</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/stylesheets/Report.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .full-width-container {
-      max-width: 100% !important;
-      padding-left: 30px;
-      padding-right: 30px;
-    }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/stylesheets/po.css" />
 </head>
 <body>
   <header class="no-print">
     <% include index.ejs %>
-  </header>  
+  </header>
 
   <div class="container-fluid full-width-container mt-4">
-    <!-- Logo and address -->
+    <!-- Logo and Address -->
     <div class="d-flex align-items-start my-4">
-      <!-- Logo -->
       <img src="https://www.mot.co.th/wp-content/uploads/2024/04/%E0%B9%82%E0%B8%A5%E0%B9%82%E0%B8%81%E0%B9%89-MOTNew-%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%8A%E0%B8%B1%E0%B8%94.png"
            style="width: 100px; height: 80px; margin-right: 15px;" />
-
-      <!-- Text -->
       <div style="margin-top: 1.5%; margin-left: 30px; font-size: 16px; width: 100%;">
         <p class="mb-0">
           835/6&nbsp;&nbsp;&nbsp;ถ.&nbsp;สรงประภา&nbsp;&nbsp;&nbsp;แขวงดอนเมือง&nbsp;&nbsp;&nbsp;
@@ -44,68 +35,122 @@
       </div>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center">
-      <h1 class="mb-0">PO: <%= po.pr.dept %><%= po.POno || po._id %></h1>
-    </div>
-    <hr />
-
     <% if (po.pr) { %>
-      <div class="mb-3">
-        <strong>Supplier:</strong> <%= po.pr.supplier %><br />
-        <strong>Tax ID:</strong> <%= po.Taxpayerno %><br />
-        <strong>Phone:</strong> <%= po.Tel %><br />
-        <strong>Mobile:</strong> <%= po.mobile %><br />
-        <strong>Email:</strong> <%= po.email %><br />
-        <strong>PO Date:</strong> <%= po.date ? po.date.toISOString().substr(0, 10) : '' %><br />
-        <strong>Delivery Date:</strong> <%= po.deliverydate ? po.deliverydate.toISOString().substr(0, 10) : '' %><br />
-        <strong>PR NO:</strong> <%= po.pr.dept %>-<%= po.pr.PRno %>-MOT<br />
+    <div class="po-box row">
+      <div class="col-md-4">
+        <div class="mb-1 d-flex">
+          <strong class="me-2">VENDOR :</strong>
+          <div>
+            <div><%= po.pr.supplier %></div>
+            <div><%= po.pr.supplierdetail %></div>
+          </div>
+        </div>
+        <p class="mb-1">&nbsp;</p>
+        <p class="mb-1"><strong>TEX ID: </strong> <%= po.Texid %></p>
+        <p class="mb-1"><strong>TEL : </strong>Tel. <%= po.Tel %> Fax. <%= po.fax %> Mobile. <%= po.mobile %></p>
+        <p class="mb-1"><strong>ATTENTION : </strong> <%= po.attention %></p>
       </div>
+      <div class="col-md-4 d-flex align-items-end justify-content-center">
+        <p class="mb-0"><strong>Email : </strong> <%= po.email %></p>
+      </div>
+      <div class="col-md-4 text-end">
+        <p class="mb-1"><strong>ใบสั่งซื้อ / PURCHASE ORDER</strong></p>
+        <p class="mb-1"><strong>PO NO. : </strong> <%= po.pr.dept %><%= po.POno %></p>
+        <p class="mb-1"><strong>PO DATE : </strong> <%= po.date ? po.date.toISOString().substr(0, 10) : '' %></p>
+      </div>
+    </div>
 
-      <h4 class="mt-4">Items</h4>
-      <div class="card mb-3">
-        <div class="card-header">
-          <strong>PR No:</strong> <%= po.pr.PRno || po.pr._id %> — <%= po.pr.name %> | <%= po.pr.customer %>
-        </div>
-        <div class="card-body p-0">
-          <table class="table table-bordered m-0">
-            <thead class="table-light">
-              <tr>
-                <th>#</th>
-                <th>Description</th>
-                <th>SN</th>
-                <th>Qty</th>
-                <th>Unit</th>
-                <th>PPU</th>
-                <th>Price</th>
-                <th>Remark</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% po.pr.pritem.forEach((item, index) => { %>
-                <tr>
-                  <td><%= index + 1 %></td>
-                  <td><%= item.description %></td>
-                  <td><%= item.sn %></td>
-                  <td><%= item.quantity %></td>
-                  <td><%= item.unit %></td>
-                  <td><%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-                  <td><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-                  <td><%= item.remark %></td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <!-- First Table: PAYMENT TERM -->
+    <div class="table-wrapper first-table-wrapper">
+      <table class="table mb-0 bordered-table first-table">
+        <thead>
+          <tr>
+            <th>PAYMENT TERM</th>
+            <th>Project Name</th>
+            <th>Delivery Date</th>
+            <th>PR No.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><%= po.pr.term %></td>
+            <td><%= po.pr.name %></td>
+            <td><%= po.deliverydate ? po.deliverydate.toISOString().substr(0, 10) : '' %></td>
+            <td><%= po.pr.dept %>-<%= po.pr.PRno %>-MOT</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Second Table: ITEMS -->
+    <div class="table-wrapper items-table-wrapper">
+      <table class="table m-0 bordered-table items-table">
+        <thead class="table-light">
+          <tr>
+            <th>Item</th>
+            <th>MATERAL NO./DESCRIPTION</th>
+            <th>UOM</th>
+            <th>QUANTITY</th>
+            <th>UNIT PRICE</th>
+            <th>AMOUNT<br/>(Bath)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% po.pr.pritem.forEach((item, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><%= item.description %></td>
+            <td><%= item.unit %></td>
+            <td><%= item.quantity %></td>
+            <td><%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
+            <td><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+        <tbody>
+          <tr>
+            <td colspan="3" class="text-start">
+              <strong style="text-decoration: underline;">
+                เงื่อนไขการฃำระเงิน / Payment Terms & Condition
+              </strong>
+              <br/>
+              เครดิต <%= po.pr.term %> <br/>
+              เลขที่ใบเสนอราคา : <%= po.quotation %>
+            </td>
+            <td colspan="3">
+              <table>
+                <tr><td>Total</td><td><%= parseFloat(totalPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
+                <tr><td>Special Discount</td><td><%= parseFloat(po.pr.discount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
+                <tr><td>Sub Total</td><td><%= parseFloat(subtotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
+                <tr><td>Vat 7%</td><td><%= parseFloat(vat || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
+                <tr><td>Grand Total(THB)</td><td><%= parseFloat(net || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+        <tbody>
+          <tr>
+            <td colspan="6">
+              <p class="mb-1">&nbsp;</p>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="margin-left: 80px;">
+                  ............................................<br/><%= po.purchasing %><br/>purchasing
+                </span>
+                <span style="margin-right: 80px;">
+                  ...........................................<br/><%= po.approval %><br/>approval
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <% } else { %>
       <p>No linked PR found for this PO.</p>
-    <% } %>      
-    <div class="mt-4">
-      <h5>Summary</h5>
-      <p><strong>Total:</strong> <%= parseFloat(totalPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></p>
-      <p><strong>VAT (7%):</strong> <%= parseFloat(vat || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></p>
-      <p><strong>Net:</strong> <%= parseFloat(net || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></p>
-    </div>
+    <% } %>
+
+    <!-- Buttons -->
     <div class="text-center no-print">
       <button class="btn btn-success" onclick="exportPO('<%= po._id %>')">Export</button>
       <a href="/po/list" class="btn btn-secondary">Back to List</a>

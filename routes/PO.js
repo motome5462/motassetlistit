@@ -92,12 +92,15 @@ router.get("/:poId", async (req, res) => {
       return sum + parseFloat(item.price || 0);
     }, 0);
 
-    const vat = +(totalPrice * 0.07).toFixed(2);
-    const net = +(totalPrice + vat).toFixed(2); // Add discount if needed
+
+    const subtotal = +(totalPrice-po.pr.discount).toFixed(2);
+    const vat = +(subtotal * 0.07).toFixed(2);
+    const net = +(subtotal + vat).toFixed(2); // Add discount if needed
 
     res.render("podetail", {
       po,
       totalPrice: totalPrice.toFixed(2),
+      subtotal: subtotal.toFixed(2),
       vat: vat.toFixed(2),
       net: net.toFixed(2),
     });

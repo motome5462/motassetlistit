@@ -1,0 +1,82 @@
+/* Container with fixed max-width and side padding */
+.full-width-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  box-sizing: border-box;
+}
+
+/* PO info box with solid black border and rounded corners */
+.po-box {
+  border: 2px solid black;
+  border-radius: 15px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;  /* match container horizontal padding */
+  padding-right: 20px;
+  margin-bottom: 0;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Remove Bootstrap column horizontal padding inside po-box */
+.po-box > [class^="col-"] {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* First and second table wrappers with black border and rounded corners */
+.table-wrapper.first-table-wrapper,
+.table-wrapper.items-table-wrapper {
+  border: 2px solid black;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Both tables: full width inside wrapper */
+.bordered-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: none;
+}
+
+/* FIRST TABLE: vertical borders between columns */
+.bordered-table.first-table th,
+.bordered-table.first-table td {
+  border-right: 1px solid black;
+  border-top: none !important;
+  border-bottom: none !important;
+  text-align: center;
+  padding: 8px;
+}
+
+.bordered-table.first-table th:last-child,
+.bordered-table.first-table td:last-child {
+  border-right: none;
+}
+
+/* SECOND TABLE: remove borders from cells */
+.bordered-table.items-table th,
+.bordered-table.items-table td {
+  border: none !important;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Remove background color override for second table header */
+.table-wrapper table.items-table thead.table-light th {
+  background-color: transparent !important;
+  color: inherit;
+}
