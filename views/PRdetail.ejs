@@ -41,7 +41,6 @@
           <tr>
             <th colspan="10" style="text-align: center;">
               <strong>ใบขอซื้อสินค้า</strong> (PURCHASE REQUISITION)
-              <button class="btn btn-success no-print" onclick="exportPR('<%= pr._id %>')">Export</button>
             </th>
           </tr>
         </thead>
@@ -204,6 +203,7 @@
 </tbody>
 </table>
 <div class="text-center mt-4 no-print">
+  <button class="btn btn-success no-print" onclick="exportPR('<%= pr._id %>')">Export</button>
   <a href="/pr/list" class="btn btn-secondary">Back to List</a>
 </div>
         <% } else { %>
