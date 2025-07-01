@@ -59,7 +59,7 @@ router.post("/frompr", async (req, res) => {
       poData.discount = poData.discount || pr.discount;
     }
 
-    // Create and save PO
+       // Create and save PO
     const po = new PO(poData);
     await po.save();
 
@@ -68,10 +68,10 @@ router.post("/frompr", async (req, res) => {
       const prWithItems = await PR.findById(poData.prId).populate("item");
 
       if (prWithItems && prWithItems.item && prWithItems.item.length > 0) {
-        // Update each item's 'po' field
+        // Update each item's 'po' field (if needed in item schema)
         await Promise.all(
           prWithItems.item.map(item =>
-            ITEM.findByIdAndUpdate(item._id, { po: po._id })
+            ITEM.findByIdAndUpdate(item._id, { po: po._id }) // OPTIONAL: only if ITEM has a `po` field
           )
         );
 
@@ -79,6 +79,9 @@ router.post("/frompr", async (req, res) => {
         po.item = prWithItems.item.map(item => item._id);
         await po.save();
       }
+
+      // 🔁 Also update the PR to reference this new PO
+      await PR.findByIdAndUpdate(poData.prId, { po: po._id });
     }
 
     res.redirect(`/po/${po._id}`);

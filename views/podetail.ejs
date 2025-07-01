@@ -77,7 +77,7 @@
             <td><%= po.term || '' %></td>
             <td><%= po.name || '' %></td>
             <td><%= po.deliverydate ? po.deliverydate.toISOString().substr(0, 10) : '' %></td>
-            <td><%= po.dept || '' %>-<%= po.PRno || '' %>-MOT</td>
+            <td><%= po.pr.PRno || '' %>-<%= po.dept || '' %>-MOT</td>
           </tr>
         </tbody>
       </table>
