@@ -18,8 +18,6 @@ const PRSchema = new mongoose.Schema({
   transport:{ type: String, default: "-" },
   ref:{ type: String, default: "" },
   discount:{type: String, default: "" },
-  vat:{type: String, default: "" },
-  net:{type: String, default: "" },
   item: [{ type: mongoose.Schema.Types.ObjectId, ref: "ITEM" }],
   po: { type: mongoose.Schema.Types.ObjectId, ref: "PO" },
 });

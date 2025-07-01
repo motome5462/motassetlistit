@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const PR = require("../models/PR");
+const PO = require("../models/PO");
 const ITEM = require("../models/ITEM");
 const ExcelJS = require("exceljs");
 const path = require("path");
@@ -39,7 +40,7 @@ router.get("/:prId/pritem", async (req, res) => {
   }
 });
 
-// POST add ITEM to a PR
+// POST add ITEM to a PR (also add to linked PO if exists)
 router.post("/:prId/pritem", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId);
@@ -48,6 +49,7 @@ router.post("/:prId/pritem", async (req, res) => {
     const itemData = {
       ...req.body,
       pr: pr._id,
+      po: pr.po, // link item to the PO as well
       instock: req.body.stockLocation === "instock" ? "/" : "",
       outstock: req.body.stockLocation === "outstock" ? "/" : "",
     };
@@ -57,6 +59,11 @@ router.post("/:prId/pritem", async (req, res) => {
 
     pr.item.push(item._id);
     await pr.save();
+
+    // Also add item to PO's item array if PO linked
+    if (pr.po) {
+      await PO.findByIdAndUpdate(pr.po, { $push: { item: item._id } });
+    }
 
     res.redirect(`/pr/${pr._id}/pritem`);
   } catch (err) {
@@ -77,13 +84,14 @@ router.get("/:prId/edit", async (req, res) => {
   }
 });
 
-// POST update PR
+// POST update PR (also update linked PO fields)
 router.post("/:prId/edit", async (req, res) => {
   try {
     const updateData = {
       ...req.body,
       manual_PRno: req.body.manual_PRno ? Number(req.body.manual_PRno) : undefined,
       date: req.body.date ? new Date(req.body.date) : undefined,
+      discount: req.body.discount ? Number(req.body.discount) : 0,
     };
 
     const updatedPR = await PR.findByIdAndUpdate(req.params.prId, updateData, {
@@ -93,23 +101,40 @@ router.post("/:prId/edit", async (req, res) => {
 
     if (!updatedPR) return res.status(404).send("PR not found");
 
+    // Sync fields to linked PO
+    if (updatedPR.po) {
+      await PO.findByIdAndUpdate(updatedPR.po, {
+        name: updatedPR.name,
+        dept: updatedPR.dept,
+        supplier: updatedPR.supplier,
+        supplierdetail: updatedPR.supplierdetail,
+        term: updatedPR.term,
+        discount: updatedPR.discount,
+      });
+    }
+
     res.redirect(`/pr/${req.params.prId}`);
   } catch (err) {
     console.error(err);
     const pr = await PR.findById(req.params.prId);
-    res.render("pr", {
-      pr: { ...req.body, _id: req.params.prId },
-      errors: err.errors || err,
-    });
+    res.render("createPR", { pr: { ...req.body, _id: req.params.prId }, errors: err.errors || err });
   }
 });
 
-// POST delete PR and related ITEMs
+// POST delete PR and related ITEMs (also remove items from linked PO)
 router.post("/:prId/delete", async (req, res) => {
   try {
     const pr = await PR.findByIdAndDelete(req.params.prId);
     if (pr) {
+      // Delete all items linked to PR
       await ITEM.deleteMany({ pr: pr._id });
+
+      // Remove all those item ids from PO's item array
+      if (pr.po) {
+        await PO.findByIdAndUpdate(pr.po, {
+          $pull: { item: { $in: pr.item } },
+        });
+      }
     }
     res.redirect("/pr/list");
   } catch (err) {
@@ -150,13 +175,24 @@ router.post("/:prId/pritem/:itemId/edit", async (req, res) => {
   }
 });
 
-// POST delete ITEM
+// POST delete ITEM (also remove from PO's item list)
 router.post("/:prId/pritem/:itemId/delete", async (req, res) => {
   try {
+    const item = await ITEM.findById(req.params.itemId);
+    if (!item) return res.status(404).send("Item not found");
+
     await ITEM.findByIdAndDelete(req.params.itemId);
+
     await PR.findByIdAndUpdate(req.params.prId, {
       $pull: { item: req.params.itemId },
     });
+
+    if (item.po) {
+      await PO.findByIdAndUpdate(item.po, {
+        $pull: { item: req.params.itemId },
+      });
+    }
+
     res.redirect(`/pr/${req.params.prId}`);
   } catch (err) {
     res.status(500).send(err.message);
@@ -174,7 +210,7 @@ router.get("/list", async (req, res) => {
   }
 });
 
-// GET PR detail with populated items
+// GET PR detail with populated items and totals
 router.get("/:prId", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId).populate("item").lean();
@@ -188,8 +224,8 @@ router.get("/:prId", async (req, res) => {
     });
 
     const totalPrice = pr.item.reduce((sum, i) => sum + parseFloat(i.price || 0), 0);
-    const vat = +(totalPrice * 0.07).toFixed(2);
     const discount = parseFloat(pr.discount || 0);
+    const vat = +((totalPrice-discount) * 0.07).toFixed(2);
     const net = +(totalPrice + vat - discount).toFixed(2);
 
     res.render("prdetail", {
@@ -203,7 +239,7 @@ router.get("/:prId", async (req, res) => {
   }
 });
 
-// GET export PR to Excel
+// GET export PR to Excel (unchanged)
 router.get("/export/:id", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.id).populate("item");
