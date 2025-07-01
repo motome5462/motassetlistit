@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add PO Item</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/stylesheets/Report.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <header class="no-print mb-4">
+    <% include index.ejs %>
+  </header>  
+
+  <div class="container my-4">
+    <div class="card shadow">
+      <div class="card-header text-white" style="background-color: #0099ff;">
+        <h3 class="mb-0">Add PO Item to PO #<%= po.POno || po._id %></h3>
+      </div>
+
+      <div class="card-body">
+        <form action="/po/<%= po._id %>/poitem" method="POST">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="quantity" class="form-label">Quantity</label>
+              <input class="form-control" type="text" id="quantity" name="quantity" value="<%= item?.quantity || '' %>" />
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label for="unit" class="form-label">Unit</label>
+              <input class="form-control" type="text" id="unit" name="unit" value="<%= item?.unit || '' %>" />
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label for="sn" class="form-label">P/N</label>
+              <input class="form-control" type="text" id="sn" name="sn" value="<%= item?.sn || '' %>" />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="2"><%= item?.description || '' %></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="ppu" class="form-label">Price per unit</label>
+              <input class="form-control" type="text" id="ppu" name="ppu" value="<%= item?.ppu || '' %>" />
+            </div>
+
+          </div>
+
+          <div class="text-end">
+            <button type="submit" class="btn btn-success px-4">Add Item</button>
+          </div>
+        </form>
+
+        <% if (errors) { %>
+          <div class="alert alert-danger mt-4">
+            <h5>Form Errors:</h5>
+            <ul class="mb-0">
+              <% for (let field in errors) { %>
+                <li><strong><%= field %>:</strong> <%= errors[field].message || errors[field] %></li>
+              <% } %>
+            </ul>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <script src="/javascripts/poitem.js"></script>
+</body>
+</html>

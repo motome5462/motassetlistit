@@ -14,6 +14,7 @@
 
   <div class="container mt-4">
     <h1>Purchase Orders (PO) List</h1>
+
     
     <% if (poList.length === 0) { %>
       <p>No POs found.</p>
@@ -26,7 +27,7 @@
             <th style="color: white;">Tax ID</th>
             <th style="color: white;">Quotation</th>
             <th style="color: white;">Date</th>
-            <th style="color: white;">Details</th>
+            <th style="color: white;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -39,6 +40,10 @@
               <td><%= po.date ? po.date.toISOString().substr(0, 10) : '' %></td>
               <td>
                 <a href="/po/<%= po._id %>" class="btn btn-sm btn-info">View</a>
+                <a href="/po/<%= po._id %>/edit" class="btn btn-sm btn-warning">Edit</a>
+                <form action="/po/<%= po._id %>/delete" method="POST" style="display:inline-block" onsubmit="return confirm('Are you sure you want to delete this PO?');">
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
               </td>
             </tr>
           <% }) %>

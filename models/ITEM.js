@@ -12,7 +12,6 @@ const ITEMSchema  = new mongoose.Schema({
     price: { type: String, default: "" },
     ppu: { type: String, default: "" },
     remark: { type: String, default: "" },
-    total:{ type: String, default: ""},
     pr: { type: mongoose.Schema.Types.ObjectId, ref: "PR" },
     po: { type: mongoose.Schema.Types.ObjectId, ref: "PO" },
 })

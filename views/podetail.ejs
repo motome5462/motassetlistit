@@ -77,37 +77,54 @@
             <td><%= po.term || '' %></td>
             <td><%= po.name || '' %></td>
             <td><%= po.deliverydate ? po.deliverydate.toISOString().substr(0, 10) : '' %></td>
-            <td><%= po.pr.PRno || '' %>-<%= po.dept || '' %>-MOT</td>
+            <td>
+              <% if (po.pr && po.pr.PRno) { %>
+                <%= po.pr.PRno %>-<%= po.dept || '' %>-MOT
+              <% } else { %>
+                &nbsp;
+              <% } %>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+<!-- Add Item button above items table -->
+<div class="d-flex justify-content-end mb-2 no-print">
+  <a href="/po/<%= po._id %>/poitem" class="btn btn-primary">Add Item</a>
+</div>
 
-    <!-- Second Table: Items -->
-    <div class="table-wrapper items-table-wrapper">
-      <table class="table m-0 bordered-table items-table">
-        <thead class="table-light">
-          <tr>
-            <th>Item</th>
-            <th>MATERAL NO./DESCRIPTION</th>
-            <th>UOM</th>
-            <th>QUANTITY</th>
-            <th>UNIT PRICE</th>
-            <th>AMOUNT<br/>(Baht)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% (po.item || []).forEach((item, index) => { %>
-            <tr>
-              <td><%= index + 1 %></td>
-              <td><%= item.description || '' %><% if (item.sn) { %> - <%= item.sn %><% } %></td>
-              <td><%= item.unit || '' %></td>
-              <td><%= item.quantity || '' %></td>
-              <td><%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-              <td><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-            </tr>
-          <% }) %>
-        </tbody>
+<!-- Items Table -->
+<div class="table-wrapper items-table-wrapper">
+  <table class="table m-0 bordered-table items-table">
+    <thead class="table-light">
+      <tr>
+        <th>Item</th>
+        <th>MATERAL NO./DESCRIPTION</th>
+        <th>UOM</th>
+        <th>QUANTITY</th>
+        <th>UNIT PRICE</th>
+        <th>AMOUNT<br/>(Baht)</th>
+        <th class="no-print">Actions</th> <!-- new column -->
+      </tr>
+    </thead>
+    <tbody>
+      <% (po.item || []).forEach((item, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= item.description || '' %><% if (item.sn) { %> - <%= item.sn %><% } %></td>
+          <td><%= item.unit || '' %></td>
+          <td><%= item.quantity || '' %></td>
+          <td><%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
+          <td><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
+          <td class="no-print">
+            <a href="/po/<%= po._id %>/poitem/<%= item._id %>/edit" class="btn btn-sm btn-warning me-1">Edit</a>
+            <form action="/po/<%= po._id %>/poitem/<%= item._id %>?_method=DELETE" method="POST" style="display:inline-block" onsubmit="return confirm('Are you sure you want to delete this item?');">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
 
         <!-- Summary -->
         <tfoot>

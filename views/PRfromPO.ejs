@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create PR from PO</title>
+  <link rel="stylesheet" href="/stylesheets/Report.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-4">
+    <h2>Create PR from PO</h2>
+    <form action="/pr/frompo" method="POST">
+      <input type="hidden" name="poId" value="<%= po._id %>" />
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label>Name</label>
+          <input name="name" value="<%= po.name || '' %>" class="form-control" />
+        </div>
+        <div class="col-md-6">
+          <label>Department</label>
+          <input name="dept" value="<%= po.dept || '' %>" class="form-control" />
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label>Supplier</label>
+        <input name="supplier" value="<%= po.supplier || '' %>" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label>Supplier Detail</label>
+        <input name="supplierdetail" value="<%= po.supplierdetail || '' %>" class="form-control" />
+      </div>
+
+      <h4 class="mt-4">Items</h4>
+      <% po.item.forEach((item, i) => { %>
+        <div class="card p-3 mb-2">
+          <input type="hidden" name="items[<%= i %>][description]" value="<%= item.description %>">
+          <input type="hidden" name="items[<%= i %>][quantity]" value="<%= item.quantity %>">
+          <input type="hidden" name="items[<%= i %>][unit]" value="<%= item.unit %>">
+          <input type="hidden" name="items[<%= i %>][ppu]" value="<%= item.ppu %>">
+          <input type="hidden" name="items[<%= i %>][sn]" value="<%= item.sn %>">
+
+          <div class="row">
+
+<div class="col-md-6 mb-3">
+  <label class="form-label d-block">Stock Location</label>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="items[<%= i %>][stockLocation]" id="instockRadio_<%= i %>" value="instock"
+      <%= item?.instock === '/' ? 'checked' : '' %> />
+    <label class="form-check-label" for="instockRadio_<%= i %>">In Stock</label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="items[<%= i %>][stockLocation]" id="outstockRadio_<%= i %>" value="outstock"
+      <%= item?.outstock === '/' ? 'checked' : '' %> />
+    <label class="form-check-label" for="outstockRadio_<%= i %>">Out Stock</label>
+  </div>
+</div>
+
+            <div class="col-md-4">
+              <label>Remark</label>
+              <input name="items[<%= i %>][remark]" class="form-control" />
+            </div>
+          </div>
+        </div>
+      <% }) %>
+
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success">Create PR</button>
+      </div>
+    </form>
+  </div>
+  <script src="/javascripts/pritem.js"></script>
+</body>
+</html>

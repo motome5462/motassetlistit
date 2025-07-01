@@ -7,6 +7,7 @@ const ITEM = require("../models/ITEM");
 const ExcelJS = require("exceljs");
 const path = require("path");
 
+
 // Redirect /pr to /pr/list
 router.get("/", (req, res) => {
   res.redirect("/pr/list");
@@ -121,23 +122,40 @@ router.post("/:prId/edit", async (req, res) => {
   }
 });
 
-// POST delete PR and related ITEMs (also remove items from linked PO)
+// POST delete PR, clean up references, and delete orphaned items
 router.post("/:prId/delete", async (req, res) => {
   try {
-    const pr = await PR.findByIdAndDelete(req.params.prId);
-    if (pr) {
-      // Delete all items linked to PR
-      await ITEM.deleteMany({ pr: pr._id });
+    const pr = await PR.findById(req.params.prId);
+    if (!pr) return res.status(404).send("PR not found");
 
-      // Remove all those item ids from PO's item array
-      if (pr.po) {
-        await PO.findByIdAndUpdate(pr.po, {
-          $pull: { item: { $in: pr.item } },
-        });
+    // 1. For each item linked to this PR
+    for (const itemId of pr.item) {
+      const item = await ITEM.findById(itemId);
+
+      if (item) {
+        if (!item.po) {
+          // Delete item if no PO reference (orphaned)
+          await ITEM.findByIdAndDelete(item._id);
+        } else {
+          // Keep item but remove PR reference
+          await ITEM.findByIdAndUpdate(item._id, { $unset: { pr: "" } });
+        }
       }
     }
+
+    // 2. Remove PR reference from linked PO (without removing items!)
+    if (pr.po) {
+      await PO.findByIdAndUpdate(pr.po, {
+        $unset: { pr: "" }, // keep items in PO.item intact
+      });
+    }
+
+    // 3. Delete the PR itself
+    await PR.findByIdAndDelete(pr._id);
+
     res.redirect("/pr/list");
   } catch (err) {
+    console.error(err);
     res.status(500).send(err.message);
   }
 });

@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
+
 const PO = require("../models/PO");
 const PR = require("../models/PR");
 const ITEM = require("../models/ITEM");
+const ExcelJS = require("exceljs");
+const path = require("path");
 
-const ExcelJS = require('exceljs');
-const path = require('path');
-
-// GET form to create new PO (optionally linked to PR)
+// === CREATE PO from PR ===
 router.get("/frompr", async (req, res) => {
   try {
     const prId = req.query.prId;
@@ -18,15 +18,10 @@ router.get("/frompr", async (req, res) => {
       pr = await PR.findById(prId).lean();
       if (!pr) return res.status(404).send("PR not found");
 
-      // Fields to copy from PR to PO (exclude date)
-      const commonFields = [
-        'name', 'dept', 'supplier', 'supplierdetail',
-        'term', 'discount', 'item'
+      const fields = [
+        "name", "dept", "supplier", "supplierdetail", "term", "discount", "item"
       ];
-
-      for (const field of commonFields) {
-        po[field] = pr[field];
-      }
+      for (const f of fields) po[f] = pr[f];
     }
 
     res.render("POfromPR", { po, pr, errors: null });
@@ -36,21 +31,15 @@ router.get("/frompr", async (req, res) => {
   }
 });
 
-// POST to create PO from PR
 router.post("/frompr", async (req, res) => {
   try {
     const poData = req.body;
 
     if (poData.prId) {
       poData.pr = poData.prId;
-
-      // Fetch PR to fill missing fields from PR data
       const pr = await PR.findById(poData.prId).lean();
-      if (!pr) {
-        return res.status(404).send("PR not found");
-      }
+      if (!pr) return res.status(404).send("PR not found");
 
-      // Copy fields from PR if missing in poData
       poData.name = poData.name || pr.name;
       poData.dept = poData.dept || pr.dept;
       poData.supplier = poData.supplier || pr.supplier;
@@ -59,28 +48,21 @@ router.post("/frompr", async (req, res) => {
       poData.discount = poData.discount || pr.discount;
     }
 
-       // Create and save PO
     const po = new PO(poData);
     await po.save();
 
-    // Update PR items to link to PO
+    // Link PR items to PO
     if (poData.prId) {
       const prWithItems = await PR.findById(poData.prId).populate("item");
-
-      if (prWithItems && prWithItems.item && prWithItems.item.length > 0) {
-        // Update each item's 'po' field (if needed in item schema)
+      if (prWithItems?.item?.length > 0) {
         await Promise.all(
           prWithItems.item.map(item =>
-            ITEM.findByIdAndUpdate(item._id, { po: po._id }) // OPTIONAL: only if ITEM has a `po` field
+            ITEM.findByIdAndUpdate(item._id, { po: po._id })
           )
         );
-
-        // Save item IDs in PO's item array
-        po.item = prWithItems.item.map(item => item._id);
+        po.item = prWithItems.item.map(i => i._id);
         await po.save();
       }
-
-      // 🔁 Also update the PR to reference this new PO
       await PR.findByIdAndUpdate(poData.prId, { po: po._id });
     }
 
@@ -90,20 +72,15 @@ router.post("/frompr", async (req, res) => {
     res.render("POfromPR", {
       po: req.body,
       pr: null,
-      errors: err.errors || err,
+      errors: err.errors || err
     });
   }
 });
 
-
-// GET PO list
+// === PO LIST ===
 router.get("/list", async (req, res) => {
   try {
-    const poList = await PO.find()
-      .sort({ POno: -1 })
-      .populate("pr")
-      .lean();
-
+    const poList = await PO.find().sort({ POno: -1 }).populate("pr").lean();
     res.render("polist", { poList });
   } catch (error) {
     console.error(error);
@@ -111,17 +88,174 @@ router.get("/list", async (req, res) => {
   }
 });
 
-// GET PO detail page with only necessary use of PR
+// === CREATE PO ===
+router.get("/new", (req, res) => {
+  res.render("createPO", { po: {}, errors: null });
+});
+
+router.post("/new", async (req, res) => {
+  try {
+    const po = new PO(req.body);
+    await po.save();
+    res.redirect(`/po/${po._id}/poitem`);
+  } catch (err) {
+    console.error(err);
+    res.render("createPO", { po: req.body, errors: err.errors });
+  }
+});
+
+// === EDIT PO ===
+router.get("/:poId/edit", async (req, res) => {
+  const po = await PO.findById(req.params.poId).lean();
+  if (!po) return res.status(404).send("PO not found");
+  res.render("createPO", { po, errors: null });
+});
+
+router.post("/:poId/edit", async (req, res) => {
+  try {
+    const updated = await PO.findByIdAndUpdate(req.params.poId, req.body, { new: true });
+
+    // Sync back to PR if exists
+    if (updated.pr) {
+      await PR.findByIdAndUpdate(updated.pr, {
+        name: updated.name,
+        dept: updated.dept,
+        supplier: updated.supplier,
+        supplierdetail: updated.supplierdetail,
+        term: updated.term,
+        discount: updated.discount,
+      });
+    }
+
+    res.redirect(`/po/${req.params.poId}`);
+  } catch (err) {
+    console.error(err);
+    const po = await PO.findById(req.params.poId).lean();
+    res.render("createPO", { po, errors: err.errors });
+  }
+});
+
+// POST delete PO, clean up references, and delete orphaned items
+router.post("/:poId/delete", async (req, res) => {
+  try {
+    const po = await PO.findById(req.params.poId);
+
+    if (po) {
+      // 1. For each item linked to this PO
+      for (const itemId of po.item) {
+        const item = await ITEM.findById(itemId);
+
+        if (item) {
+          if (!item.pr) {
+            // Delete item if no PR reference (orphaned)
+            await ITEM.findByIdAndDelete(item._id);
+          } else {
+            // Keep item but remove PO reference
+            await ITEM.findByIdAndUpdate(item._id, { $unset: { po: "" } });
+          }
+        }
+      }
+
+      // 2. Remove PO reference from linked PR
+      if (po.pr) {
+        await PR.findByIdAndUpdate(po.pr, {
+          $unset: { po: "" },
+        });
+      }
+
+      // 3. Delete the PO itself
+      await PO.findByIdAndDelete(po._id);
+    }
+
+    res.redirect("/po/list");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
+// === ADD ITEM TO PO ===
+router.get("/:poId/poitem", async (req, res) => {
+  try {
+    const po = await PO.findById(req.params.poId);
+    if (!po) return res.status(404).send("PO not found");
+    res.render("poitem", { po, item: {}, errors: null });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+router.post("/:poId/poitem", async (req, res) => {
+  try {
+    const po = await PO.findById(req.params.poId);
+    if (!po) return res.status(404).send("PO not found");
+
+    const item = new ITEM({ ...req.body, po: po._id });
+    await item.save();
+
+    po.item.push(item._id);
+    await po.save();
+
+    // Also link item to PR if PO has one
+    if (po.pr) {
+      await PR.findByIdAndUpdate(po.pr, { $push: { item: item._id } });
+      await ITEM.findByIdAndUpdate(item._id, { pr: po.pr });
+    }
+
+    res.redirect(`/po/${po._id}/poitem`);
+  } catch (err) {
+    console.error(err);
+    const po = await PO.findById(req.params.poId);
+    res.render("poitem", { po, item: req.body, errors: err.errors || err });
+  }
+});
+
+// === EDIT ITEM ===
+router.get("/:poId/poitem/:itemId/edit", async (req, res) => {
+  try {
+    const po = await PO.findById(req.params.poId);
+    const item = await ITEM.findById(req.params.itemId);
+    if (!po || !item) return res.status(404).send("PO or Item not found");
+    res.render("poitemedit", { po, item, errors: null });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+router.post("/:poId/poitem/:itemId/edit", async (req, res) => {
+  try {
+    await ITEM.findByIdAndUpdate(req.params.itemId, req.body, { runValidators: true });
+    res.redirect(`/po/${req.params.poId}`);
+  } catch (err) {
+    const po = await PO.findById(req.params.poId);
+    const item = { ...req.body, _id: req.params.itemId };
+    res.render("poitemedit", { po, item, errors: err.errors || err });
+  }
+});
+
+// === DELETE ITEM ===
+router.post("/:poId/poitem/:itemId/delete", async (req, res) => {
+  try {
+    await ITEM.findByIdAndDelete(req.params.itemId);
+    await PO.findByIdAndUpdate(req.params.poId, {
+      $pull: { item: req.params.itemId },
+    });
+    res.redirect(`/po/${req.params.poId}`);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// === PO DETAIL PAGE ===
 router.get("/:poId", async (req, res) => {
   try {
     const po = await PO.findById(req.params.poId)
-      .populate("item") // Use PO's own items
-      .populate("pr", "PRno") // Only fetch PRno from PR
+      .populate("item")
+      .populate("pr", "PRno")
       .lean();
 
     if (!po) return res.status(404).send("PO not found");
 
-    // Calculate item price
     const allItems = (po.item || []).map(item => {
       const quantity = parseFloat(item.quantity || 0);
       const ppu = parseFloat(item.ppu || 0);
@@ -148,41 +282,38 @@ router.get("/:poId", async (req, res) => {
   }
 });
 
-// GET export PO to Excel using only PR for PRno if needed
-router.get('/export/:id', async (req, res) => {
+// === EXPORT TO EXCEL ===
+router.get("/export/:id", async (req, res) => {
   try {
     const po = await PO.findById(req.params.id)
-      .populate("item") // Use items from PO
-      .populate("pr", "PRno dept"); // Only load PRno and dept
+      .populate("item")
+      .populate("pr", "PRno dept");
 
-    if (!po) {
-      return res.status(404).send('PO not found');
-    }
+    if (!po) return res.status(404).send("PO not found");
 
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(path.join(__dirname, '../public/templates/PO_Form.xlsx'));
-    const worksheet = workbook.getWorksheet('Sheet1');
+    await workbook.xlsx.readFile(path.join(__dirname, "../public/templates/PO_Form.xlsx"));
+    const worksheet = workbook.getWorksheet("Sheet1");
 
-    worksheet.getCell('G4').value = `เลขประจำตัวผู้เสียภาษี : ${po.Taxpayerno}`;
-    worksheet.getCell('B5').value = `   VENDOR : ${po.supplier}`;
-    worksheet.getCell('C6').value = po.supplierdetail;
-    worksheet.getCell('G6').value = `${po.dept}-${po.POno}`;
-    worksheet.getCell('G7').value = po.date;
-    worksheet.getCell('C8').value = po.Texid;
-    worksheet.getCell('C9').value = ` : Tel. ${po.Tel}  Fax. ${po.fax} (AUTO) Mobile. ${po.mobile}`;
-    worksheet.getCell('B10').value = `  ATTENTION  : ${po.attention}`;
-    worksheet.getCell('C12').value = po.Paymentterm;
-    worksheet.getCell('D12').value = po.name;
-    worksheet.getCell('F12').value = po.deliverydate;
-    worksheet.getCell('H12').value = `${po.pr?.PRno || ''}-${po.dept}-MOT`;
-    worksheet.getCell('C34').value = `เครดิต ${po.term}`;
-    worksheet.getCell('H34').value = Number(po.discount || 0);
-    worksheet.getCell('H34').numFmt = '#,##0.00';
-    worksheet.getCell('C35').value = `เลขที่ใบเสนอราคา : ${po.quotation}`;
-    worksheet.getCell('B40').value = `(${po.purchasing})`;
-    worksheet.getCell('E40').value = `                            (${po.approval})`;
+    worksheet.getCell("G4").value = `เลขประจำตัวผู้เสียภาษี : ${po.Taxpayerno}`;
+    worksheet.getCell("B5").value = `   VENDOR : ${po.supplier}`;
+    worksheet.getCell("C6").value = po.supplierdetail;
+    worksheet.getCell("G6").value = `${po.dept}-${po.POno}`;
+    worksheet.getCell("G7").value = po.date;
+    worksheet.getCell("C8").value = po.Texid;
+    worksheet.getCell("C9").value = ` : Tel. ${po.Tel}  Fax. ${po.fax} (AUTO) Mobile. ${po.mobile}`;
+    worksheet.getCell("B10").value = `  ATTENTION  : ${po.attention}`;
+    worksheet.getCell("C12").value = po.Paymentterm;
+    worksheet.getCell("D12").value = po.name;
+    worksheet.getCell("F12").value = po.deliverydate;
+    worksheet.getCell("H12").value = `${po.pr?.PRno || ""}-${po.dept}-MOT`;
+    worksheet.getCell("C34").value = `เครดิต ${po.term}`;
+    worksheet.getCell("H34").value = Number(po.discount || 0);
+    worksheet.getCell("H34").numFmt = "#,##0.00";
+    worksheet.getCell("C35").value = `เลขที่ใบเสนอราคา : ${po.quotation}`;
+    worksheet.getCell("B40").value = `(${po.purchasing})`;
+    worksheet.getCell("E40").value = `                            (${po.approval})`;
 
-    // Fill items from PO
     const startRow = 16;
     po.item.forEach((item, i) => {
       const row = worksheet.getRow(startRow + i);
@@ -191,20 +322,18 @@ router.get('/export/:id', async (req, res) => {
       row.getCell(5).value = item.unit;
       row.getCell(6).value = item.quantity;
       row.getCell(7).value = Number(item.ppu);
-      row.getCell(7).numFmt = '#,##0.00';
+      row.getCell(7).numFmt = "#,##0.00";
       row.commit();
     });
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=PO_${po.POno || po._id}-${po.dept}-MOT.xlsx`);
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename=PO_${po.POno || po._id}-${po.dept}-MOT.xlsx`);
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (err) {
     console.error(err);
-    res.status(500).send('Failed to export PO');
+    res.status(500).send("Failed to export PO");
   }
 });
-
 
 module.exports = router;
