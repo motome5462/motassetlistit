@@ -20,47 +20,48 @@
            style="width: 100px; height: 80px; margin-right: 15px;" />
       <div style="margin-top: 1.5%; margin-left: 30px; font-size: 16px; width: 100%;">
         <p class="mb-0">
-          835/6&nbsp;&nbsp;&nbsp;ถ.&nbsp;สรงประภา&nbsp;&nbsp;&nbsp;แขวงดอนเมือง&nbsp;&nbsp;&nbsp;
-          เขตดอนเมือง&nbsp;&nbsp;&nbsp;กรุงเทพฯ&nbsp;&nbsp;&nbsp;10210&nbsp;&nbsp;&nbsp;
-          โทร +66 (0)2 928-6806&nbsp;&nbsp;&nbsp;แฟกซ์ +66 (0)2 928-6807
+          835/6 ถ.สรงประภา แขวงดอนเมือง เขตดอนเมือง กรุงเทพฯ 10210  
+          โทร +66 (0)2 928-6806 แฟกซ์ +66 (0)2 928-6807
         </p>
         <p class="mb-0">
-          835/6,&nbsp;Song Prapha Road,&nbsp;Don Mueang Sub-district,&nbsp;Don Mueang District,&nbsp;
-          Bangkok&nbsp;Thailand&nbsp;Tel: +66 (0)2 928-6806&nbsp;Fax: +66 (0)2 928-6807
+          835/6, Song Prapha Road, Don Mueang Sub-district, Don Mueang District,  
+          Bangkok, Thailand. Tel: +66 (0)2 928-6806 Fax: +66 (0)2 928-6807
         </p>
         <div class="d-flex justify-content-between">
           <p class="mb-0">Website: www.mot.co.th</p>
-          <p class="mb-0">เลขประจำตัวผู้เสียภาษี : <%= po.Taxpayerno %></p>
+          <p class="mb-0">เลขประจำตัวผู้เสียภาษี : <%= po.Taxpayerno || '-' %></p>
         </div>
       </div>
     </div>
 
-    <% if (po.pr) { %>
+    <% if (po) { %>
+    <!-- Vendor Info -->
     <div class="po-box row">
       <div class="col-md-4">
         <div class="mb-1 d-flex">
           <strong class="me-2">VENDOR :</strong>
           <div>
-            <div><%= po.pr.supplier %></div>
-            <div><%= po.pr.supplierdetail %></div>
+            <div><%= po.supplier || '' %></div>
+            <div><%= po.supplierdetail || '' %></div>
           </div>
         </div>
-        <p class="mb-1">&nbsp;</p>
-        <p class="mb-1"><strong>TEX ID: </strong> <%= po.Texid %></p>
-        <p class="mb-1"><strong>TEL : </strong>Tel. <%= po.Tel %> Fax. <%= po.fax %> Mobile. <%= po.mobile %></p>
-        <p class="mb-1"><strong>ATTENTION : </strong> <%= po.attention %></p>
+        <p class="mb-1"><strong>TEX ID: </strong> <%= po.Texid || '' %></p>
+        <p class="mb-1"><strong>TEL : </strong> Tel. <%= po.Tel || '' %> Fax. <%= po.fax || '' %> Mobile. <%= po.mobile || '' %></p>
+        <p class="mb-1"><strong>ATTENTION : </strong> <%= po.attention || '' %></p>
       </div>
+
       <div class="col-md-4 d-flex align-items-end justify-content-center">
-        <p class="mb-0"><strong>Email : </strong> <%= po.email %></p>
+        <p class="mb-0"><strong>Email : </strong> <%= po.email || '' %></p>
       </div>
+
       <div class="col-md-4 text-end">
         <p class="mb-1"><strong>ใบสั่งซื้อ / PURCHASE ORDER</strong></p>
-        <p class="mb-1"><strong>PO NO. : </strong> <%= po.pr.dept %><%= po.POno %></p>
+        <p class="mb-1"><strong>PO NO. : </strong> <%= po.dept || '' %><%= po.POno || '' %></p>
         <p class="mb-1"><strong>PO DATE : </strong> <%= po.date ? po.date.toISOString().substr(0, 10) : '' %></p>
       </div>
     </div>
 
-    <!-- First Table: PAYMENT TERM -->
+    <!-- First Table: Payment Term -->
     <div class="table-wrapper first-table-wrapper">
       <table class="table mb-0 bordered-table first-table">
         <thead>
@@ -73,16 +74,16 @@
         </thead>
         <tbody>
           <tr>
-            <td><%= po.pr.term %></td>
-            <td><%= po.pr.name %></td>
+            <td><%= po.term || '' %></td>
+            <td><%= po.name || '' %></td>
             <td><%= po.deliverydate ? po.deliverydate.toISOString().substr(0, 10) : '' %></td>
-            <td><%= po.pr.dept %>-<%= po.pr.PRno %>-MOT</td>
+            <td><%= po.dept || '' %>-<%= po.PRno || '' %>-MOT</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Second Table: ITEMS -->
+    <!-- Second Table: Items -->
     <div class="table-wrapper items-table-wrapper">
       <table class="table m-0 bordered-table items-table">
         <thead class="table-light">
@@ -92,66 +93,66 @@
             <th>UOM</th>
             <th>QUANTITY</th>
             <th>UNIT PRICE</th>
-            <th>AMOUNT<br/>(Bath)</th>
+            <th>AMOUNT<br/>(Baht)</th>
           </tr>
         </thead>
         <tbody>
-          <% po.pr.pritem.forEach((item, index) => { %>
-          <tr>
-            <td><%= index + 1 %></td>
-            <td><%= item.description %></td>
-            <td><%= item.unit %></td>
-            <td><%= item.quantity %></td>
-            <td><%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-            <td><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
-          </tr>
+          <% (po.item || []).forEach((item, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= item.description || '' %><% if (item.sn) { %> - <%= item.sn %><% } %></td>
+              <td><%= item.unit || '' %></td>
+              <td><%= item.quantity || '' %></td>
+              <td><%= parseFloat(item.ppu || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
+              <td><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
+            </tr>
           <% }) %>
         </tbody>
-        <tbody>
+
+        <!-- Summary -->
+        <tfoot>
           <tr>
-            <td colspan="3" class="text-start">
-              <strong style="text-decoration: underline;">
-                เงื่อนไขการฃำระเงิน / Payment Terms & Condition
-              </strong>
-              <br/>
-              เครดิต <%= po.pr.term %> <br/>
-              เลขที่ใบเสนอราคา : <%= po.quotation %>
+            <td colspan="3" class="text-start align-top">
+              <strong style="text-decoration: underline;">เงื่อนไขการฃำระเงิน / Payment Terms & Condition</strong><br />
+              เครดิต <%= po.term || '' %><br />
+              เลขที่ใบเสนอราคา : <%= po.quotation || '' %>
             </td>
             <td colspan="3">
-              <table>
+              <table class="table table-borderless table-sm mb-0">
                 <tr><td>Total</td><td><%= parseFloat(totalPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
-                <tr><td>Special Discount</td><td><%= parseFloat(po.pr.discount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
+                <tr><td>Special Discount</td><td><%= parseFloat(po.discount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
                 <tr><td>Sub Total</td><td><%= parseFloat(subtotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
                 <tr><td>Vat 7%</td><td><%= parseFloat(vat || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
-                <tr><td>Grand Total(THB)</td><td><%= parseFloat(net || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
+                <tr><td>Grand Total (THB)</td><td><%= parseFloat(net || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td></tr>
               </table>
             </td>
           </tr>
-        </tbody>
-        <tbody>
           <tr>
             <td colspan="6">
               <p class="mb-1">&nbsp;</p>
-              <div style="display: flex; justify-content: space-between;">
-                <span style="margin-left: 80px;">
-                  ............................................<br/><%= po.purchasing %><br/>purchasing
+              <div class="d-flex justify-content-between px-5">
+                <span>
+                  ............................................<br />
+                  <%= po.purchasing || '' %><br />
+                  purchasing
                 </span>
-                <span style="margin-right: 80px;">
-                  ...........................................<br/><%= po.approval %><br/>approval
+                <span>
+                  ............................................<br />
+                  <%= po.approval || '' %><br />
+                  approval
                 </span>
               </div>
             </td>
           </tr>
-        </tbody>
+        </tfoot>
       </table>
     </div>
-
     <% } else { %>
-      <p>No linked PR found for this PO.</p>
+      <p class="text-danger">No linked PR found for this PO.</p>
     <% } %>
 
     <!-- Buttons -->
-    <div class="text-center no-print">
+    <div class="text-center no-print mt-4">
       <button class="btn btn-success" onclick="exportPO('<%= po._id %>')">Export</button>
       <a href="/po/list" class="btn btn-secondary">Back to List</a>
     </div>

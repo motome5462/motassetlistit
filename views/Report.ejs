@@ -154,12 +154,13 @@
             </tr>
           </thead>
           <tbody>
+
             <tr>
               <td><%= item.device %></td>
-              <td><%= item.devicetype %> <%= item.devicechoice %></td>
+              <td><%= item.devicetype || ' '%> <%= item.devicechoice|| ' '%></td>
               <td><%= item.devicemodel %></td>
-              <td>S/N: <%= item.devicesn %></td>
-              <td><%= item.cpu %> <%= item.cputype %></td>
+              <td><% if (item.devicesn) { %> S/N: <%= item.devicesn %><% } %></td>
+              <td><%= item.cpu || ' '%> <%= item.cputype || ' '%></td>
               <td><%= item.speed %></td>
               <td><%= item.cpuassetaccountno %></td>
               <td><%= item.harddisk %></td>
@@ -197,14 +198,15 @@
           </thead>
           <tbody>
             <tr>
+              
               <td><%= item.romdrive %> <%= item.romdrivetype %></td>
-              <td>S/N: <%= item.romsn %> ID: <%= item.romassetid %></td>
+              <td><% if (item.romsn) { %> S/N: <%= item.romsn %><% } %> <% if (item.romassetid) { %> ID: <%= item.romassetid %><% } %></td>
               <td><%= item.monitor %> <%= item.monitortype %></td>
-              <td>S/N: <%= item.monitorsn %> ID: <%= item.monitorassetid %></td>
+              <td><% if (item.monitorsn) { %> S/N: <%= item.monitorsn %><% } %> <% if (item.monitorassetid) { %> ID: <%= item.monitorassetid %><% } %></td>
               <td><%= item.keyboard %> <%= item.keyboardtype %></td>
-              <td>S/N: <%= item.keyboardsn %> ID: <%= item.keyboardassetid %></td>
+              <td><% if (item.keyboardsn) { %> S/N: <%= item.keyboardsn %><% } %> <% if (item.keyboardassetid) { %> ID: <%= item.keyboardassetid %><% } %></td>
               <td><%= item.mouse %> <%= item.mousetype %></td>
-              <td>S/N: <%= item.mousesn %> ID: <%= item.mouseassetid %></td>
+              <td><% if (item.mousesn) { %> S/N: <%= item.mousesn %><% } %> <% if (item.mouseassetid) { %> ID: <%= item.mouseassetid %><% } %></td>
             </tr>
           </tbody>
           <thead>
@@ -222,13 +224,13 @@
           <tbody>
             <tr>
               <td><%= item.printer %> <%= item.printermodel %> <%= item.printertype %></td>
-              <td>S/N: <%= item.printersn %> ID: <%= item.printerassetid %></td>
+              <td><% if (item.printersn) { %> S/N: <%= item.printersn %><% } %> <% if (item.printerassetid) { %> ID: <%= item.printerassetid %><% } %></td>
               <td><%= item.adaptor %></td>
-              <td>S/N: <%= item.adaptorsn %></td>
+              <td><% if (item.adaptorsn) { %> S/N: <%= item.adaptorsn %><% } %></td>
               <td><%= item.ups %> <%= item.upstype %> <%= item.upsva %></td>
-              <td><%= item.upstypemodel %> S/N: <%= item.upstypesn %> ID: <%= item.upstypeassetid %></td>
+              <td><%= item.upstypemodel %> <% if (item.upstypesn) { %> S/N: <%= item.upstypesn %><% } %> <% if (item.upstypeassetid) { %> ID: <%= item.upstypeassetid %><% } %></td>
               <td><%= item.other1 %></td>
-              <td>S/N: <%= item.othersn %></td>
+              <td><% if (item.othersn) { %> S/N: <%= item.othersn %><% } %></td>
             </tr>
           </tbody>
         </table>
@@ -247,7 +249,7 @@
           <tbody>
             <tr>
               <td><%= item.os %> <%= item.ostype %></td>
-              <td>S/N: <%= item.ossn %></td>
+              <td><% if (item.ossn) { %> S/N: <%= item.ossn %><% } %></td>
               <td><%= item.antivirus %></td>
               <td><%= item.pdf %></td>
               <td><%= item.mapdrive %></td>
@@ -265,7 +267,7 @@
           <tbody>
             <tr>
               <td><%= item.office %> <%= item.officetype %></td>
-              <td>S/N: <%= item.officesn %></td>
+              <td><% if (item.officesn) { %> S/N: <%= item.officesn %><% } %></td>
               <td><%= item.utility %></td>
               <td><%= item.other2 %></td>
               <td><%= item.addprinter %></td>
@@ -276,7 +278,7 @@
         <h2 style="font-size: 30px">Other</h2>
         <table class="table table-bordered" style="border: 1px solid rgb(0, 0, 0);">
           <tr>
-            <td><%= item.other3 %> </td>
+            <td><%= item.other3 || ' ' %></td>
           </tr>
         </table>
         <div class="row mb-3 align-items-center">

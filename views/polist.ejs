@@ -33,7 +33,7 @@
           <% poList.forEach(po => { %>
             <tr>
               <td><%= po.POno || po._id %></td>
-              <td><%= po.pr.supplier %></td>
+              <td><%= po.supplier %></td>
               <td><%= po.Taxpayerno %></td>
               <td><%= po.quotation %></td>
               <td><%= po.date ? po.date.toISOString().substr(0, 10) : '' %></td>

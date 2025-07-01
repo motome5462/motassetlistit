@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const PR = require("../models/PR");
-const PRITEM = require("../models/PRITEM");
-const ExcelJS = require('exceljs');
-const path = require('path');
+const ITEM = require("../models/ITEM");
+const ExcelJS = require("exceljs");
+const path = require("path");
 
 // Redirect /pr to /pr/list
 router.get("/", (req, res) => {
@@ -13,98 +13,87 @@ router.get("/", (req, res) => {
 
 // GET form to create new PR
 router.get("/new", (req, res) => {
-  res.render("pr", { pr: {}, errors: null });
+  res.render("createPR", { pr: {}, errors: null });
 });
 
 // POST new PR
 router.post("/new", async (req, res) => {
   try {
-    const prData = req.body;
-    const pr = new PR(prData);
+    const pr = new PR(req.body);
     await pr.save();
-    res.redirect(`/pr/${pr._id}/pritem`); // After PR created, go to add items
+    res.redirect(`/pr/${pr._id}/pritem`);
   } catch (err) {
     console.error(err);
-    res.render("pr", { pr: req.body, errors: err.errors || err });
+    res.render("createPR", { pr: req.body, errors: err.errors || err });
   }
 });
 
-// GET form to add PRITEM(s) to a PR
+// GET form to add ITEM(s) to a PR
 router.get("/:prId/pritem", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId);
     if (!pr) return res.status(404).send("PR not found");
-    res.render("pritem", { pr, pritem: {}, errors: null });
+    res.render("pritem", { pr, item: {}, errors: null });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-// POST add PRITEM to a PR
+// POST add ITEM to a PR
 router.post("/:prId/pritem", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId);
     if (!pr) return res.status(404).send("PR not found");
 
-    const pritemData = req.body;
-    pritemData.PRNO = pr._id; // Link PRITEM to PR
+    const itemData = {
+      ...req.body,
+      pr: pr._id,
+      instock: req.body.stockLocation === "instock" ? "/" : "",
+      outstock: req.body.stockLocation === "outstock" ? "/" : "",
+    };
 
-    pritemData.instock = req.body.stockLocation === 'instock' ? '/' : '';
-    pritemData.outstock = req.body.stockLocation === 'outstock' ? '/' : '';
-    
-    const pritem = new PRITEM(pritemData);
-    await pritem.save();
+    const item = new ITEM(itemData);
+    await item.save();
 
-    // Add PRITEM ref to PR document
-    pr.pritem.push(pritem._id);
+    pr.item.push(item._id);
     await pr.save();
 
-    res.redirect(`/pr/${pr._id}/pritem`); // Stay on add PRITEM form for more items
+    res.redirect(`/pr/${pr._id}/pritem`);
   } catch (err) {
     console.error(err);
     const pr = await PR.findById(req.params.prId);
-    res.render("pritem", { pr, pritem: req.body, errors: err.errors || err });
+    res.render("pritem", { pr, item: req.body, errors: err.errors || err });
   }
 });
 
-// GET form to edit a PR
+// GET form to edit PR
 router.get("/:prId/edit", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId);
     if (!pr) return res.status(404).send("PR not found");
-    res.render("pr", { pr, errors: null });
+    res.render("createPR", { pr, errors: null });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-// POST update a PR
+// POST update PR
 router.post("/:prId/edit", async (req, res) => {
   try {
-    const prId = req.params.prId;
-    const updateData = { ...req.body };
+    const updateData = {
+      ...req.body,
+      manual_PRno: req.body.manual_PRno ? Number(req.body.manual_PRno) : undefined,
+      date: req.body.date ? new Date(req.body.date) : undefined,
+    };
 
-    // Convert manual_PRno to Number or undefined
-    if (updateData.manual_PRno) {
-      const num = Number(updateData.manual_PRno);
-      updateData.manual_PRno = isNaN(num) ? undefined : num;
-    } else {
-      updateData.manual_PRno = undefined;
-    }
-
-    // Convert date string to Date object if present
-    if (updateData.date) {
-      updateData.date = new Date(updateData.date);
-    }
-
-    const updatedPR = await PR.findByIdAndUpdate(prId, updateData, {
+    const updatedPR = await PR.findByIdAndUpdate(req.params.prId, updateData, {
       new: true,
       runValidators: true,
     });
 
     if (!updatedPR) return res.status(404).send("PR not found");
 
-    res.redirect(`/pr/${prId}`);
+    res.redirect(`/pr/${req.params.prId}`);
   } catch (err) {
     console.error(err);
     const pr = await PR.findById(req.params.prId);
@@ -115,56 +104,58 @@ router.post("/:prId/edit", async (req, res) => {
   }
 });
 
-
-// POST delete a PR
+// POST delete PR and related ITEMs
 router.post("/:prId/delete", async (req, res) => {
   try {
     const pr = await PR.findByIdAndDelete(req.params.prId);
-    await PRITEM.deleteMany({ PRNO: pr._id }); // Delete linked PRITEMs too
+    if (pr) {
+      await ITEM.deleteMany({ pr: pr._id });
+    }
     res.redirect("/pr/list");
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-// GET form to edit PRITEM
+// GET form to edit ITEM
 router.get("/:prId/pritem/:itemId/edit", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId);
-    const pritem = await PRITEM.findById(req.params.itemId);
-    if (!pr || !pritem) return res.status(404).send("PR or Item not found");
-    res.render("pritemedit", { pr, pritem, errors: null });
+    const item = await ITEM.findById(req.params.itemId);
+    if (!pr || !item) return res.status(404).send("PR or Item not found");
+    res.render("pritemedit", { pr, item, errors: null });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-// POST update PRITEM
+// POST update ITEM
 router.post("/:prId/pritem/:itemId/edit", async (req, res) => {
   try {
-    const updateData = req.body;
+    const updateData = {
+      ...req.body,
+      instock: req.body.stockLocation === "instock" ? "/" : "",
+      outstock: req.body.stockLocation === "outstock" ? "/" : "",
+    };
 
-    updateData.instock = req.body.stockLocation === 'instock' ? '/' : '';
-    updateData.outstock = req.body.stockLocation === 'outstock' ? '/' : '';
-
-    await PRITEM.findByIdAndUpdate(req.params.itemId, updateData, {
+    await ITEM.findByIdAndUpdate(req.params.itemId, updateData, {
       runValidators: true,
     });
 
     res.redirect(`/pr/${req.params.prId}`);
   } catch (err) {
     const pr = await PR.findById(req.params.prId);
-    const pritem = { ...req.body, _id: req.params.itemId };
-    res.render("pritemedit", { pr, pritem, errors: err.errors || err });
+    const item = { ...req.body, _id: req.params.itemId };
+    res.render("pritemedit", { pr, item, errors: err.errors || err });
   }
 });
 
-// POST delete PRITEM
+// POST delete ITEM
 router.post("/:prId/pritem/:itemId/delete", async (req, res) => {
   try {
-    await PRITEM.findByIdAndDelete(req.params.itemId);
+    await ITEM.findByIdAndDelete(req.params.itemId);
     await PR.findByIdAndUpdate(req.params.prId, {
-      $pull: { pritem: req.params.itemId }
+      $pull: { item: req.params.itemId },
     });
     res.redirect(`/pr/${req.params.prId}`);
   } catch (err) {
@@ -172,9 +163,7 @@ router.post("/:prId/pritem/:itemId/delete", async (req, res) => {
   }
 });
 
-
-
-// GET list of all PRs
+// GET PR list
 router.get("/list", async (req, res) => {
   try {
     const prList = await PR.find().sort({ PRno: -1 }).exec();
@@ -185,27 +174,20 @@ router.get("/list", async (req, res) => {
   }
 });
 
-// GET PR detail page with all PRITEMs
+// GET PR detail with populated items
 router.get("/:prId", async (req, res) => {
   try {
-    const pr = await PR.findById(req.params.prId).populate("pritem").lean();
+    const pr = await PR.findById(req.params.prId).populate("item").lean();
     if (!pr) return res.status(404).send("PR not found");
 
-    // Calculate price total
-    pr.pritem = pr.pritem.map(item => {
-      const quantity = parseFloat(item.quantity || 0);
-      const price = parseFloat(item.ppu || 0);
-      item.price = quantity !== 0 ? (price * quantity).toFixed(2) : "0.00";
-      return item;
+    pr.item = pr.item.map(i => {
+      const quantity = parseFloat(i.quantity || 0);
+      const ppu = parseFloat(i.ppu || 0);
+      i.price = (quantity * ppu).toFixed(2);
+      return i;
     });
 
-    // Calculate total price
-    const totalPrice = (pr.pritem || []).reduce((sum, item) => {
-      return sum + parseFloat(item.price || 0);
-    }, 0);
-
-
-    // Calculate VAT and Net
+    const totalPrice = pr.item.reduce((sum, i) => sum + parseFloat(i.price || 0), 0);
     const vat = +(totalPrice * 0.07).toFixed(2);
     const discount = parseFloat(pr.discount || 0);
     const net = +(totalPrice + vat - discount).toFixed(2);
@@ -221,89 +203,54 @@ router.get("/:prId", async (req, res) => {
   }
 });
 
-router.get('/export/:id', async (req, res) => {
+// GET export PR to Excel
+router.get("/export/:id", async (req, res) => {
   try {
-    const pr = await PR.findById(req.params.id).populate('pritem');
+    const pr = await PR.findById(req.params.id).populate("item");
 
-        // --- Price ---
-    // pr.pritem = pr.pritem.map(item => {
-    //   const quantity = parseFloat(item.quantity || "0");
-    //   const unitPrice = parseFloat(item.ppu || "0");
-    //   const price = quantity * unitPrice;
-
-    //   item.price = price.toFixed(2);
-    //   return item;
-    // });
-
-    // // ---Calculate totals ---
-    // const totalPrice = pr.pritem.reduce((sum, item) => {
-    //   return sum + parseFloat(item.price || "0");
-    // }, 0);
-
-    // const discount = parseFloat(pr.discount || "0");
-    // const vat = +(totalPrice * 0.07).toFixed(2);
-    // const net = +(totalPrice + vat - discount).toFixed(2);
-
-
-    // pr.totalPrice = totalPrice.toFixed(2);
-    // pr.vat = vat.toFixed(2);
-    // pr.net = net.toFixed(2);
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(path.join(__dirname, '../public/templates/PR_Form.xlsx'));
-    const worksheet = workbook.getWorksheet('1');
+    await workbook.xlsx.readFile(path.join(__dirname, "../public/templates/PR_Form.xlsx"));
+    const worksheet = workbook.getWorksheet("1");
 
+    worksheet.getCell("D7").value = pr.name;
+    worksheet.getCell("D8").value = pr.note;
+    worksheet.getCell("I7").value = pr.customer;
+    worksheet.getCell("M7").value = pr.date ? new Date(pr.date) : "";
+    worksheet.getCell("M8").value = `${pr.PRno || pr._id}-${pr.dept}-MOT`;
+    worksheet.getCell("D33").value = pr.supplier;
+    worksheet.getCell("D34").value = pr.supplierdetail;
+    worksheet.getCell("J34").value = Number(pr.discount);
+    worksheet.getCell("J34").numFmt = "#,##0.00";
+    worksheet.getCell("M33").value = pr.term;
+    worksheet.getCell("M34").value = pr.delivery;
+    worksheet.getCell("L35").value = pr.validity;
+    worksheet.getCell("L36").value = pr.transport;
+    worksheet.getCell("M37").value = pr.ref;
 
-    // --- Fill PR main data (adjust cell positions as needed) ---
-    worksheet.getCell('D7').value = pr.name;
-    worksheet.getCell('D8').value = pr.note;
-    worksheet.getCell('I7').value = pr.customer;
-    worksheet.getCell('M7').value = pr.date ? new Date(pr.date) : '';
-    worksheet.getCell('M8').value =  `${pr.PRno|| pr._id}-${pr.dept}-MOT`;
-    worksheet.getCell('D33').value = pr.supplier;
-    worksheet.getCell('D34').value = pr.supplierdetail;
-    //worksheet.getCell('J33').value = pr.totalPrice;
-    worksheet.getCell('J34').value = Number(pr.discount);
-    worksheet.getCell('J34').numFmt = '#,##0.00'; // Set format to include commas and 2 decimals
-    //worksheet.getCell('J35').value = pr.vat;
-    //worksheet.getCell('J36').value = pr.net;
-    worksheet.getCell('M33').value = pr.term;
-    worksheet.getCell('M34').value = pr.delivery;
-    worksheet.getCell('L35').value = pr.validity;
-    worksheet.getCell('L36').value = pr.transport;
-    worksheet.getCell('M37').value = pr.ref;
-
-    // --- Insert PRITEMs starting at B11 ---
     const startRow = 11;
-
-    pr.pritem.forEach((item, i) => {
+    pr.item.forEach((item, i) => {
       const row = worksheet.getRow(startRow + i);
-      row.getCell(2).value = i + 1;         // Column B (2nd column)
-      row.getCell(3).value = item.quantity; // Column C
-      row.getCell(4).value = item.unit;     // Column D
-      row.getCell(5).value = item.sn;       // Column E
-      row.getCell(6).value = item.description; // Column F
-      row.getCell(8).value = item.instock;  // Column H
-      row.getCell(9).value = item.outstock; // Column I
-      //row.getCell(10).value = item.price;    Column J
-      row.getCell(11).value = Number(item.ppu);     // Column K
-      row.getCell(11).numFmt = '#,##0.00';      // Set format to include commas and 2 decimals
-      row.getCell(12).value = item.remark;  // Column L
+      row.getCell(2).value = i + 1;
+      row.getCell(3).value = item.quantity;
+      row.getCell(4).value = item.unit;
+      row.getCell(5).value = item.sn;
+      row.getCell(6).value = item.sn ? `${item.description} - ${item.sn}` : item.description;
+      row.getCell(8).value = item.instock;
+      row.getCell(9).value = item.outstock;
+      row.getCell(11).value = Number(item.ppu);
+      row.getCell(11).numFmt = "#,##0.00";
+      row.getCell(12).value = item.remark;
       row.commit();
     });
 
-
-
-    // --- Send file to browser ---
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=PR_${pr.PRno|| pr._id}-${pr.dept}-MOT.xlsx`);
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename=PR_${pr.PRno || pr._id}-${pr.dept}-MOT.xlsx`);
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (err) {
     console.error(err);
-    res.status(500).send('Failed to export PR');
+    res.status(500).send("Failed to export PR");
   }
 });
-
 
 module.exports = router;

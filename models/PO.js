@@ -5,7 +5,11 @@ const Counter = require("./Counter");
 const POSchema = new mongoose.Schema({
   POno: { type: Number, unique: true },
   manual_POno: { type: Number },
+  name: { type: String, default: "" },
+  dept: { type: String, default: "" },
   Taxpayerno:{ type: String, default: "" },
+  supplier:{ type: String, default: "" },
+  supplierdetail:{ type: String, default: "" },
   date:{ type: Date, default: null },
   Texid:{ type: String, default: "" },
   Tel:{ type: String, default: "" },
@@ -18,7 +22,9 @@ const POSchema = new mongoose.Schema({
   quotation:{ type: String, default: "" },
   purchasing:{ type: String, default: "" },
   approval:{ type: String, default: "" },
-
+  term:{ type: String, default: "" },
+  discount:{type: String, default: "" },
+item: [{ type: mongoose.Schema.Types.ObjectId, ref: "ITEM" }],
 pr: { type: mongoose.Schema.Types.ObjectId, ref: "PR" },
 });
 

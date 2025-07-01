@@ -1,8 +1,8 @@
-// models/PRITEM.js
+// models/ITEM.js
 const mongoose = require("mongoose");
 
 
-const PRITEMSchema  = new mongoose.Schema({
+const ITEMSchema  = new mongoose.Schema({
     quantity: { type: String, default: "" },
     unit: {type: String, default: ""},
     sn: {type: String, default: ""},
@@ -14,5 +14,6 @@ const PRITEMSchema  = new mongoose.Schema({
     remark: { type: String, default: "" },
     total:{ type: String, default: ""},
     pr: { type: mongoose.Schema.Types.ObjectId, ref: "PR" },
+    po: { type: mongoose.Schema.Types.ObjectId, ref: "PO" },
 })
-module.exports = mongoose.model("PRITEM",PRITEMSchema)
+module.exports = mongoose.model("ITEM",ITEMSchema)
