@@ -2,115 +2,118 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>PO from PR</title>
+  <title>Create PO from PR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/stylesheets/Report.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
-<body class="container mt-4">
+<body>
   <header class="no-print mb-4">
     <% include index.ejs %>
   </header>
 
-  <h1>PO from PR</h1>
-
-  <form action="/po/frompr" method="POST">
-    <% if (pr) { %>
-      <input type="hidden" name="prId" value="<%= pr._id %>" />
-    <% } %>
-
-    <div class="row">
-      <div class="col-md-4 mb-3">
-        <label for="date" class="form-label">Date</label>
-        <input type="date" name="date" id="date" class="form-control" value="<%= po?.date ? po.date.toISOString().slice(0,10) : '' %>" />
+  <div class="container my-4">
+    <div class="card shadow-sm">
+      <div class="card-header text-white" style="background-color: #0099ff;">
+        <h2 class="mb-0">Create PO from PR</h2>
       </div>
 
-      <div class="col-md-4 mb-3">
-        <label for="manual_POno" class="form-label">Manual PO Number</label>
-        <input type="number" name="manual_POno" id="manual_POno" class="form-control" value="<%= po?.manual_POno || '' %>" />
-      </div>
+      <div class="card-body">
+        <form action="/po/frompr" method="POST">
+          <% if (pr) { %>
+            <input type="hidden" name="prId" value="<%= pr._id %>" />
+          <% } %>
 
-      <div class="col-md-4 mb-3">
-        <label for="quotation" class="form-label">Quotation</label>
-        <input type="text" name="quotation" id="quotation" class="form-control" value="<%= po?.quotation || '' %>" />
-      </div>
-    </div>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="manual_POno" class="form-label">Manual PO No.</label>
+              <input type="number" class="form-control" id="manual_POno" name="manual_POno" value="<%= po?.manual_POno || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="Taxpayerno" class="form-label">Taxpayer No.</label>
+              <input type="text" class="form-control" id="Taxpayerno" name="Taxpayerno" value="<%= po?.Taxpayerno || '' %>">
+            </div>                        
+            <div class="col-md-4 mb-3">
+              <label for="date" class="form-label">Date</label>
+              <input type="date" class="form-control" id="date" name="date" value="<%= po?.date ? new Date(po.date).toISOString().slice(0,10) : '' %>">
+            </div>
+          </div>
 
-    <div class="row">
-      <div class="col-md-4 mb-3">
-        <label for="attention" class="form-label">Attention</label>
-        <input type="text" name="attention" id="attention" class="form-control" value="<%= po?.attention || '' %>" />
-      </div>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="quotation" class="form-label">Quotation</label>
+              <input type="text" class="form-control" id="quotation" name="quotation" value="<%= po?.quotation || '' %>">
+            </div>            
+            <div class="col-md-4 mb-3">
+              <label for="attention" class="form-label">Attention</label>
+              <input type="text" class="form-control" id="attention" name="attention" value="<%= po?.attention || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" value="<%= po?.email || '' %>">
+            </div>
+          </div>
 
-      <div class="col-md-4 mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" name="email" id="email" class="form-control" value="<%= po?.email || '' %>" />
-      </div>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="Tel" class="form-label">Tel</label>
+              <input type="text" class="form-control" id="Tel" name="Tel" value="<%= po?.Tel || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="fax" class="form-label">Fax</label>
+              <input type="text" class="form-control" id="fax" name="fax" value="<%= po?.fax || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="mobile" class="form-label">Mobile</label>
+              <input type="text" class="form-control" id="mobile" name="mobile" value="<%= po?.mobile || '' %>">
+            </div>
+          </div>
 
-      <div class="col-md-4 mb-3">
-        <label for="mobile" class="form-label">Mobile</label>
-        <input type="text" name="mobile" id="mobile" class="form-control" value="<%= po?.mobile || '' %>" />
-      </div>
-    </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="Texid" class="form-label">Tex ID</label>
+              <input type="text" class="form-control" id="Texid" name="Texid" value="<%= po?.Texid || '' %>">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="Paymentterm" class="form-label">Payment Term</label>
+              <input type="text" class="form-control" id="Paymentterm" name="Paymentterm" value="<%= po?.Paymentterm || pr?.term || '' %>">
+            </div>
+          </div>
 
-    <div class="row">
-      <div class="col-md-4 mb-3">
-        <label for="Tel" class="form-label">Tel</label>
-        <input type="text" name="Tel" id="Tel" class="form-control" value="<%= po?.Tel || '' %>" />
-      </div>
+          <div class="row">
+          <div class="col-md-6 mb-3">
+              <label for="purchasing" class="form-label">Purchasing By</label>
+              <input type="text" class="form-control" id="purchasing" name="purchasing" value="<%= po?.purchasing || '' %>">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="approval" class="form-label">Approval</label>
+            <input type="text" class="form-control" id="approval" name="approval" value="<%= po?.approval || '' %>">
+          </div>
 
-      <div class="col-md-4 mb-3">
-        <label for="fax" class="form-label">Fax</label>
-        <input type="text" name="fax" id="fax" class="form-control" value="<%= po?.fax || '' %>" />
-      </div>
+          </div>
+          <div class="mb-3">
+              <label for="deliverydate" class="form-label">Delivery Date</label>
+              <input type="date" class="form-control" id="deliverydate" name="deliverydate" value="<%= po?.deliverydate ? new Date(po.deliverydate).toISOString().slice(0,10) : '' %>">
+            </div>
 
-      <div class="col-md-4 mb-3">
-        <label for="Taxpayerno" class="form-label">Taxpayer No.</label>
-        <input type="text" name="Taxpayerno" id="Taxpayerno" class="form-control" value="<%= po?.Taxpayerno || '' %>" />
-      </div>
-    </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-success px-4">Create PO</button>
+            <a href="/pr/<%= pr?._id || '' %>" class="btn btn-secondary ms-2">Back to PR</a>
+          </div>
+        </form>
 
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="Texid" class="form-label">Tex ID</label>
-        <input type="text" name="Texid" id="Texid" class="form-control" value="<%= po?.Texid || '' %>" />
-      </div>
-
-      <div class="col-md-6 mb-3">
-        <label for="Paymentterm" class="form-label">Payment Term</label>
-        <input type="text" name="Paymentterm" id="Paymentterm" class="form-control" value="<%= po?.Paymentterm || pr?.term || '' %>" />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="deliverydate" class="form-label">Delivery Date</label>
-        <input type="date" name="deliverydate" id="deliverydate" class="form-control" value="<%= po?.deliverydate ? po.deliverydate.toISOString().slice(0,10) : '' %>" />
-      </div>
-
-      <div class="col-md-6 mb-3">
-        <label for="purchasing" class="form-label">Purchasing By</label>
-        <input type="text" name="purchasing" id="purchasing" class="form-control" value="<%= po?.purchasing || '' %>" />
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label for="approval" class="form-label">Approval</label>
-      <input type="text" name="approval" id="approval" class="form-control" value="<%= po?.approval || '' %>" />
-    </div>
-
-    <button type="submit" class="btn btn-success">Create PO</button>
-    <a href="/pr/<%= pr?._id || '' %>" class="btn btn-secondary">Back to PR</a>
-  </form>
-
-  <% if (errors) { %>
-    <div class="alert alert-danger mt-4">
-      <h5>Form Errors:</h5>
-      <ul class="mb-0">
-        <% for (let field in errors) { %>
-          <li><strong><%= field %>:</strong> <%= errors[field].message || errors[field] %></li>
+        <% if (errors) { %>
+          <div class="alert alert-danger mt-4">
+            <h5>Form Errors:</h5>
+            <ul class="mb-0">
+              <% for (let field in errors) { %>
+                <li><strong><%= field %>:</strong> <%= errors[field].message || errors[field] %></li>
+              <% } %>
+            </ul>
+          </div>
         <% } %>
-      </ul>
+      </div>
     </div>
-  <% } %>
+  </div>
 </body>
 </html>

@@ -2,111 +2,124 @@
 <html>
 <head>
   <title>Create PR from PO</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/stylesheets/Report.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
-  <header class="no-print">
+  <header class="no-print mb-4">
     <% include index.ejs %>
   </header>
 
-  <div class="container mt-4">
-    <h2>Create PR from PO</h2>
-
-    <% if (errors) { %>
-      <div class="alert alert-danger">
-        <pre><%= JSON.stringify(errors, null, 2) %></pre>
-      </div>
-    <% } %>
-
-    <form action="/pr/frompo" method="POST">
-      <input type="hidden" name="poId" value="<%= po._id %>" />
-
-      <!-- === PR FIELDS SECTION === -->
-      <div class="row">
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Customer</label>
-          <input type="text" name="customer" class="form-control" value="<%= pr ? pr.customer : '' %>">
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Date</label>
-          <input type="date" name="date" class="form-control"
-            value="<%= pr && pr.date ? new Date(pr.date).toISOString().substring(0,10) : (po.date ? new Date(po.date).toISOString().substring(0,10) : '') %>">
-        </div>
+  <div class="container my-4">
+    <div class="card shadow-sm">
+      <div class="card-header text-white" style="background-color: #0099ff;">
+        <h2 class="mb-0">Create PR from PO</h2>
       </div>
 
-      <div class="row">
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Note</label>
-          <input type="text" name="note" class="form-control" value="<%= pr ? pr.note : '' %>">
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Delivery</label>
-          <input type="text" name="delivery" class="form-control" value="<%= pr ? pr.delivery : '' %>">
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Validity</label>
-          <input type="text" name="validity" class="form-control" value="<%= pr ? pr.validity : '-' %>">
-        </div>
-      </div>
+      <div class="card-body">
+        <% if (errors) { %>
+          <div class="alert alert-danger">
+            <h5>Form Errors</h5>
+            <pre><%= JSON.stringify(errors, null, 2) %></pre>
+          </div>
+        <% } %>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Transport</label>
-          <input type="text" name="transport" class="form-control" value="<%= pr ? pr.transport : '-' %>">
-        </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Ref</label>
-          <input type="text" name="ref" class="form-control" value="<%= pr ? pr.ref : '' %>">
-        </div>
-      </div>
+        <form action="/pr/frompo" method="POST">
+          <input type="hidden" name="poId" value="<%= po._id %>" />
 
-      <!-- === ITEM SECTION === -->
-      <h4 class="mt-4">Items</h4>
-      <% po.item.forEach((item, index) => { %>
-        <div class="border rounded p-3 mb-3">
-          <input type="hidden" name="itemId[]" value="<%= item._id %>">
+          <!-- === PR Fields Section === -->
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="customer" class="form-label">Customer</label>
+              <input type="text" name="customer" id="customer" class="form-control" value="<%= pr?.customer || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="date" class="form-label">Date</label>
+              <input type="date" name="date" id="date" class="form-control"
+                value="<%= pr?.date ? new Date(pr.date).toISOString().substring(0,10) : (po.date ? new Date(po.date).toISOString().substring(0,10) : '') %>">
+            </div>
+          </div>
 
-          <p><strong>Description:</strong> <%= item.description %></p>
-          <p><strong>Quantity:</strong> <%= item.quantity %> <%= item.unit %></p>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="note" class="form-label">Note</label>
+              <input type="text" name="note" id="note" class="form-control" value="<%= pr?.note || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="delivery" class="form-label">Delivery</label>
+              <input type="text" name="delivery" id="delivery" class="form-control" value="<%= pr?.delivery || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="validity" class="form-label">Validity</label>
+              <input type="text" name="validity" id="validity" class="form-control" value="<%= pr?.validity || '-' %>">
+            </div>
+          </div>
 
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label class="form-label">Stock Location</label><br/>
-              <div class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="stockLocation[<%= index %>]"
-                  id="instock_<%= index %>"
-                  value="instock"
-                  <%= item.instock === '/' ? 'checked' : '' %>
-                >
-                <label class="form-check-label" for="instock_<%= index %>">In Stock</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="stockLocation[<%= index %>]"
-                  id="outstock_<%= index %>"
-                  value="outstock"
-                  <%= item.outstock === '/' ? 'checked' : '' %>
-                >
-                <label class="form-check-label" for="outstock_<%= index %>">Out Stock</label>
-              </div>
+              <label for="transport" class="form-label">Transport</label>
+              <input type="text" name="transport" id="transport" class="form-control" value="<%= pr?.transport || '-' %>">
             </div>
-
             <div class="col-md-6 mb-3">
-              <label class="form-label">Remark</label>
-              <textarea class="form-control" name="remark[]" rows="2"><%= item.remark || '' %></textarea>
+              <label for="ref" class="form-label">Ref</label>
+              <input type="text" name="ref" id="ref" class="form-control" value="<%= pr?.ref || '' %>">
             </div>
           </div>
-        </div>
-      <% }) %>
 
-      <button type="submit" class="btn btn-primary">Create PR</button>
-    </form>
+          <!-- === ITEM Section === -->
+          <h4 class="mt-4">Items</h4>
+
+          <% po.item.forEach((item, index) => { %>
+            <div class="border rounded p-3 mb-4">
+              <input type="hidden" name="itemId[]" value="<%= item._id %>">
+
+              <div class="row">
+                <div class="col-md-6">
+                  <p><strong>Description:</strong> <%= item.description %></p>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>Quantity:</strong> <%= item.quantity %> <%= item.unit %></p>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Stock Location</label><br />
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio"
+                      name="stockLocation[<%= index %>]"
+                      id="instock_<%= index %>"
+                      value="instock"
+                      <%= item.instock === '/' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="instock_<%= index %>">In Stock</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio"
+                      name="stockLocation[<%= index %>]"
+                      id="outstock_<%= index %>"
+                      value="outstock"
+                      <%= item.outstock === '/' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="outstock_<%= index %>">Out Stock</label>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Remark</label>
+                  <textarea class="form-control" name="remark[]" rows="2"><%= item.remark || '' %></textarea>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+
+          <div class="text-end">
+            <button type="submit" class="btn btn-success px-4">Create PR</button>
+            <a href="/po/<%= po._id %>" class="btn btn-secondary ms-2">Back to PO</a>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </body>
 </html>
