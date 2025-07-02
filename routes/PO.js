@@ -113,9 +113,15 @@ router.get("/:poId/edit", async (req, res) => {
 
 router.post("/:poId/edit", async (req, res) => {
   try {
-    const updated = await PO.findByIdAndUpdate(req.params.poId, req.body, { new: true });
+    const updateData = {
+      ...req.body,
+      manual_POno: req.body.manual_POno ? Number(req.body.manual_POno) : undefined,
+      date: req.body.date ? new Date(req.body.date) : undefined,
+      discount: req.body.discount ? Number(req.body.discount) : 0,
+    };
 
-    // Sync back to PR if exists
+    const updated = await PO.findByIdAndUpdate(req.params.poId, updateData, { new: true });
+
     if (updated.pr) {
       await PR.findByIdAndUpdate(updated.pr, {
         name: updated.name,
@@ -131,39 +137,31 @@ router.post("/:poId/edit", async (req, res) => {
   } catch (err) {
     console.error(err);
     const po = await PO.findById(req.params.poId).lean();
-    res.render("createPO", { po, errors: err.errors });
+    res.render("createPO", { po: { ...req.body, _id: req.params.poId }, errors: err.errors || err });
   }
 });
 
-// POST delete PO, clean up references, and delete orphaned items
+// === DELETE PO ===
 router.post("/:poId/delete", async (req, res) => {
   try {
     const po = await PO.findById(req.params.poId);
 
     if (po) {
-      // 1. For each item linked to this PO
       for (const itemId of po.item) {
         const item = await ITEM.findById(itemId);
-
         if (item) {
           if (!item.pr) {
-            // Delete item if no PR reference (orphaned)
             await ITEM.findByIdAndDelete(item._id);
           } else {
-            // Keep item but remove PO reference
             await ITEM.findByIdAndUpdate(item._id, { $unset: { po: "" } });
           }
         }
       }
 
-      // 2. Remove PO reference from linked PR
       if (po.pr) {
-        await PR.findByIdAndUpdate(po.pr, {
-          $unset: { po: "" },
-        });
+        await PR.findByIdAndUpdate(po.pr, { $unset: { po: "" } });
       }
 
-      // 3. Delete the PO itself
       await PO.findByIdAndDelete(po._id);
     }
 
@@ -173,6 +171,7 @@ router.post("/:poId/delete", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
 
 // === ADD ITEM TO PO ===
 router.get("/:poId/poitem", async (req, res) => {
@@ -190,16 +189,22 @@ router.post("/:poId/poitem", async (req, res) => {
     const po = await PO.findById(req.params.poId);
     if (!po) return res.status(404).send("PO not found");
 
-    const item = new ITEM({ ...req.body, po: po._id });
+    const itemData = {
+      ...req.body,
+      po: po._id,
+      pr: po.pr,
+      instock: req.body.stockLocation === "instock" ? "/" : "",
+      outstock: req.body.stockLocation === "outstock" ? "/" : "",
+    };
+
+    const item = new ITEM(itemData);
     await item.save();
 
     po.item.push(item._id);
     await po.save();
 
-    // Also link item to PR if PO has one
     if (po.pr) {
       await PR.findByIdAndUpdate(po.pr, { $push: { item: item._id } });
-      await ITEM.findByIdAndUpdate(item._id, { pr: po.pr });
     }
 
     res.redirect(`/po/${po._id}/poitem`);
@@ -210,7 +215,7 @@ router.post("/:poId/poitem", async (req, res) => {
   }
 });
 
-// === EDIT ITEM ===
+// === EDIT PO ITEM ===
 router.get("/:poId/poitem/:itemId/edit", async (req, res) => {
   try {
     const po = await PO.findById(req.params.poId);
@@ -224,7 +229,14 @@ router.get("/:poId/poitem/:itemId/edit", async (req, res) => {
 
 router.post("/:poId/poitem/:itemId/edit", async (req, res) => {
   try {
-    await ITEM.findByIdAndUpdate(req.params.itemId, req.body, { runValidators: true });
+    const updateData = {
+      ...req.body,
+      instock: req.body.stockLocation === "instock" ? "/" : "",
+      outstock: req.body.stockLocation === "outstock" ? "/" : "",
+    };
+
+    await ITEM.findByIdAndUpdate(req.params.itemId, updateData, { runValidators: true });
+
     res.redirect(`/po/${req.params.poId}`);
   } catch (err) {
     const po = await PO.findById(req.params.poId);
@@ -233,15 +245,28 @@ router.post("/:poId/poitem/:itemId/edit", async (req, res) => {
   }
 });
 
-// === DELETE ITEM ===
+// === DELETE PO ITEM ===
 router.post("/:poId/poitem/:itemId/delete", async (req, res) => {
   try {
-    await ITEM.findByIdAndDelete(req.params.itemId);
-    await PO.findByIdAndUpdate(req.params.poId, {
-      $pull: { item: req.params.itemId },
-    });
+    const item = await ITEM.findById(req.params.itemId);
+    if (!item) return res.status(404).send("Item not found");
+
+    // Remove item reference from PO
+    if (item.po) {
+      await PO.findByIdAndUpdate(item.po, { $pull: { item: item._id } });
+    }
+
+    // Remove item reference from PR (if linked)
+    if (item.pr) {
+      await PR.findByIdAndUpdate(item.pr, { $pull: { item: item._id } });
+    }
+
+    // Delete the item
+    await ITEM.findByIdAndDelete(item._id);
+
     res.redirect(`/po/${req.params.poId}`);
   } catch (err) {
+    console.error("Error deleting item:", err);
     res.status(500).send(err.message);
   }
 });

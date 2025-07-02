@@ -15,11 +15,11 @@
   <div class="container my-4">
     <div class="card shadow">
       <div class="card-header text-white" style="background-color: #0099ff;">
-        <h3 class="mb-0">Edit PO Item for PO #<%= po.POno || poId %></h3>
+        <h3 class="mb-0">Edit PO Item for PO #<%= po.POno || po._Id %></h3>
       </div>
 
       <div class="card-body">
-        <form action="/po/<%= poId %>/poitem/<%= item._id %>/edit" method="POST">
+        <form action="/po/<%= po._id %>/poitem/<%= item._id %>/edit" method="POST">
           <div class="row">
             <div class="col-md-4 mb-3">
               <label for="quantity" class="form-label">Quantity</label>

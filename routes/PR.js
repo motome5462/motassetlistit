@@ -7,18 +7,16 @@ const ITEM = require("../models/ITEM");
 const ExcelJS = require("exceljs");
 const path = require("path");
 
-
 // Redirect /pr to /pr/list
 router.get("/", (req, res) => {
   res.redirect("/pr/list");
 });
 
-// GET form to create new PR
+// === CREATE PR ===
 router.get("/new", (req, res) => {
   res.render("createPR", { pr: {}, errors: null });
 });
 
-// POST new PR
 router.post("/new", async (req, res) => {
   try {
     const pr = new PR(req.body);
@@ -30,18 +28,130 @@ router.post("/new", async (req, res) => {
   }
 });
 
-// GET form to add ITEM(s) to a PR
-router.get("/:prId/pritem", async (req, res) => {
+
+// GET /pr/frompo
+// Render form to create a PR from a given PO ID with editable item fields
+router.get("/frompo", async (req, res) => {
   try {
-    const pr = await PR.findById(req.params.prId);
-    if (!pr) return res.status(404).send("PR not found");
-    res.render("pritem", { pr, item: {}, errors: null });
+    const poId = req.query.poId;
+    if (!poId) return res.status(400).send("Missing PO ID");
+
+    const po = await PO.findById(poId).populate("item").lean();
+    if (!po) return res.status(404).send("PO not found");
+
+    // Render the form, initially no PR data or errors
+    res.render("PRfromPO", { po, pr: null, errors: null });
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error("GET /pr/frompo error:", err);
+    res.status(500).send("Error loading PR from PO form");
   }
 });
 
-// POST add ITEM to a PR (also add to linked PO if exists)
+// POST /pr/frompo
+// Create PR from PO and update shared ITEM documents accordingly
+router.post("/frompo", async (req, res) => {
+  try {
+    const poData = req.body;
+    const poId = poData.poId;
+    if (!poId) return res.status(400).send("Missing PO ID");
+
+    console.log("Received POST data:", poData);
+
+    // Load PO with items as Mongoose documents (not lean) for item updates
+    const po = await PO.findById(poId).populate("item");
+    if (!po) return res.status(404).send("PO not found");
+
+    // Create new PR copying from PO + override with form data
+    const pr = new PR({
+      manual_PRno: poData.manual_PRno || undefined,
+      date: poData.date || po.date,
+      name: poData.name || po.name,
+      dept: poData.dept || po.dept,
+      note: poData.note || "",
+      customer: poData.customer || "",
+      supplier: poData.supplier || po.supplier,
+      supplierdetail: poData.supplierdetail || po.supplierdetail,
+      term: poData.term || po.term,
+      delivery: poData.delivery || "",
+      validity: poData.validity || "-",
+      transport: poData.transport || "-",
+      ref: poData.ref || "",
+      discount: poData.discount || po.discount,
+      po: po._id,
+    });
+
+    await pr.save();
+    console.log(`Created PR with ID ${pr._id} and PRno ${pr.PRno}`);
+
+    // Normalize remarks array from poData['remark[]']
+    const remarks = Array.isArray(poData['remark[]']) ? poData['remark[]'] : [poData['remark[]']];
+
+    // Rebuild stockLocs array from keys like 'stockLocation[0]', 'stockLocation[1]'
+    const stockLocs = [];
+    for (const key in poData) {
+      const match = key.match(/^stockLocation\[(\d+)\]$/);
+      if (match) {
+        stockLocs[parseInt(match[1], 10)] = poData[key];
+      }
+    }
+
+    // Update each ITEM in the PO's item array with form values and set pr ref
+    for (let i = 0; i < po.item.length; i++) {
+      const item = po.item[i];
+      if (!item) continue;
+
+      item.remark = remarks[i] || "";
+
+      const loc = stockLocs[i];
+      if (loc === "instock") {
+        item.instock = "/";
+        item.outstock = "";
+      } else if (loc === "outstock") {
+        item.instock = "";
+        item.outstock = "/";
+      } else {
+        item.instock = "";
+        item.outstock = "";
+      }
+
+      item.pr = pr._id; // Link item to PR
+      await item.save();
+
+      console.log(`Updated ITEM ${item._id}: remark='${item.remark}', instock='${item.instock}', outstock='${item.outstock}'`);
+    }
+
+    // Link PR's item array to the same items as PO's
+    pr.item = po.item.map((i) => i._id);
+    await pr.save();
+    console.log(`Linked ${pr.item.length} items to PR ${pr._id}`);
+
+    // Update PO to link to this PR
+    await PO.findByIdAndUpdate(po._id, { pr: pr._id });
+
+    // Redirect to the new PR page
+    res.redirect(`/pr/${pr._id}`);
+  } catch (err) {
+    console.error("POST /pr/frompo error:", err);
+
+    // On error, reload PO and render form with previous data and errors
+    const po = await PO.findById(req.body.poId).populate("item").lean();
+
+    res.render("PRfromPO", {
+      po,
+      pr: req.body,
+      errors: err.errors || err.message || err,
+    });
+  }
+});
+
+
+// === ADD ITEM TO PR ===
+router.get("/:prId/pritem", async (req, res) => {
+  const pr = await PR.findById(req.params.prId);
+  if (!pr) return res.status(404).send("PR not found");
+  res.render("pritem", { pr, item: {}, errors: null });
+});
+
 router.post("/:prId/pritem", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId);
@@ -50,9 +160,9 @@ router.post("/:prId/pritem", async (req, res) => {
     const itemData = {
       ...req.body,
       pr: pr._id,
-      po: pr.po, // link item to the PO as well
+      po: pr.po,
       instock: req.body.stockLocation === "instock" ? "/" : "",
-      outstock: req.body.stockLocation === "outstock" ? "/" : "",
+      outstock: req.body.stockLocation === "outstock" ? "/" : ""
     };
 
     const item = new ITEM(itemData);
@@ -61,7 +171,6 @@ router.post("/:prId/pritem", async (req, res) => {
     pr.item.push(item._id);
     await pr.save();
 
-    // Also add item to PO's item array if PO linked
     if (pr.po) {
       await PO.findByIdAndUpdate(pr.po, { $push: { item: item._id } });
     }
@@ -74,35 +183,29 @@ router.post("/:prId/pritem", async (req, res) => {
   }
 });
 
-// GET form to edit PR
+// === EDIT PR ===
 router.get("/:prId/edit", async (req, res) => {
-  try {
-    const pr = await PR.findById(req.params.prId);
-    if (!pr) return res.status(404).send("PR not found");
-    res.render("createPR", { pr, errors: null });
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
+  const pr = await PR.findById(req.params.prId);
+  if (!pr) return res.status(404).send("PR not found");
+  res.render("createPR", { pr, errors: null });
 });
 
-// POST update PR (also update linked PO fields)
 router.post("/:prId/edit", async (req, res) => {
   try {
     const updateData = {
       ...req.body,
       manual_PRno: req.body.manual_PRno ? Number(req.body.manual_PRno) : undefined,
       date: req.body.date ? new Date(req.body.date) : undefined,
-      discount: req.body.discount ? Number(req.body.discount) : 0,
+      discount: req.body.discount ? Number(req.body.discount) : 0
     };
 
     const updatedPR = await PR.findByIdAndUpdate(req.params.prId, updateData, {
       new: true,
-      runValidators: true,
+      runValidators: true
     });
 
     if (!updatedPR) return res.status(404).send("PR not found");
 
-    // Sync fields to linked PO
     if (updatedPR.po) {
       await PO.findByIdAndUpdate(updatedPR.po, {
         name: updatedPR.name,
@@ -110,7 +213,7 @@ router.post("/:prId/edit", async (req, res) => {
         supplier: updatedPR.supplier,
         supplierdetail: updatedPR.supplierdetail,
         term: updatedPR.term,
-        discount: updatedPR.discount,
+        discount: updatedPR.discount
       });
     }
 
@@ -122,37 +225,28 @@ router.post("/:prId/edit", async (req, res) => {
   }
 });
 
-// POST delete PR, clean up references, and delete orphaned items
+// === DELETE PR ===
 router.post("/:prId/delete", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId);
     if (!pr) return res.status(404).send("PR not found");
 
-    // 1. For each item linked to this PR
     for (const itemId of pr.item) {
       const item = await ITEM.findById(itemId);
-
       if (item) {
         if (!item.po) {
-          // Delete item if no PO reference (orphaned)
           await ITEM.findByIdAndDelete(item._id);
         } else {
-          // Keep item but remove PR reference
           await ITEM.findByIdAndUpdate(item._id, { $unset: { pr: "" } });
         }
       }
     }
 
-    // 2. Remove PR reference from linked PO (without removing items!)
     if (pr.po) {
-      await PO.findByIdAndUpdate(pr.po, {
-        $unset: { pr: "" }, // keep items in PO.item intact
-      });
+      await PO.findByIdAndUpdate(pr.po, { $unset: { pr: "" } });
     }
 
-    // 3. Delete the PR itself
     await PR.findByIdAndDelete(pr._id);
-
     res.redirect("/pr/list");
   } catch (err) {
     console.error(err);
@@ -160,30 +254,23 @@ router.post("/:prId/delete", async (req, res) => {
   }
 });
 
-// GET form to edit ITEM
+// === EDIT ITEM ===
 router.get("/:prId/pritem/:itemId/edit", async (req, res) => {
-  try {
-    const pr = await PR.findById(req.params.prId);
-    const item = await ITEM.findById(req.params.itemId);
-    if (!pr || !item) return res.status(404).send("PR or Item not found");
-    res.render("pritemedit", { pr, item, errors: null });
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
+  const pr = await PR.findById(req.params.prId);
+  const item = await ITEM.findById(req.params.itemId);
+  if (!pr || !item) return res.status(404).send("PR or Item not found");
+  res.render("pritemedit", { pr, item, errors: null });
 });
 
-// POST update ITEM
 router.post("/:prId/pritem/:itemId/edit", async (req, res) => {
   try {
     const updateData = {
       ...req.body,
       instock: req.body.stockLocation === "instock" ? "/" : "",
-      outstock: req.body.stockLocation === "outstock" ? "/" : "",
+      outstock: req.body.stockLocation === "outstock" ? "/" : ""
     };
 
-    await ITEM.findByIdAndUpdate(req.params.itemId, updateData, {
-      runValidators: true,
-    });
+    await ITEM.findByIdAndUpdate(req.params.itemId, updateData, { runValidators: true });
 
     res.redirect(`/pr/${req.params.prId}`);
   } catch (err) {
@@ -193,34 +280,36 @@ router.post("/:prId/pritem/:itemId/edit", async (req, res) => {
   }
 });
 
-// POST delete ITEM (also remove from PO's item list)
+// === DELETE ITEM ===
 router.post("/:prId/pritem/:itemId/delete", async (req, res) => {
   try {
     const item = await ITEM.findById(req.params.itemId);
     if (!item) return res.status(404).send("Item not found");
 
-    await ITEM.findByIdAndDelete(req.params.itemId);
-
-    await PR.findByIdAndUpdate(req.params.prId, {
-      $pull: { item: req.params.itemId },
-    });
-
-    if (item.po) {
-      await PO.findByIdAndUpdate(item.po, {
-        $pull: { item: req.params.itemId },
-      });
+    // Remove reference from PR
+    if (item.pr) {
+      await PR.findByIdAndUpdate(item.pr, { $pull: { item: item._id } });
     }
+
+    // Remove reference from PO (if exists)
+    if (item.po) {
+      await PO.findByIdAndUpdate(item.po, { $pull: { item: item._id } });
+    }
+
+    // Delete the item itself
+    await ITEM.findByIdAndDelete(item._id);
 
     res.redirect(`/pr/${req.params.prId}`);
   } catch (err) {
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
-// GET PR list
+// === PR LIST ===
 router.get("/list", async (req, res) => {
   try {
-    const prList = await PR.find().sort({ PRno: -1 }).exec();
+    const prList = await PR.find().sort({ PRno: -1 });
     res.render("prlist", { prList });
   } catch (error) {
     console.error(error);
@@ -228,7 +317,7 @@ router.get("/list", async (req, res) => {
   }
 });
 
-// GET PR detail with populated items and totals
+// === PR DETAIL ===
 router.get("/:prId", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.prId).populate("item").lean();
@@ -243,21 +332,21 @@ router.get("/:prId", async (req, res) => {
 
     const totalPrice = pr.item.reduce((sum, i) => sum + parseFloat(i.price || 0), 0);
     const discount = parseFloat(pr.discount || 0);
-    const vat = +((totalPrice-discount) * 0.07).toFixed(2);
+    const vat = +((totalPrice - discount) * 0.07).toFixed(2);
     const net = +(totalPrice + vat - discount).toFixed(2);
 
     res.render("prdetail", {
       pr,
       totalPrice: totalPrice.toFixed(2),
       vat: vat.toFixed(2),
-      net: net.toFixed(2),
+      net: net.toFixed(2)
     });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-// GET export PR to Excel (unchanged)
+// === EXPORT PR TO EXCEL ===
 router.get("/export/:id", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.id).populate("item");

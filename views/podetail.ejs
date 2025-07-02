@@ -118,8 +118,8 @@
           <td><%= parseFloat(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
           <td class="no-print">
             <a href="/po/<%= po._id %>/poitem/<%= item._id %>/edit" class="btn btn-sm btn-warning me-1">Edit</a>
-            <form action="/po/<%= po._id %>/poitem/<%= item._id %>?_method=DELETE" method="POST" style="display:inline-block" onsubmit="return confirm('Are you sure you want to delete this item?');">
-              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            <form action="/po/<%= po._id %>/poitem/<%= item._id %>/delete" method="POST" style="display:inline-block" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
             </form>
           </td>
         </tr>
