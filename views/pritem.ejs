@@ -22,23 +22,23 @@
         <form action="/pr/<%= pr._id %>/pritem" method="POST">
           <div class="row">
             <div class="col-md-4 mb-3">
-              <label for="quantity" class="form-label">Quantity</label>
+              <label for="quantity" class="form-label">จำนวน</label>
               <input class="form-control" type="text" id="quantity" name="quantity" value="<%= item?.quantity || '' %>" />
             </div>
 
             <div class="col-md-4 mb-3">
-              <label for="unit" class="form-label">Unit</label>
+              <label for="unit" class="form-label">หน่วย</label>
               <input class="form-control" type="text" id="unit" name="unit" value="<%= item?.unit || '' %>" />
             </div>
 
             <div class="col-md-4 mb-3">
-              <label for="sn" class="form-label">P/N</label>
+              <label for="sn" class="form-label">รหัสสินค้า</label>
               <input class="form-control" type="text" id="sn" name="sn" value="<%= item?.sn || '' %>" />
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
+            <label for="description" class="form-label">รายการ</label>
             <textarea class="form-control" id="description" name="description" rows="2"><%= item?.description || '' %></textarea>
           </div>
 
@@ -47,18 +47,18 @@
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="stockLocation" id="instockRadio" value="instock"
                 <%= item?.instock === '/' ? 'checked' : '' %> />
-              <label class="form-check-label" for="instockRadio">In Stock</label>
+              <label class="form-check-label" for="instockRadio">On-Stock</label>
             </div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="stockLocation" id="outstockRadio" value="outstock"
                 <%= item?.outstock === '/' ? 'checked' : '' %> />
-              <label class="form-check-label" for="outstockRadio">Out Stock</label>
+              <label class="form-check-label" for="outstockRadio">Out-Stock</label>
             </div>
           </div>
 
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="ppu" class="form-label">Price per unit</label>
+              <label for="ppu" class="form-label">Unit/Price</label>
               <input class="form-control" type="text" id="ppu" name="ppu" value="<%= item?.ppu || '' %>" />
             </div>
 

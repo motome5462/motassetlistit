@@ -22,7 +22,7 @@
         <form action="<%= po._id ? '/po/' + po._id + '/edit' : '/po/new' %>" method="POST">
           <div class="row">
             <div class="col-md-4 mb-3">
-              <label for="Taxpayerno" class="form-label">Taxpayer No.</label>
+              <label for="Taxpayerno" class="form-label">เลขประจำตัวผู้เสียภาษี</label>
               <input type="text" class="form-control" id="Taxpayerno" name="Taxpayerno" value="<%= po.Taxpayerno || '' %>">
             </div>
             <div class="col-md-4 mb-3">
@@ -30,7 +30,7 @@
               <input type="text" class="form-control" id="supplier" name="supplier" value="<%= po.supplier || '' %>">
             </div>
             <div class="col-md-4 mb-3">
-              <label for="supplierdetail" class="form-label">Vendor Detail</label>
+              <label for="supplierdetail" class="form-label">ข้อมูลที่อยู่ Vendor</label>
               <input type="text" class="form-control" id="supplierdetail" name="supplierdetail" value="<%= po.supplierdetail || '' %>">
             </div>
           </div>
@@ -108,11 +108,11 @@
 
           <div class="row">
             <div class="col-md-4 mb-3">
-              <label for="term" class="form-label">Term</label>
+              <label for="term" class="form-label">การชำระเงิน</label>
               <input type="text" class="form-control" id="term" name="term" value="<%= po.term || '' %>">
             </div>
             <div class="col-md-4 mb-3">
-              <label for="quotation" class="form-label">Quotation</label>
+              <label for="quotation" class="form-label">เลขที่ใบเสนอราคา</label>
               <input type="text" class="form-control" id="quotation" name="quotation" value="<%= po.quotation || '' %>">
             </div>
             <div class="col-md-4 mb-3">
