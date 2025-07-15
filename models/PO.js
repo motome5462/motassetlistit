@@ -6,7 +6,7 @@ const POSchema = new mongoose.Schema({
   POno: { type: Number, unique: true },
   manual_POno: { type: Number },
   name: { type: String, default: "" },
-  dept: { type: String, default: "" },
+  dept: { type: String, default: "IT" },
   Taxpayerno:{ type: String, default: "" },
   supplier:{ type: String, default: "" },
   supplierdetail:{ type: String, default: "" },

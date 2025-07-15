@@ -350,6 +350,11 @@ router.get("/:prId", async (req, res) => {
 router.get("/export/:id", async (req, res) => {
   try {
     const pr = await PR.findById(req.params.id).populate("item");
+    // Load related PO for reference info
+    let po = null;
+    if (pr.po) {
+      po = await PO.findById(pr.po).lean();
+    }
 
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(path.join(__dirname, "../public/templates/PR_Form.xlsx"));
@@ -386,8 +391,17 @@ router.get("/export/:id", async (req, res) => {
       row.commit();
     });
 
+    // Add reference text 4 rows below the last item, in the description column (column 6)
+    const lastItemRow = startRow + pr.item.length - 1;
+    const refRow = lastItemRow + 4;
+    if (po) {
+      const refText = `อ้างอิงใบเสนอราคา ${po.quotation || ""} / PO No: ${po.dept || ""}-${po.POno || ""}`;
+      worksheet.getRow(refRow).getCell(6).value = refText;
+      worksheet.getRow(refRow).commit();
+    }
+
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", `attachment; filename=PR_${pr.PRno || pr._id}-${pr.dept}-MOT.xlsx`);
+    res.setHeader("Content-Disposition", `attachment; filename=PR${pr.PRno || pr._id}-${pr.dept}-MOT.xlsx`);
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {

@@ -22,84 +22,79 @@
         <form action="<%= pr._id ? '/pr/' + pr._id + '/edit' : '/pr/new' %>" method="POST">
           <div class="row">
             <div class="col-md-4 mb-3">
+              <label for="name" class="form-label">Project Name</label>
+              <input type="text" class="form-control" id="name" name="name" value="<%= pr.name || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="note" class="form-label">Project No</label>
+               <input type="text" class="form-control" id="note" name="note" value="<%= pr.note || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="customer" class="form-label">Customer</label>
+              <input type="text" class="form-control" id="customer" name="customer" value="<%= pr.customer || '' %>">
+            </div>
+          </div>
+
+          <!--<div class="row">
+            <div class="col-md-4 mb-3">
               <label for="manual_PRno" class="form-label">Manual PR No.</label>
               <input type="number" class="form-control" id="manual_PRno" name="manual_PRno" value="<%= pr.manual_PRno || '' %>">
             </div>
-
-            <div class="col-md-4 mb-3">
-              <label for="name" class="form-label">Name</label>
-              <input type="text" class="form-control" id="name" name="name" value="<%= pr.name || '' %>">
-            </div>
-
             <div class="col-md-4 mb-3">
               <label for="dept" class="form-label">Department</label>
               <input type="text" class="form-control" id="dept" name="dept" value="<%= pr.dept || '' %>">
             </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="customer" class="form-label">Customer</label>
-              <input type="text" class="form-control" id="customer" name="customer" value="<%= pr.customer || '' %>">
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label for="supplier" class="form-label">Supplier</label>
-              <input type="text" class="form-control" id="supplier" name="supplier" value="<%= pr.supplier || '' %>">
-            </div>
-
-            <div class="col-12 mb-3">
-              <label for="supplierdetail" class="form-label">Supplier Detail</label>
-              <input type="text" class="form-control" id="supplierdetail" name="supplierdetail" value="<%= pr.supplierdetail || '' %>">
-            </div>
-          </div>
-
-          <div class="row">
             <div class="col-md-4 mb-3">
+              <label for="date" class="form-label">PR DATE</label>
+              <input type="date" class="form-control" id="date" name="date" value="<%= pr.date ? new Date(pr.date).toISOString().substring(0, 10) : '' %>">
+            </div>
+          </div> -->
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
               <label for="date" class="form-label">Date</label>
               <input type="date" class="form-control" id="date" name="date" value="<%= pr.date ? new Date(pr.date).toISOString().substring(0, 10) : '' %>">
             </div>
 
-            <div class="col-md-4 mb-3">
-              <label for="term" class="form-label">Term</label>
-              <input type="text" class="form-control" id="term" name="term" value="<%= pr.term || '' %>">
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <label for="delivery" class="form-label">Delivery</label>
-              <input type="text" class="form-control" id="delivery" name="delivery" value="<%= pr.delivery || '' %>">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="validity" class="form-label">Validity</label>
-              <input type="text" class="form-control" id="validity" name="validity" value="<%= pr.validity || '-' %>">
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <label for="transport" class="form-label">Transport</label>
-              <input type="text" class="form-control" id="transport" name="transport" value="<%= pr.transport || '-' %>">
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <label for="ref" class="form-label">Reference</label>
-              <input type="text" class="form-control" id="ref" name="ref" value="<%= pr.ref || '' %>">
-            </div>
-          </div>
-
-          <div class="row">
             <div class="col-md-6 mb-3">
+              <label for="manual_PRno" class="form-label">Manual PR No.</label>
+              <input type="number" class="form-control" id="manual_PRno" name="manual_PRno" value="<%= pr.manual_PRno || '' %>">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="supplier" class="form-label">Supplier</label>
+              <input type="text" class="form-control" id="supplier" name="supplier" value="<%= pr.supplier || '' %>">
+            </div>
+            <div class="col-4 mb-3">
+              <label for="supplierdetail" class="form-label">Supplier Detail</label>
+              <input type="text" class="form-control" id="supplierdetail" name="supplierdetail" value="<%= pr.supplierdetail || '' %>">
+            </div>
+            <div class="col-md-4 mb-3">
               <label for="discount" class="form-label">Discount</label>
               <input type="text" class="form-control" id="discount" name="discount" value="<%= pr.discount || '' %>">
             </div>
-
-            <div class="col-md-6 mb-3">
-              <label for="note" class="form-label">Note</label>
-              <textarea class="form-control" id="note" name="note" rows="3"><%= pr.note || '' %></textarea>
-            </div>
           </div>
 
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="term" class="form-label">Term of Payment</label>
+              <input type="text" class="form-control" id="term" name="term" value="<%= pr.term || '' %>">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="delivery" class="form-label">Delivery Time</label>
+              <input type="text" class="form-control" id="delivery" name="delivery" value="<%= pr.delivery || '' %>">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="validity" class="form-label">Validity</label>
+              <input type="text" class="form-control" id="validity" name="validity" value="<%= pr.validity || '-' %>">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="transport" class="form-label">Transport</label>
+              <input type="text" class="form-control" id="transport" name="transport" value="<%= pr.transport || '-' %>">
+            </div>
+          </div>
           <div class="text-end">
             <button type="submit" class="btn btn-success px-4">
               <%= pr._id ? 'Update PR' : 'Create PR' %>

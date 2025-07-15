@@ -325,9 +325,10 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("C6").value = po.supplierdetail;
     worksheet.getCell("G6").value = `${po.dept}-${po.POno}`;
     worksheet.getCell("G7").value = po.date;
-    worksheet.getCell("C8").value = po.Texid;
+    worksheet.getCell("C8").value = `: ${po.Texid}`;
     worksheet.getCell("C9").value = ` : Tel. ${po.Tel}  Fax. ${po.fax} (AUTO) Mobile. ${po.mobile}`;
-    worksheet.getCell("B10").value = `  ATTENTION  : ${po.attention}`;
+    worksheet.getCell("B10").value = `ATTENTION : ${po.attention}`;
+    worksheet.getCell("D10").value = `Email:${po.email}`;
     worksheet.getCell("C12").value = po.Paymentterm;
     worksheet.getCell("D12").value = po.name;
     worksheet.getCell("F12").value = po.deliverydate;
@@ -352,7 +353,7 @@ router.get("/export/:id", async (req, res) => {
     });
 
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", `attachment; filename=PO_${po.POno || po._id}-${po.dept}-MOT.xlsx`);
+    res.setHeader("Content-Disposition", `attachment; filename=${po.dept}-${po.POno || po._id}`);
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
