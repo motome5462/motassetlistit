@@ -392,8 +392,7 @@ router.get("/export/:id", async (req, res) => {
     });
 
     // Add reference text 4 rows below the last item, in the description column (column 6)
-    const lastItemRow = startRow + pr.item.length - 1;
-    const refRow = lastItemRow + 4;
+    const refRow = startRow + pr.item.length + 4;
     if (po) {
       const refText = `อ้างอิงใบเสนอราคา ${po.quotation || ""} / PO No: ${po.dept || ""}-${po.POno || ""}`;
       worksheet.getRow(refRow).getCell(6).value = refText;
