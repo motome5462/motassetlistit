@@ -80,8 +80,30 @@ router.post("/frompr", async (req, res) => {
 // === PO LIST ===
 router.get("/list", async (req, res) => {
   try {
-    const poList = await PO.find().sort({ POno: -1 }).populate("pr").lean();
-    res.render("polist", { poList });
+    const poList = await PO.find()
+      .sort({ POno: -1 })
+      .populate("item")
+      .populate("pr", "PRno dept") // <-- populate PRno and dept for pr
+      .lean();
+
+    // Calculate totalPrice for each PO (like podetail)
+    const poListWithTotal = poList.map(po => {
+      const allItems = (po.item || []).map(item => {
+        const quantity = parseFloat(item.quantity || 0);
+        const ppu = parseFloat(item.ppu || 0);
+        return {
+          ...item,
+          price: (quantity * ppu).toFixed(2)
+        };
+      });
+      const totalPrice = allItems.reduce((sum, item) => sum + parseFloat(item.price), 0);
+      return {
+        ...po,
+        totalPrice: totalPrice.toFixed(2)
+      };
+    });
+
+    res.render("polist", { poList: poListWithTotal });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
@@ -272,7 +294,10 @@ router.post("/:poId/poitem/:itemId/delete", async (req, res) => {
 });
 
 // === PO DETAIL PAGE ===
-router.get("/:poId", async (req, res) => {
+router.get("/:poId", async (req, res, next) => {
+  // Prevent accidental match for /exportall or /export/:id
+  if (req.params.poId === "exportall") return next();
+  if (req.params.poId === "export") return next();
   try {
     const po = await PO.findById(req.params.poId)
       .populate("item")
@@ -353,12 +378,113 @@ router.get("/export/:id", async (req, res) => {
     });
 
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", `attachment; filename=${po.dept}-${po.POno || po._id}`);
+    res.setHeader("Content-Disposition", `attachment; filename=${po.dept}-${po.POno || po._id}.xlsx`);
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
     console.error(err);
     res.status(500).send("Failed to export PO");
+  }
+});
+
+// === EXPORT ALL PO LIST TO EXCEL ===
+router.get("/exportall", async (req, res) => {
+  try {
+    const poList = await PO.find()
+      .populate("item")
+      .populate("pr", "PRno dept")
+      .sort({ POno: -1 })
+      .lean();
+
+    const ExcelJS = require("exceljs");
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("PO List");
+
+    // Set column headers and widths
+    sheet.columns = [
+      { header: "PO No.", width: 15 },
+      { header: "Supplier", width: 20 },
+      { header: "Quotation", width: 18 },
+      { header: "Date", width: 12 },
+      { header: "PR", width: 18 },
+      { header: "Project Name", width: 20 },
+      { header: "Payment Term", width: 15 },
+      { header: "Delivery Date", width: 15 },
+      { header: "Discount", width: 10 },
+      { header: "Item No.", width: 8 },
+      { header: "Description", width: 30 },
+      { header: "Unit", width: 10 },
+      { header: "Quantity", width: 10 },
+      { header: "Unit Price", width: 12 },
+      { header: "Amount", width: 12 },
+      { header: "Total", width: 15 }
+    ];
+
+    poList.forEach(po => {
+      // Calculate totals as in detail
+      const allItems = (po.item || []).map(item => {
+        const quantity = parseFloat(item.quantity || 0);
+        const ppu = parseFloat(item.ppu || 0);
+        return {
+          ...item,
+          price: (quantity * ppu).toFixed(2)
+        };
+      });
+      const totalPrice = allItems.reduce((sum, item) => sum + parseFloat(item.price), 0);
+      const discount = parseFloat(po.discount || 0);
+
+      // PR link format (same as podetail)
+      const prLink = po.pr && po.pr.PRno ? `${po.pr.PRno}-${po.dept || ""}-MOT` : "-";
+
+      // If no items, still output one row for the PO
+      if (!allItems.length) {
+        sheet.addRow([
+          (po.dept || "") + (po.POno || "-"),
+          po.supplier || "",
+          po.quotation || "",
+          po.date ? new Date(po.date).toISOString().substr(0, 10) : "",
+          prLink,
+          po.name || "",
+          po.Paymentterm || "",
+          po.deliverydate ? new Date(po.deliverydate).toISOString().substr(0, 10) : "",
+          discount.toFixed(2),
+          "", "", "", "", "", "",
+          totalPrice.toFixed(2)
+        ]);
+      } else {
+        allItems.forEach((item, idx) => {
+          sheet.addRow([
+            idx === 0 ? (po.dept || "") + (po.POno || "-") : "",
+            idx === 0 ? (po.supplier || "") : "",
+            idx === 0 ? (po.quotation || "") : "",
+            idx === 0 ? (po.date ? new Date(po.date).toISOString().substr(0, 10) : "") : "",
+            idx === 0 ? prLink : "",
+            idx === 0 ? (po.name || "") : "",
+            idx === 0 ? (po.Paymentterm || "") : "",
+            idx === 0 ? (po.deliverydate ? new Date(po.deliverydate).toISOString().substr(0, 10) : "") : "",
+            idx === 0 ? discount.toFixed(2) : "",
+            idx + 1,
+            item.description || "",
+            item.unit || "",
+            item.quantity || "",
+            item.ppu || "",
+            item.price || "",
+            idx === 0 ? totalPrice.toFixed(2) : ""
+          ]);
+        });
+      }
+
+      // Add a blank row after each PO
+      sheet.addRow([]);
+    });
+
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", "attachment; filename=PO_List.xlsx");
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to export PO list");
   }
 });
 

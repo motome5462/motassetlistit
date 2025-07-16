@@ -15,7 +15,10 @@
   <div class="container mt-4">
     <h1>Purchase Orders (PO) List</h1>
 
-    
+    <div class="mb-3">
+      <a href="/po/exportall" class="btn btn-success">Export All to Excel</a>
+    </div>
+
     <% if (poList.length === 0) { %>
       <p>No POs found.</p>
     <% } else { %>
@@ -24,20 +27,28 @@
           <tr>
             <th style="color: white;">PO No.</th>
             <th style="color: white;">Supplier</th>
-            <th style="color: white;">Tax ID</th>
-            <th style="color: white;">Quotation</th>
+            <th style="color: white;">เลชที่ใบเสนอราคา</th>
+            <th style="color: white;">Total</th>
             <th style="color: white;">Date</th>
+            <th style="color: white;">PR</th>
             <th style="color: white;">Actions</th>
           </tr>
         </thead>
         <tbody>
           <% poList.forEach(po => { %>
             <tr>
-              <td><%= po.POno || po._id %></td>
+              <td><%= po.dept || '' %><%= po.POno ? po.POno : '-' %></td>
               <td><%= po.supplier %></td>
-              <td><%= po.Taxpayerno %></td>
               <td><%= po.quotation %></td>
+              <td><%= parseFloat(po.totalPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) %></td>
               <td><%= po.date ? po.date.toISOString().substr(0, 10) : '' %></td>
+              <td>
+                <% if (po.pr) { %>
+                  <%= po.pr.PRno %>-<%= po.pr.dept || '' %>-MOT
+                <% } else { %>
+                  -
+                <% } %>
+              </td>
               <td>
                 <a href="/po/<%= po._id %>" class="btn btn-sm btn-info">View</a>
                 <a href="/po/<%= po._id %>/edit" class="btn btn-sm btn-warning">Edit</a>

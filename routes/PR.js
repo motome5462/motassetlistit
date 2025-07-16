@@ -309,8 +309,26 @@ router.post("/:prId/pritem/:itemId/delete", async (req, res) => {
 // === PR LIST ===
 router.get("/list", async (req, res) => {
   try {
-    const prList = await PR.find().sort({ PRno: -1 });
-    res.render("prlist", { prList });
+    const prList = await PR.find().sort({ PRno: -1 }).populate("item").populate("po").lean();
+
+    // Calculate totalPrice for each PR (same as prdetail)
+    const prListWithTotal = prList.map(pr => {
+      const items = (pr.item || []).map(i => {
+        const quantity = parseFloat(i.quantity || 0);
+        const ppu = parseFloat(i.ppu || 0);
+        return {
+          ...i,
+          price: (quantity * ppu).toFixed(2)
+        };
+      });
+      const totalPrice = items.reduce((sum, i) => sum + parseFloat(i.price || 0), 0);
+      return {
+        ...pr,
+        totalPrice: totalPrice.toFixed(2)
+      };
+    });
+
+    res.render("prlist", { prList: prListWithTotal });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
@@ -318,7 +336,10 @@ router.get("/list", async (req, res) => {
 });
 
 // === PR DETAIL ===
-router.get("/:prId", async (req, res) => {
+router.get("/:prId", async (req, res, next) => {
+  // Prevent accidental match for /exportall or /export/:id
+  if (req.params.prId === "exportall") return next();
+  if (req.params.prId === "export") return next();
   try {
     const pr = await PR.findById(req.params.prId).populate("item").lean();
     if (!pr) return res.status(404).send("PR not found");
@@ -406,6 +427,110 @@ router.get("/export/:id", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Failed to export PR");
+  }
+});
+
+// === EXPORT ALL PR LIST TO EXCEL ===
+router.get("/exportall", async (req, res) => {
+  try {
+    const prList = await PR.find()
+      .populate("item")
+      .populate("po", "POno dept")
+      .sort({ PRno: -1 })
+      .lean();
+
+    const ExcelJS = require("exceljs");
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("PR List");
+
+    // Header
+    sheet.columns = [
+      { header: "PR No.", width: 15 },
+      { header: "Project Name", width: 20 },
+      { header: "Date", width: 12 },
+      { header: "Supplier", width: 20 },
+      { header: "PO", width: 15 },
+      { header: "Customer", width: 15 },
+      { header: "Note", width: 15 },
+      { header: "Term", width: 12 },
+      { header: "Delivery", width: 12 },
+      { header: "Discount", width: 10 },
+      { header: "Item No.", width: 8 },
+      { header: "Description", width: 30 },
+      { header: "Unit", width: 10 },
+      { header: "Quantity", width: 10 },
+      { header: "Unit Price", width: 12 },
+      { header: "Amount", width: 12 },
+      { header: "Total", width: 15 }
+    ];
+
+    prList.forEach(pr => {
+      // Calculate totals as in detail
+      const items = (pr.item || []).map(i => {
+        const quantity = parseFloat(i.quantity || 0);
+        const ppu = parseFloat(i.ppu || 0);
+        return {
+          ...i,
+          price: (quantity * ppu).toFixed(2)
+        };
+      });
+      const totalPrice = items.reduce((sum, i) => sum + parseFloat(i.price || 0), 0);
+      const discount = parseFloat(pr.discount || 0);
+
+      // PO link format
+      const poLink = pr.po && pr.po.POno ? `${pr.po.dept || ""}${pr.po.POno}` : "-";
+
+      // If no items, still output one row for the PR
+      if (!items.length) {
+        sheet.addRow([
+          (pr.PRno || "-") + "-" + (pr.dept || "") + "-MOT",
+          pr.name || "",
+          pr.date ? new Date(pr.date).toISOString().substr(0, 10) : "",
+          pr.supplier || "",
+          poLink,
+          pr.customer || "",
+          pr.note || "",
+          pr.term || "",
+          pr.delivery || "",
+          discount.toFixed(2),
+          "", "", "", "", "", "",
+          totalPrice.toFixed(2)
+        ]);
+      } else {
+        items.forEach((item, idx) => {
+          sheet.addRow([
+            idx === 0 ? (pr.PRno || "-") + "-" + (pr.dept || "") + "-MOT" : "",
+            idx === 0 ? (pr.name || "") : "",
+            idx === 0 ? (pr.date ? new Date(pr.date).toISOString().substr(0, 10) : "") : "",
+            idx === 0 ? (pr.supplier || "") : "",
+            idx === 0 ? poLink : "",
+            idx === 0 ? (pr.customer || "") : "",
+            idx === 0 ? (pr.note || "") : "",
+            idx === 0 ? (pr.term || "") : "",
+            idx === 0 ? (pr.delivery || "") : "",
+            idx === 0 ? discount.toFixed(2) : "",
+            idx + 1,
+            item.description || "",
+            item.unit || "",
+            item.quantity || "",
+            item.ppu || "",
+            item.price || "",
+            idx === 0 ? totalPrice.toFixed(2) : ""
+          ]);
+        });
+      }
+
+      // Add a blank row after each PR
+      sheet.addRow([]);
+    });
+
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", "attachment; filename=PR_List.xlsx");
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to export PR list");
   }
 });
 
