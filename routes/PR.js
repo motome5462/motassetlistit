@@ -404,6 +404,15 @@ router.get("/export/:id", async (req, res) => {
     // Check if all items have empty instock
     const allNoInstock = !pr.item || pr.item.every(item => !item.instock);
 
+    // Find the last row that has a description
+    let lastDescRow = startRow - 1;
+    for (let i = 0; i < (endRow - startRow + 1); i++) {
+      const item = pr.item && pr.item[i] ? pr.item[i] : null;
+      if (item && item.description && item.description.trim() !== "") {
+        lastDescRow = startRow + i;
+      }
+    }
+
     for (let i = 0; i < (endRow - startRow + 1); i++) {
       const row = worksheet.getRow(startRow + i);
       const item = pr.item && pr.item[i] ? pr.item[i] : null;
@@ -421,15 +430,17 @@ router.get("/export/:id", async (req, res) => {
         : "";
 
       // Instock/Outstock logic
-      if (item) {
-        if (!item.instock && !item.outstock) {
-          row.getCell(9).value = "/";
-        } else {
-          row.getCell(8).value = item.instock || "";
-          row.getCell(9).value = item.outstock || "";
-        }
-      } else if (allNoInstock) {
+      // Always print "/" in outstock if both instock and outstock are empty
+      if (startRow + i > lastDescRow) {
+        // After lastDescRow, always print "/" in outstock
+        row.getCell(8).value = "";
         row.getCell(9).value = "/";
+      } else if ((!item?.instock || item.instock === "") && (!item?.outstock || item.outstock === "")) {
+        row.getCell(8).value = "";
+        row.getCell(9).value = "/";
+      } else {
+        row.getCell(8).value = item?.instock || "";
+        row.getCell(9).value = item?.outstock || "";
       }
 
       row.getCell(11).value = item ? ppu : 0;
@@ -438,10 +449,11 @@ router.get("/export/:id", async (req, res) => {
       row.commit();
     }
 
-    // Reference row: always at row 32 (if more than 32 items, keep ref at 32)
-    const refRowNum = endRow;
+    // Reference row: 4 rows after the last row with description, but not after row 32
+    let refRowNum = lastDescRow + 5;
+    if (refRowNum > endRow) refRowNum = endRow;
     const refRow = worksheet.getRow(refRowNum);
-    if (allNoInstock && po) {
+    if (po) {
       refRow.getCell(6).value = `อ้างอิงใบเสนอราคา ${po.quotation || ""} / PO No: ${po.dept || ""}-${po.POno || ""}`;
     }
     refRow.commit();
