@@ -365,17 +365,49 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("B40").value = `(${po.purchasing})`;
     worksheet.getCell("E40").value = `                            (${po.approval})`;
 
+    // Fill items from row 16 to 32 (Excel is 1-based)
     const startRow = 16;
-    po.item.forEach((item, i) => {
+    const endRow = 32;
+    let itemCount = Array.isArray(po.item) ? po.item.length : 0;
+
+    for (let i = 0; i < (endRow - startRow + 1); i++) {
       const row = worksheet.getRow(startRow + i);
-      row.getCell(2).value = i + 1;
-      row.getCell(3).value = item.sn ? `${item.description} - ${item.sn}` : item.description;
-      row.getCell(5).value = item.unit;
-      row.getCell(6).value = item.quantity;
-      row.getCell(7).value = Number(item.ppu);
-      row.getCell(7).numFmt = "#,##0.00";
+      const item = po.item && po.item[i] ? po.item[i] : null;
+
+      row.getCell(2).value = item ? i + 1 : ""; // Item No.
+      row.getCell(3).value = item
+        ? (item.sn ? `${item.description} - ${item.sn}` : item.description)
+        : "";
+      row.getCell(5).value = item ? item.unit : "";
+      row.getCell(6).value = item ? item.quantity : "";
+
+      row.getCell(7).value = item ? Number(item.ppu) : "";
+      if (item) row.getCell(7).numFmt = "#,##0.00";
+
+      // Instock/Outstock logic
+      // If both instock and outstock are empty, print "/" in outstock
+      if (item) {
+        if (!item.instock && !item.outstock) {
+          row.getCell(9).value = "/";
+          row.getCell(8).value = "";
+        } else {
+          row.getCell(8).value = item.instock || "";
+          row.getCell(9).value = item.outstock || "";
+        }
+      } else {
+        // For empty rows, if there is no instock data for any item, fill "/" in outstock
+        row.getCell(8).value = "";
+        row.getCell(9).value = "/";
+      }
+
       row.commit();
-    });
+    }
+
+    // Reference row: always at row 32 (if more than 32 items, keep ref at 32)
+    const refRowNum = endRow;
+    const refRow = worksheet.getRow(refRowNum);
+    refRow.getCell(3).value = `อ้างอิงใบเสนอราคา ${po.quotation || ""} / PO No: ${po.dept || ""}-${po.POno || ""}`;
+    refRow.commit();
 
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", `attachment; filename=${po.dept}-${po.POno || po._id}.xlsx`);

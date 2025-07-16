@@ -396,29 +396,55 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("L36").value = pr.transport;
     worksheet.getCell("M37").value = pr.ref;
 
+    // Fill items from row 11 to 32 (Excel is 1-based)
     const startRow = 11;
-    pr.item.forEach((item, i) => {
-      const row = worksheet.getRow(startRow + i);
-      row.getCell(2).value = i + 1;
-      row.getCell(3).value = item.quantity;
-      row.getCell(4).value = item.unit;
-      row.getCell(5).value = item.sn;
-      row.getCell(6).value = item.sn ? `${item.description} - ${item.sn}` : item.description;
-      row.getCell(8).value = item.instock;
-      row.getCell(9).value = item.outstock;
-      row.getCell(11).value = Number(item.ppu);
-      row.getCell(11).numFmt = "#,##0.00";
-      row.getCell(12).value = item.remark;
-      row.commit();
-    });
+    const endRow = 32;
+    let itemCount = Array.isArray(pr.item) ? pr.item.length : 0;
 
-    // Add reference text 4 rows below the last item, in the description column (column 6)
-    const refRow = startRow + pr.item.length + 4;
-    if (po) {
-      const refText = `อ้างอิงใบเสนอราคา ${po.quotation || ""} / PO No: ${po.dept || ""}-${po.POno || ""}`;
-      worksheet.getRow(refRow).getCell(6).value = refText;
-      worksheet.getRow(refRow).commit();
+    // Check if all items have empty instock
+    const allNoInstock = !pr.item || pr.item.every(item => !item.instock);
+
+    for (let i = 0; i < (endRow - startRow + 1); i++) {
+      const row = worksheet.getRow(startRow + i);
+      const item = pr.item && pr.item[i] ? pr.item[i] : null;
+
+      // Default quantity and ppu to zero if null/empty/NaN
+      const quantity = item && item.quantity && !isNaN(Number(item.quantity)) ? Number(item.quantity) : 0;
+      const ppu = item && item.ppu && !isNaN(Number(item.ppu)) ? Number(item.ppu) : 0;
+
+      row.getCell(2).value = item ? i + 1 : ""; // Item No.
+      row.getCell(3).value = item ? quantity : 0;
+      row.getCell(4).value = item ? item.unit : "";
+      row.getCell(5).value = item ? item.sn : "";
+      row.getCell(6).value = item
+        ? (item.sn ? `${item.description} - ${item.sn}` : item.description)
+        : "";
+
+      // Instock/Outstock logic
+      if (item) {
+        if (!item.instock && !item.outstock) {
+          row.getCell(9).value = "/";
+        } else {
+          row.getCell(8).value = item.instock || "";
+          row.getCell(9).value = item.outstock || "";
+        }
+      } else if (allNoInstock) {
+        row.getCell(9).value = "/";
+      }
+
+      row.getCell(11).value = item ? ppu : 0;
+      row.getCell(12).value = item ? item.remark : "";
+
+      row.commit();
     }
+
+    // Reference row: always at row 32 (if more than 32 items, keep ref at 32)
+    const refRowNum = endRow;
+    const refRow = worksheet.getRow(refRowNum);
+    if (allNoInstock && po) {
+      refRow.getCell(6).value = `อ้างอิงใบเสนอราคา ${po.quotation || ""} / PO No: ${po.dept || ""}-${po.POno || ""}`;
+    }
+    refRow.commit();
 
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", `attachment; filename=PR${pr.PRno || pr._id}-${pr.dept}-MOT.xlsx`);
