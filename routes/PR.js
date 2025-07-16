@@ -386,19 +386,19 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("I7").value = pr.customer;
     worksheet.getCell("M7").value = pr.date ? new Date(pr.date) : "";
     worksheet.getCell("M8").value = `${pr.PRno || pr._id}-${pr.dept}-MOT`;
-    worksheet.getCell("D33").value = pr.supplier;
-    worksheet.getCell("D34").value = pr.supplierdetail;
-    worksheet.getCell("J34").value = Number(pr.discount);
-    worksheet.getCell("J34").numFmt = "#,##0.00";
-    worksheet.getCell("M33").value = pr.term;
-    worksheet.getCell("M34").value = pr.delivery;
-    worksheet.getCell("L35").value = pr.validity;
-    worksheet.getCell("L36").value = pr.transport;
-    worksheet.getCell("M37").value = pr.ref;
+    worksheet.getCell("D29").value = pr.supplier;
+    worksheet.getCell("D30").value = pr.supplierdetail;
+    worksheet.getCell("J30").value = Number(pr.discount);
+    worksheet.getCell("J30").numFmt = "#,##0.00";
+    worksheet.getCell("M29").value = pr.term;
+    worksheet.getCell("M30").value = pr.delivery;
+    worksheet.getCell("L31").value = pr.validity;
+    worksheet.getCell("L32").value = pr.transport;
+    worksheet.getCell("M33").value = pr.ref;
 
-    // Fill items from row 11 to 32 (Excel is 1-based)
+    // Fill items from row 11 to 27 (Excel is 1-based)
     const startRow = 11;
-    const endRow = 32;
+    const endRow = 27;
     let itemCount = Array.isArray(pr.item) ? pr.item.length : 0;
 
     // Check if all items have empty instock
@@ -451,7 +451,7 @@ router.get("/export/:id", async (req, res) => {
 
     // Reference row: 4 rows after the last row with description, but not after row 32
     let refRowNum = lastDescRow + 5;
-    if (refRowNum > endRow) refRowNum = endRow;
+    if (refRowNum > endRow+1) refRowNum = endRow+1;
     const refRow = worksheet.getRow(refRowNum);
     if (po) {
       refRow.getCell(6).value = `อ้างอิงใบเสนอราคา ${po.quotation || ""} / PO No: ${po.dept || ""}-${po.POno || ""}`;

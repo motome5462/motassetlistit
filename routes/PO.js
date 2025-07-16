@@ -360,7 +360,6 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("H12").value = `${po.pr?.PRno || ""}-${po.dept}-MOT`;
     worksheet.getCell("C34").value = `เครดิต ${po.term}`;
     worksheet.getCell("H34").value = Number(po.discount || 0);
-    worksheet.getCell("H34").numFmt = "#,##0.00";
     worksheet.getCell("C35").value = `เลขที่ใบเสนอราคา : ${po.quotation}`;
     worksheet.getCell("B40").value = `(${po.purchasing})`;
     worksheet.getCell("E40").value = `                            (${po.approval})`;
@@ -374,40 +373,25 @@ router.get("/export/:id", async (req, res) => {
       const row = worksheet.getRow(startRow + i);
       const item = po.item && po.item[i] ? po.item[i] : null;
 
+      // Set quantity and ppu to zero if missing/invalid
+      const quantity = item && !isNaN(Number(item.quantity)) && item.quantity !== "" ? Number(item.quantity) : 0;
+      const ppu = item && !isNaN(Number(item.ppu)) && item.ppu !== "" ? Number(item.ppu) : 0;
+
       row.getCell(2).value = item ? i + 1 : ""; // Item No.
       row.getCell(3).value = item
         ? (item.sn ? `${item.description} - ${item.sn}` : item.description)
         : "";
       row.getCell(5).value = item ? item.unit : "";
-      row.getCell(6).value = item ? item.quantity : "";
 
-      row.getCell(7).value = item ? Number(item.ppu) : "";
-      if (item) row.getCell(7).numFmt = "#,##0.00";
+      // Hide quantity if zero, but always set value to 0 for formula compatibility
+      row.getCell(6).value = quantity;
+      row.getCell(6).numFmt = '[=0]"";General;General'; // Hide zero, show nonzero
 
-      // Instock/Outstock logic
-      // If both instock and outstock are empty, print "/" in outstock
-      if (item) {
-        if (!item.instock && !item.outstock) {
-          row.getCell(9).value = "/";
-          row.getCell(8).value = "";
-        } else {
-          row.getCell(8).value = item.instock || "";
-          row.getCell(9).value = item.outstock || "";
-        }
-      } else {
-        // For empty rows, if there is no instock data for any item, fill "/" in outstock
-        row.getCell(8).value = "";
-        row.getCell(9).value = "/";
-      }
-
-      row.commit();
+      // Hide ppu if zero, but always set value to 0 for formula compatibility
+      row.getCell(7).value = ppu;
+      row.getCell(7).numFmt = '[=0]"";General;General'; // Hide zero, show nonzero
+      
     }
-
-    // Reference row: always at row 32 (if more than 32 items, keep ref at 32)
-    const refRowNum = endRow;
-    const refRow = worksheet.getRow(refRowNum);
-    refRow.getCell(3).value = `อ้างอิงใบเสนอราคา ${po.quotation || ""} / PO No: ${po.dept || ""}-${po.POno || ""}`;
-    refRow.commit();
 
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", `attachment; filename=${po.dept}-${po.POno || po._id}.xlsx`);
@@ -498,8 +482,8 @@ router.get("/exportall", async (req, res) => {
             idx + 1,
             item.description || "",
             item.unit || "",
-            item.quantity || "",
-            item.ppu || "",
+            item.quantity || "0",
+            item.ppu || "0",
             item.price || "",
             idx === 0 ? totalPrice.toFixed(2) : ""
           ]);
