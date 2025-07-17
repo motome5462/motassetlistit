@@ -352,7 +352,7 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("G7").value = po.date;
     worksheet.getCell("C8").value = `: ${po.Texid}`;
     worksheet.getCell("C9").value = ` : Tel. ${po.Tel}  Fax. ${po.fax} (AUTO) Mobile. ${po.mobile}`;
-    worksheet.getCell("B10").value = `  ATTENTION  : ${po.attention}`;
+    worksheet.getCell("B10").value = ` ATTENTION  : ${po.attention}`;
     worksheet.getCell("D10").value = `Email:${po.email}`;
     worksheet.getCell("F12").value = po.deliverydate;
     worksheet.getCell("H12").value = `${po.pr?.PRno || ""}-${po.dept}-MOT`;
@@ -360,7 +360,7 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("H34").value = Number(po.discount || 0);
     worksheet.getCell("C35").value = `เลขที่ใบเสนอราคา : ${po.quotation}`;
     worksheet.getCell("B40").value = `(${po.purchasing})`;
-    worksheet.getCell("E40").value = `                            (${po.approval})`;
+    worksheet.getCell("E40").value = `(${po.approval})`;
 
     // Fill items from row 16 to 32 (Excel is 1-based)
     const startRow = 16;
