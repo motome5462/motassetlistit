@@ -394,7 +394,6 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("L31").value = pr.validity;
     worksheet.getCell("L32").value = pr.transport;
     worksheet.getCell("M33").value = pr.ref;
-    worksheet.getCell("I28").value = `/`;
     // Fill items from row 11 to 27 (Excel is 1-based)
     const startRow = 11;
     const endRow = 27;
