@@ -92,15 +92,11 @@
           </div>
 
           <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="Paymentterm" class="form-label">Payment Term</label>
-              <input type="text" class="form-control" id="Paymentterm" name="Paymentterm" value="<%= po.Paymentterm || '' %>">
-            </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 mb-3">
               <label for="name" class="form-label">Project Name</label>
               <input type="text" class="form-control" id="name" name="name" value="<%= po.name || '' %>">
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 mb-3">
               <label for="deliverydate" class="form-label">Delivery Date</label>
               <input type="date" class="form-control" id="deliverydate" name="deliverydate" value="<%= po.deliverydate ? new Date(po.deliverydate).toISOString().substring(0,10) : '' %>">
             </div>
