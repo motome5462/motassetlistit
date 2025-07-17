@@ -17,7 +17,7 @@ const PRSchema = new mongoose.Schema({
   validity:{ type: String, default: "-" },
   transport:{ type: String, default: "-" },
   ref:{ type: String, default: "" },
-  discount:{type: String, default: "" },
+  discount:{type: String, default: "0" },
   item: [{ type: mongoose.Schema.Types.ObjectId, ref: "ITEM" }],
   po: { type: mongoose.Schema.Types.ObjectId, ref: "PO" },
 });

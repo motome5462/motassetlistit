@@ -389,20 +389,17 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("D29").value = pr.supplier;
     worksheet.getCell("D30").value = pr.supplierdetail;
     worksheet.getCell("J30").value = Number(pr.discount);
-    worksheet.getCell("J30").numFmt = "#,##0.00";
     worksheet.getCell("M29").value = pr.term;
     worksheet.getCell("M30").value = pr.delivery;
     worksheet.getCell("L31").value = pr.validity;
     worksheet.getCell("L32").value = pr.transport;
     worksheet.getCell("M33").value = pr.ref;
-
+    worksheet.getCell("I28").value = `/`;
     // Fill items from row 11 to 27 (Excel is 1-based)
     const startRow = 11;
     const endRow = 27;
-    let itemCount = Array.isArray(pr.item) ? pr.item.length : 0;
 
     // Check if all items have empty instock
-    const allNoInstock = !pr.item || pr.item.every(item => !item.instock);
 
     // Find the last row that has a description
     let lastDescRow = startRow - 1;

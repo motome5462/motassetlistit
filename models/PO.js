@@ -23,7 +23,7 @@ const POSchema = new mongoose.Schema({
   purchasing:{ type: String, default: "" },
   approval:{ type: String, default: "" },
   term:{ type: String, default: "" },
-  discount:{type: String, default: "" },
+  discount:{type: String, default: "0" },
 item: [{ type: mongoose.Schema.Types.ObjectId, ref: "ITEM" }],
 pr: { type: mongoose.Schema.Types.ObjectId, ref: "PR" },
 });
