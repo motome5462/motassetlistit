@@ -51,7 +51,7 @@
       </div>
 
       <div class="col-md-4 d-flex align-items-end justify-content-center">
-        <p class="mb-0"><strong>Email : </strong> <%= po.email || '' %></p>
+        <p class="mb-0" style="margin-left: 40px;"><strong>Email : </strong> <%= po.email || '' %></p>
       </div>
 
       <div class="col-md-4 text-end">
@@ -131,7 +131,7 @@
           <tr>
             <td colspan="3" class="text-start align-top">
               <strong style="text-decoration: underline;">เงื่อนไขการฃำระเงิน / Payment Terms & Condition</strong><br />
-              เครดิต <%= po.term || '' %><br />
+              <%= po.term || '' %><br />
               เลขที่ใบเสนอราคา : <%= po.quotation || '' %>
             </td>
             <td colspan="3">

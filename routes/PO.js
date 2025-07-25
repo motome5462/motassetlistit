@@ -343,7 +343,8 @@ router.get("/export/:id", async (req, res) => {
 
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(path.join(__dirname, "../public/templates/PO_Form.xlsx"));
-    const worksheet = workbook.getWorksheet("Sheet1");
+    // Use the first worksheet if only one page exists
+    const worksheet = workbook.worksheets[0];
 
     worksheet.getCell("G4").value = `เลขประจำตัวผู้เสียภาษี : ${po.Taxpayerno}`;
     worksheet.getCell("B5").value = `   VENDOR : ${po.supplier}`;
@@ -367,8 +368,14 @@ router.get("/export/:id", async (req, res) => {
     const endRow = 32;
     let itemCount = Array.isArray(po.item) ? po.item.length : 0;
 
+    // Ensure worksheet has enough rows (ExcelJS getRow is always safe, but template may be missing rows)
+    for (let r = worksheet.rowCount + 1; r <= endRow; r++) {
+      worksheet.addRow([]);
+    }
+
     for (let i = 0; i < (endRow - startRow + 1); i++) {
       const row = worksheet.getRow(startRow + i);
+
       const item = po.item && po.item[i] ? po.item[i] : null;
 
       // Set quantity and ppu to zero if missing/invalid
@@ -388,7 +395,6 @@ router.get("/export/:id", async (req, res) => {
       // Hide ppu if zero, but always set value to 0 for formula compatibility
       row.getCell(7).value = ppu;
       row.getCell(7).numFmt = '[=0]"";General;General'; // Hide zero, show nonzero
-      
     }
 
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
