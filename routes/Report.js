@@ -240,7 +240,7 @@ router.get('/getalldetail', async (req, res) => {
       devicetype,
       sn,
       page = 1,
-      limit = 2
+      limit = 1
     } = req.query;
 
     const filters = {};
