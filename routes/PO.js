@@ -381,8 +381,14 @@ router.get("/export/:id", async (req, res) => {
       // Set quantity and ppu to zero if missing/invalid
       const quantity = item && !isNaN(Number(item.quantity)) && item.quantity !== "" ? Number(item.quantity) : 0;
       const ppu = item && !isNaN(Number(item.ppu)) && item.ppu !== "" ? Number(item.ppu) : 0;
+      const price = quantity * ppu;
 
-      row.getCell(2).value = item ? i + 1 : ""; // Item No.
+      // Only print item number if quantity and price are not 0/null
+      if (item && quantity !== 0 && price !== 0) {
+        row.getCell(2).value = i + 1;
+      } else {
+        row.getCell(2).value = "";
+      }
       row.getCell(3).value = item
         ? (item.sn ? `${item.description} - ${item.sn}` : item.description)
         : "";

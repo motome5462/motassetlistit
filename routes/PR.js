@@ -409,6 +409,8 @@ router.get("/export/:id", async (req, res) => {
       }
     }
 
+    // Track the running item number for non-zero items
+    let excelItemNo = 1;
     for (let i = 0; i < (endRow - startRow + 1); i++) {
       const row = worksheet.getRow(startRow + i);
       const item = pr.item && pr.item[i] ? pr.item[i] : null;
@@ -416,8 +418,14 @@ router.get("/export/:id", async (req, res) => {
       // Default quantity and ppu to zero if null/empty/NaN
       const quantity = item && item.quantity && !isNaN(Number(item.quantity)) ? Number(item.quantity) : 0;
       const ppu = item && item.ppu && !isNaN(Number(item.ppu)) ? Number(item.ppu) : 0;
+      const price = quantity * ppu;
 
-      row.getCell(2).value = item ? i + 1 : ""; // Item No.
+      // Only print item number if quantity and price are not 0/null
+      if (item && quantity !== 0 && price !== 0) {
+        row.getCell(2).value = excelItemNo++; // Item No.
+      } else {
+        row.getCell(2).value = "";
+      }
       row.getCell(3).value = item ? quantity : 0;
       row.getCell(4).value = item ? item.unit : "";
       row.getCell(5).value = item ? item.sn : "";

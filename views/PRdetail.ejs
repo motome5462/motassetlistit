@@ -81,9 +81,17 @@
             </tr>
           </thead>
           <tbody>
-            <% pr.item.forEach((item, itemIndex) => { %>
+            <% 
+              let webItemNo = 1;
+              pr.item.forEach((item, itemIndex) => { 
+                const quantity = parseFloat(item.quantity || 0);
+                const price = parseFloat(item.price || 0);
+                const showItemNo = quantity !== 0 && price !== 0;
+            %>
               <tr>
-                <td class="text-center align-middle"><%= itemIndex + 1 %></td>
+                <td class="text-center align-middle">
+                  <%= showItemNo ? webItemNo++ : "" %>
+                </td>
                 <td class="text-center align-middle"><%= item.quantity %></td>
                 <td class="text-center align-middle"><%= item.unit %></td>
                 <td class="text-center align-middle"><%= item.sn %></td>

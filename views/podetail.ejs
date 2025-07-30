@@ -39,7 +39,7 @@
     <div class="po-box row">
       <div class="col-md-4">
         <div class="mb-1 d-flex">
-          <strong class="me-2">VENDOR :</strong>
+          <strong class="me-2">VENDOR:</strong>
           <div>
             <div><%= po.supplier || '' %></div>
             <div><%= po.supplierdetail || '' %></div>
@@ -108,9 +108,15 @@
       </tr>
     </thead>
     <tbody>
-      <% (po.item || []).forEach((item, index) => { %>
+      <% 
+        let webItemNo = 1;
+        (po.item || []).forEach((item, index) => { 
+          const quantity = parseFloat(item.quantity || 0);
+          const price = parseFloat(item.price || 0);
+          const showItemNo = quantity !== 0 && price !== 0;
+      %>
         <tr>
-          <td><%= index + 1 %></td>
+          <td><%= showItemNo ? webItemNo++ : "" %></td>
           <td><%= item.description || '' %><% if (item.sn) { %> - <%= item.sn %><% } %></td>
           <td><%= item.unit || '' %></td>
           <td><%= item.quantity || '' %></td>
