@@ -352,7 +352,12 @@ router.get("/export/:id", async (req, res) => {
     worksheet.getCell("G6").value = `${po.dept}-${po.POno}`;
     worksheet.getCell("G7").value = po.date;
     worksheet.getCell("C8").value = `: ${po.Texid}`;
-    worksheet.getCell("C9").value = ` : Tel. ${po.Tel}  Fax. ${po.fax} (AUTO) Mobile. ${po.mobile}`;
+    // Build Tel/Fax/Mobile string only if values exist
+    let contactParts = [];
+    if (po.Tel) contactParts.push(`Tel. ${po.Tel}`);
+    if (po.fax) contactParts.push(`Fax. ${po.fax} (AUTO)`);
+    if (po.mobile) contactParts.push(`Mobile. ${po.mobile}`);
+    worksheet.getCell("C9").value = contactParts.length ? ` : ${contactParts.join("  ")}` : "";
     worksheet.getCell("B10").value = ` ATTENTION  : ${po.attention}`;
     worksheet.getCell("D10").value = `Email:${po.email}`;
     worksheet.getCell("F12").value = po.deliverydate;

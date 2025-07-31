@@ -46,7 +46,15 @@
           </div>
         </div>
         <p class="mb-1"><strong>TEX ID: </strong> <%= po.Texid || '' %></p>
-        <p class="mb-1"><strong>TEL : </strong> Tel. <%= po.Tel || '' %> Fax. <%= po.fax || '' %> Mobile. <%= po.mobile || '' %></p>
+        <% 
+          let contactParts = [];
+          if (po.Tel) contactParts.push('Tel. ' + po.Tel);
+          if (po.fax) contactParts.push('Fax. ' + po.fax);
+          if (po.mobile) contactParts.push('Mobile. ' + po.mobile);
+        %>
+        <% if (contactParts.length) { %>
+          <p class="mb-1"><strong>TEL : </strong> <%= contactParts.join('  ') %></p>
+        <% } %>
         <p class="mb-1"><strong>ATTENTION : </strong> <%= po.attention || '' %></p>
       </div>
 
